@@ -1,28 +1,3 @@
-'use strict';
-
-// class LikeButton extends React.Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = { liked: false };
-//   }
-//
-//   render() {
-//     if (this.state.liked) {
-//       return 'You liked this.';
-//     }
-//
-//     return (
-//       <button onClick={() => this.setState({ liked: true }) }>
-//         Like
-//       </button>
-//     );
-//   }
-// }
-//
-// let domContainer = document.querySelector('#react_test');
-// ReactDOM.render(<LikeButton />, domContainer);
-
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -44,7 +19,7 @@ var Clock = function (_React$Component) {
   }
 
   _createClass(Clock, [{
-    key: 'componentDidMount',
+    key: "componentDidMount",
     value: function componentDidMount() {
       var _this2 = this;
 
@@ -53,34 +28,34 @@ var Clock = function (_React$Component) {
       }, 1000);
     }
   }, {
-    key: 'componentWillUnmount',
+    key: "componentWillUnmount",
     value: function componentWillUnmount() {
       clearInterval(this.timerID);
     }
   }, {
-    key: 'tick',
+    key: "tick",
     value: function tick() {
       this.setState({
         date: new Date()
       });
     }
   }, {
-    key: 'render',
+    key: "render",
     value: function render() {
       return React.createElement(
-        'div',
+        "div",
         null,
         React.createElement(
-          'h1',
+          "h1",
           null,
-          'Hello, world!'
+          "Hello, react world! Not scaryy. Hi from blueprint!"
         ),
         React.createElement(
-          'h2',
+          "h2",
           null,
-          'It is ',
+          "It is ",
           this.state.date.toLocaleTimeString(),
-          '.'
+          "."
         )
       );
     }
@@ -89,4 +64,4 @@ var Clock = function (_React$Component) {
   return Clock;
 }(React.Component);
 
-ReactDOM.render(React.createElement(Clock, null), document.getElementById('react_test'));
+export default Clock;

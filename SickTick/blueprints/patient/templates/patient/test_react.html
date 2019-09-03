@@ -7,7 +7,7 @@
 {% block content%}
   <h3> {{str}} </h3>
   <a href="{{url_for('home')}}">home</a>
-  <div id="react_test"></div>
+  <div id="root"></div>
 {% endblock %}
 
 {% block footer_scripts %}
@@ -17,5 +17,5 @@
   <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
 
   <!-- Load our React component. -->
-  <script src="{{ url_for('static', filename='like_button.js')}}"></script>
+  <script type="module" src="{{ url_for('patient_blpr.static', filename='react_dst/index.js')}}"></script>
 {% endblock %}

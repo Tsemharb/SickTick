@@ -1,4 +1,5 @@
 venv
 run.py
 SickTick/__pycache__
-SickTick/static/node_modules
+SickTick/blueprints/patient/__pycache__
+SickTick/blueprints/patient/static/node_modules
