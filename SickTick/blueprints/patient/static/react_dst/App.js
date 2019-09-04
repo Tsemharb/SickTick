@@ -7,6 +7,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 import Clock from './Clock.js';
+import Patients_api from './patients_api.js';
 
 var App = function (_React$Component) {
   _inherits(App, _React$Component);
@@ -20,7 +21,12 @@ var App = function (_React$Component) {
   _createClass(App, [{
     key: 'render',
     value: function render() {
-      return React.createElement(Clock, null);
+      return React.createElement(
+        'div',
+        null,
+        React.createElement(Clock, null),
+        React.createElement(Patients_api, null)
+      );
     }
   }]);
 
