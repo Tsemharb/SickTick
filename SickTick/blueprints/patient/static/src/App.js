@@ -6,6 +6,7 @@ class App extends React.Component {
     return (
       <div>
         <Clock />
+          <hr/>
         <Patients_api />
       </div>
     );

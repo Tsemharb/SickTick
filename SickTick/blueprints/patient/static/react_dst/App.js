@@ -25,6 +25,7 @@ var App = function (_React$Component) {
         'div',
         null,
         React.createElement(Clock, null),
+        React.createElement('hr', null),
         React.createElement(Patients_api, null)
       );
     }

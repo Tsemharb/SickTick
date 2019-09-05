@@ -48,7 +48,7 @@ var Clock = function (_React$Component) {
         React.createElement(
           "h1",
           null,
-          "Hello, react world! Not scaryy. Hi from blueprint!"
+          "Hello, react world! Hi from blueprint!"
         ),
         React.createElement(
           "h2",
