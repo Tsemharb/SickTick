@@ -1,16 +1,20 @@
+// import Patients from './patient.js'
 
-function Patients_api() {
-  React.useEffect(function () {
-    fetch("http://localhost:5000/thesis/patient").then(function (response) {
-      return (
-        // fetch("https://api.randomuser.me/").then(response =>
-        response.json().then(function (data) {
-          console.log(data['patients'][0]['name']);
-        })
-      );
-    });
-  }, []);
-  return React.createElement('div', { className: 'Patients_api' });
-}
+// function Patients_api(){
+//   const [patients, setPatients] = React.useState([]);
 
-export default Patients_api;
+//   React.useEffect(() => {
+//     fetch("http://localhost:5000/thesis/patient").then(response =>
+//       // fetch("https://api.randomuser.me/").then(response =>
+//       response.json().then(data => {
+//         setPatients(data.patients);
+//       })
+//     );
+//   }, []);
+
+//   return <div className="Patients_api">
+//           <Patients patients={patients} />
+//          </div>;
+// }
+
+// export default Patients_api;
