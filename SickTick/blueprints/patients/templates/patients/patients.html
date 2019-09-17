@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title%}
+  react test
+{% endblock %}
+
+{% block head_scripts%}
+
+{% endblock %}
+
+{% block content%}
+  <h3> {{str}} </h3>
+
+  {% for file in files %}
+    <a href="{{url_for('patient_plotter.patient', file_name=file) }}">{{file}}</a>
+  {% endfor %}
+
+  <br />
+  <br />
+
+  <a href="{{url_for('home')}}">home</a>
+  <div id="root"></div>
+{% endblock %}
+
+{% block footer_scripts %}
+
+{% endblock %}

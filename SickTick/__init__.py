@@ -8,6 +8,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)
 
 from SickTick import routes
-from SickTick.blueprints.patient.routes import patient_blpr
+from SickTick.blueprints.patients.routes import patient_plotter
 
-app.register_blueprint(patient_blpr, url_prefix='/thesis')
+app.register_blueprint(patient_plotter, url_prefix='/thesis')
