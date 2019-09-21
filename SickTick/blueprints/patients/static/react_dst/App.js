@@ -22,7 +22,20 @@ function App() {
     null,
     React.createElement(Clock, null),
     React.createElement('hr', null),
-    patient.length ? React.createElement(Graph, { patients: patient }) : null
+    React.createElement(
+      'div',
+      { className: 'app' },
+      React.createElement(
+        'div',
+        { className: 'app__graph' },
+        patient.length ? React.createElement(Graph, { patients: patient }) : null
+      ),
+      React.createElement(
+        'div',
+        { className: 'app__control-panel' },
+        'test'
+      )
+    )
   );
 }
 

@@ -13,7 +13,7 @@
   <h3> {{str}} </h3>
   <a href="{{url_for('home')}}">home</a>
   <br />
-  <a href="{{url_for('patient_plotter.patients')}}">patients_list</a>
+  <a href="{{url_for('patient_visualizer.patients')}}">patients_list</a>
   <div id="root"></div>
 {% endblock %}
 
@@ -24,5 +24,5 @@
   <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
 
   <!-- Load our React component. -->
-  <script type="module" src="{{ url_for('patient_plotter.static', filename='react_dst/index.js')}}"></script>
+  <script type="module" src="{{ url_for('patient_visualizer.static', filename='react_dst/index.js')}}"></script>
 {% endblock %}

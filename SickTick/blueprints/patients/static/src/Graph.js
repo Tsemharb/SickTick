@@ -1,4 +1,4 @@
-import draw from './draw_graph/draw.js'
+import draw from './graph_components/draw.js'
 
 class Graph extends React.Component{
 	componentDidMount(){

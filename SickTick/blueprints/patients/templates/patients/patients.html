@@ -12,7 +12,7 @@
   <h3> {{str}} </h3>
 
   {% for file in files %}
-    <a href="{{url_for('patient_plotter.patient', file_name=file) }}">{{file}}</a>
+    <a href="{{url_for('patient_visualizer.patient', file_name=file) }}">{{file}}</a>
   {% endfor %}
 
   <br />

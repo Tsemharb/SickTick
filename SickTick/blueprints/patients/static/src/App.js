@@ -16,11 +16,18 @@ function App() {
 
 
   return (
-      <div>
-        <Clock />
-        <hr/>
-        {patient.length ? <Graph patients={patient}/> : null}
+    <div>
+      <Clock />
+      <hr/>
+      <div className='app'>
+        <div className='app__graph'>
+          {patient.length ? <Graph patients={patient}/> : null}
+        </div>
+        <div className="app__control-panel">
+          test
+        </div>
       </div>
+    </div>
     );
   }
 
