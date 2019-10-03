@@ -2,5 +2,5 @@ venv
 run.py
 draft_data
 SickTick/__pycache__
-SickTick/blueprints/patient/__pycache__
-SickTick/blueprints/patient/static/node_modules
+SickTick/blueprints/patients/__pycache__
+SickTick/blueprints/patients/static/node_modules
