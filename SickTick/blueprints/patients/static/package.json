@@ -1,18 +1,13 @@
 {
-  "name": "static",
+  "name": "Patient_visualizer",
   "version": "1.0.0",
-  "main": "like_button.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "description": "Draw patient data graph using React and D3",
+  "main": "index.js",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "babel-cli": "^6.26.0",
     "babel-preset-react-app": "^3.1.2"
-  },
-  "devDependencies": {
-    "babel-cli": "^6.26.0"
-  },
-  "description": ""
+  }
 }

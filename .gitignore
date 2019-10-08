@@ -1,6 +1,7 @@
 venv
 run.py
 draft_data
+side_scripts/.ipynb_checkpoints
 SickTick/__pycache__
 SickTick/blueprints/patients/__pycache__
 SickTick/blueprints/patients/static/node_modules

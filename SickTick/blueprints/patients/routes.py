@@ -6,6 +6,8 @@ from SickTick.models import Patient
 
 from os import listdir
 
+from .patient import Patient_parser
+
 
 @patient_visualizer.route('/')
 def patients():
@@ -22,6 +24,7 @@ def patient(file_name):
 
 @patient_visualizer.route('/patient/data')
 def get_patients():
+    a = Patient_parser()
     patients_list = Patient.query.all()
     patients = []
 

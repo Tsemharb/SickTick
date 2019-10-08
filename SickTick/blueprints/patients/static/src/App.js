@@ -24,12 +24,12 @@ function App() {
           {patient.length ? <Graph patients={patient}/> : null}
         </div>
         <div className="app__control-panel">
-          test
+          Insert your control panel here
         </div>
       </div>
     </div>
-    );
-  }
+  );
+}
 
 
 
