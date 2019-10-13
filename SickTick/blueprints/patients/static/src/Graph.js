@@ -1,12 +1,12 @@
-import draw from './graph_components/draw.js'
+import draw_everything from './graph_components/draw_everything.js'
 
 class Graph extends React.Component{
     componentDidMount(){
-        draw(this.props)
+        draw_everything(this.props)
     }
 
     componentDidUpdate(){
-        draw(this.props)
+        draw_everything(this.props)
     }
 
     render(){

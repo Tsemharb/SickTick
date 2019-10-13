@@ -22,12 +22,14 @@ def patient(file_name):
     return render_template('patients/patient.html', str=content_string)
 
 
-@patient_visualizer.route('/patient/data')
-def get_patients():
-    a = Patient_parser()
-    patients_list = Patient.query.all()
-    patients = []
+@patient_visualizer.route('/patient/data/<patient_id>')
+def get_patient_data(patient_id):
+    patient_data = Patient_parser(patient_id)
+    return jsonify({'patients': [patient_data.general_info]})
 
-    for patient in patients_list:
-        patients.append({'name': patient.patient_name, 'surname': patient.patient_surname})
-    return jsonify({'patients' : patients})
+    # patients_list = Patient.query.all()
+    # patients = [{'as': 's'}]
+    #
+    # for patient in patients_list:
+    #     patients.append({'name': patient.patient_name, 'surname': patient.patient_surname})
+    # return jsonify({'patients' : patients})

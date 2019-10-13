@@ -5,15 +5,20 @@ import Graph from './Graph.js'
 function App() {
 
   const [patient, setPatient] = React.useState([]);
+  let location = window.location.href.split("_");
+  let patient_id = (location[location.length-1]);
 
   React.useEffect(() => {
-    fetch("http://localhost:5000/thesis/patient/data").then(response =>
-      response.json().then(data => {
+    fetch("http://localhost:5000/thesis/patient/data/" + patient_id)
+    .then(response => response.json()
+    .then(data => {
         setPatient(data.patients);
       })
     );
   }, []);
 
+console.log(patient.length);
+console.log(patient);
 
   return (
     <div>
