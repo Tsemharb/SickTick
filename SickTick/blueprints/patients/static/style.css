@@ -1,0 +1,23 @@
+.patients_list_wrapper{
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+.patients_list{
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 1400px;
+}
+
+.patients_list p:nth-child(3n+2){
+  text-align: center
+}
+
+.patients_list p:nth-child(3n+3){
+  text-align: right;
+}
+
+.patients_list p{
+  width: 33%;
+}

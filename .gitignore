@@ -6,3 +6,5 @@ SickTick/__pycache__
 SickTick/blueprints/patients/__pycache__
 SickTick/blueprints/patients/static/node_modules
 SickTick/blueprints/patients/static/package-lock.json
+data/*
+!data/0 123_3.docx

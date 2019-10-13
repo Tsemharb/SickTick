@@ -2,6 +2,7 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 import Clock from './Clock.js';
 import Graph from './Graph.js';
+import General_info from './General_info.js';
 
 function App() {
   var _React$useState = React.useState([]),
@@ -9,32 +10,35 @@ function App() {
       patient = _React$useState2[0],
       setPatient = _React$useState2[1];
 
-  var location = window.location.href.split("_");
-  var patient_id = location[location.length - 1];
+  var location = window.location.href;
+  var patient_id = location.match(/\/([0-9]*)%20/)[1]; //get serial number as id
+
+  console.log(patient_id);
 
   React.useEffect(function () {
     fetch("http://localhost:5000/thesis/patient/data/" + patient_id).then(function (response) {
       return response.json().then(function (data) {
-        setPatient(data.patients);
+        setPatient(data.patient);
       });
     });
   }, []);
 
-  console.log(patient.length);
-  console.log(patient);
+  // console.log(Object.keys(patient).length);
+  // console.log(patient);
 
   return React.createElement(
     'div',
     null,
     React.createElement(Clock, null),
     React.createElement('hr', null),
+    Object.keys(patient).length ? React.createElement(General_info, { info: patient.general_info }) : null,
     React.createElement(
       'div',
-      { className: 'app' },
+      { className: 'app', style: { display: "flex", justifyContent: "center" } },
       React.createElement(
         'div',
         { className: 'app__graph' },
-        patient.length ? React.createElement(Graph, { patients: patient }) : null
+        Object.keys(patient).length ? React.createElement(Graph, { patient: patient }) : null
       ),
       React.createElement(
         'div',

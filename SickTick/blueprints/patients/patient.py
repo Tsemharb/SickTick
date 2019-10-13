@@ -30,7 +30,7 @@ class Patient_parser:
     def get_patient_file_name(id):
         files = [f.replace('.docx', '') for f in listdir('data')]
         for file in files:
-            if file.split('_')[-1] == id:
+            if file.split(' ')[0] == id:
                 return file + '.docx'
 
 

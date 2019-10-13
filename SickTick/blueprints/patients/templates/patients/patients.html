@@ -4,21 +4,28 @@
   react test
 {% endblock %}
 
+{% block styles %}
+  <link rel="stylesheet" href="{{ url_for('patient_visualizer.static', filename='style.css') }}">
+{% endblock %}
+
 {% block head_scripts%}
 
 {% endblock %}
 
 {% block content%}
+  <a href="{{url_for('home')}}">home</a>
   <h3> {{str}} </h3>
 
-  {% for file in files %}
-    <a href="{{url_for('patient_visualizer.patient', file_name=file) }}">{{file}}</a><br/>
-  {% endfor %}
+<div class=patients_list_wrapper>
+  <div class="patients_list">
+    {% for file in files %}
+      <p><a href="{{url_for('patient_visualizer.patient', file_name=file) }}">{{file}}</a></p>
+    {% endfor %}
+  </div>
+</div>
 
-  <br />
-  <br />
 
-  <a href="{{url_for('home')}}">home</a>
+
   <div id="root"></div>
 {% endblock %}
 

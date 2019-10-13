@@ -13,19 +13,24 @@ from .patient import Patient_parser
 def patients():
     content_string = 'Patients list'
     files = [f.replace('.docx', '') for f in listdir('data')]
+    files = sorted(files, key = lambda x: int(x.split(' ')[0]))
     return render_template('patients/patients.html', str=content_string, files=files)
 
 
 @patient_visualizer.route('/patient/<file_name>')
 def patient(file_name):
-    content_string = file_name
-    return render_template('patients/patient.html', str=content_string)
+    return render_template('patients/patient.html')
 
 
 @patient_visualizer.route('/patient/data/<patient_id>')
 def get_patient_data(patient_id):
     patient_data = Patient_parser(patient_id)
-    return jsonify({'patients': [patient_data.general_info]})
+    return jsonify({'patient': {
+                                'general_info': patient_data.general_info,
+                                'temperature': patient_data.temperature
+                                }
+                        }
+                    )
 
     # patients_list = Patient.query.all()
     # patients = [{'as': 's'}]
