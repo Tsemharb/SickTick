@@ -1,6 +1,8 @@
 from os import listdir
 import docx
 
+# TODO: check dates by regexp (sometimes additional info presents)
+# TODO: consider adding year info to dates of lab get_tests
 
 class Patient_parser:
     def __init__(self, id):

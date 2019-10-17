@@ -14,6 +14,9 @@ var Clock = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Clock.__proto__ || Object.getPrototypeOf(Clock)).call(this, props));
 
+    var test_date = new Date();
+
+    test_date.setMonth(5);
     _this.state = { date: new Date() };
     return _this;
   }

@@ -1,7 +1,10 @@
 class Clock extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {date: new Date()};
+    let test_date = new Date();
+
+    test_date.setMonth(5);
+    this.state = {date: new Date()}
   }
 
   componentDidMount() {
