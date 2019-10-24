@@ -1,52 +1,101 @@
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 import Clock from './Clock.js';
 import Graph from './Graph.js';
 import General_info from './General_info.js';
 
-function App() {
-  var _React$useState = React.useState([]),
-      _React$useState2 = _slicedToArray(_React$useState, 2),
-      patient = _React$useState2[0],
-      setPatient = _React$useState2[1];
+// function App() {
 
-  var location = window.location.href;
-  var patient_id = location.match(/\/([0-9]*)%20/)[1]; //get serial number as id
+var App = function (_React$Component) {
+  _inherits(App, _React$Component);
 
-  console.log(patient_id);
+  function App(props) {
+    _classCallCheck(this, App);
 
-  React.useEffect(function () {
-    fetch("http://localhost:5000/thesis/patient/data/" + patient_id).then(function (response) {
-      return response.json().then(function (data) {
-        setPatient(data.patient);
+    var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+
+    _this.onDraw = function () {
+      return _this.setState({ drawGraph: true });
+    };
+
+    var location = window.location.href;
+    var patient_id = location.match(/\/([0-9]*)%20/)[1]; //get serial number as id
+    _this.state = {
+      isLoaded: false,
+      drawGraph: false,
+      patient: {}
+    };
+    return _this;
+  }
+
+  _createClass(App, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      var location = window.location.href;
+      var patient_id = location.match(/\/([0-9]*)%20/)[1]; //get serial number as id
+      fetch("http://localhost:5000/thesis/patient/data/" + patient_id).then(function (response) {
+        return response.json().then(function (data) {
+          _this2.setState({ isLoaded: true,
+            patient: data });
+        });
       });
-    });
-  }, []);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _state = this.state,
+          isLoaded = _state.isLoaded,
+          drawGraph = _state.drawGraph,
+          patient = _state.patient;
 
-  // console.log(Object.keys(patient).length);
-  // console.log(patient);
 
-  return React.createElement(
-    'div',
-    null,
-    React.createElement(Clock, null),
-    React.createElement('hr', null),
-    Object.keys(patient).length ? React.createElement(General_info, { info: patient.general_info }) : null,
-    React.createElement(
-      'div',
-      { className: 'app', style: { display: "flex", justifyContent: "center" } },
-      React.createElement(
-        'div',
-        { className: 'app__graph' },
-        Object.keys(patient).length ? React.createElement(Graph, { patient: patient }) : null
-      ),
-      React.createElement(
-        'div',
-        { className: 'app__control-panel' },
-        'Insert your control panel here'
-      )
-    )
-  );
-}
+      if (!isLoaded) {
+        return React.createElement(
+          'div',
+          null,
+          ' loading '
+        );
+      } else {
+        // console.log(drawGraph);
+        return React.createElement(
+          'div',
+          null,
+          React.createElement(Clock, null),
+          React.createElement('hr', null),
+          React.createElement(General_info, { info: patient }),
+          React.createElement(
+            'div',
+            { className: 'app', style: { display: "flex", justifyContent: "center" } },
+            React.createElement(
+              'div',
+              { className: 'app__graph' },
+              drawGraph ? React.createElement(Graph, { patient: patient }) : null
+            ),
+            React.createElement(
+              'div',
+              { className: 'app__control-panel' },
+              'Insert your control panel here'
+            ),
+            React.createElement(
+              'button',
+              { onClick: this.onDraw },
+              ' plot '
+            )
+          )
+        );
+      }
+    }
+  }]);
+
+  return App;
+}(React.Component);
 
 export default App;

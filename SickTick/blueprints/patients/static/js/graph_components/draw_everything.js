@@ -14,7 +14,9 @@ var diffDays = function diffDays(d1, d2) {
 };
 
 var draw_everything = function draw_everything(props) {
-  // console.log(props);
+  var patient = props.patient.patient;
+
+
   d3.select('.graph > *').remove();
   d3.select('.graph').append('svg').attr('height', height).attr('width', width).attr('id', 'graph');
 
@@ -29,7 +31,7 @@ var draw_everything = function draw_everything(props) {
     return new Date(dateISO).getTime();
   };
 
-  var treatmentDuration = diffDays(getValidDate(props.patient.general_info.admission_date), getValidDate(props.patient.general_info.discharge_date));
+  var treatmentDuration = diffDays(getValidDate(patient.general_info.admission_date), getValidDate(patient.general_info.discharge_date));
 
   var temp = Array.from({ length: treatmentDuration + 1 }, function (v, k) {
     return Math.random() * (42.0 - 35.0) + 35.0;
@@ -43,7 +45,7 @@ var draw_everything = function draw_everything(props) {
     return day + '-' + month;
   };
 
-  var xScale = d3.scaleTime().domain([getValidDate(props.patient.general_info.admission_date), getValidDate(props.patient.general_info.discharge_date)]).range([0, innerWidth]);
+  var xScale = d3.scaleTime().domain([getValidDate(patient.general_info.admission_date), getValidDate(patient.general_info.discharge_date)]).range([0, innerWidth]);
 
   var xAxis = d3.axisBottom(xScale).tickFormat(dateFormat);
 
@@ -55,7 +57,7 @@ var draw_everything = function draw_everything(props) {
   });
 
   //temperature
-  temp = Object.values(props.patient.temperature);
+  temp = Object.values(patient.temperature);
 
   // const max_temp = temp
   var max_temp = Math.max.apply(Math, temp.map(function (o) {
@@ -118,6 +120,36 @@ var draw_everything = function draw_everything(props) {
 
   // draw_circles(svg, x);
   // draw_circles2(svg, x, 200);
+
+
+  // function updateChart() {
+  //
+  //     let extent = d3.event.selection
+  //
+  //     // If no selection, back to initial coordinate. Otherwise, update X axis domain
+  //     if(!extent){
+  //       if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
+  //       xScale.domain([ 4,8])
+  //     }else{
+  //       xScale.domain([ xScale.invert(extent[0]), xScale.invert(extent[1]) ])
+  //       chart.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
+  //     }
+  //
+  //     // Update axis and circle position
+  //     xAxis.transition().duration(1000).call(d3.axisBottom(x))
+  //     scatter
+  //       .selectAll("circle")
+  //       .transition().duration(1000)
+  //       .attr("cx", function (d) { return x(d.Sepal_Length); } )
+  //       .attr("cy", function (d) { return y(d.Petal_Length); } )
+  //
+  //     }
+  //
+  // d3.select("#graph")
+  //       .call( d3.brushX()                     // Add the brush feature using the d3.brush function
+  //         .extent( [ [margin.left, 0], [width, height] ] )
+  //         .on("end", updateChart)        // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+  //       )
 };
 
 export default draw_everything;

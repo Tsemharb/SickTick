@@ -25,49 +25,49 @@ var General_info = function (_React$Component) {
                     'p',
                     null,
                     ' ',
-                    this.props.info.name,
+                    this.props.info.patient.general_info.name,
                     ' '
                 ),
                 React.createElement(
                     'p',
                     null,
                     ' ',
-                    this.props.info.address,
+                    this.props.info.patient.general_info.address,
                     ' '
                 ),
                 React.createElement(
                     'p',
                     null,
                     ' ',
-                    this.props.info.birthdate,
+                    this.props.info.patient.general_info.birthdate,
                     ' '
                 ),
                 React.createElement(
                     'p',
                     null,
                     ' ',
-                    this.props.info.admission_date,
+                    this.props.info.patient.general_info.admission_date,
                     ' '
                 ),
                 React.createElement(
                     'p',
                     null,
                     ' ',
-                    this.props.info.discharge_date,
+                    this.props.info.patient.general_info.discharge_date,
                     ' '
                 ),
                 React.createElement(
                     'p',
                     null,
                     ' ',
-                    this.props.info.department,
+                    this.props.info.patient.general_info.department,
                     ' '
                 ),
                 React.createElement(
                     'p',
                     null,
                     ' ',
-                    this.props.info.diagnosis,
+                    this.props.info.patient.general_info.diagnosis,
                     ' '
                 )
             );

@@ -2,42 +2,60 @@ import Clock from './Clock.js'
 import Graph from './Graph.js'
 import General_info from './General_info.js'
 
-function App() {
+// function App() {
+class App extends React.Component {
 
-  const [patient, setPatient] = React.useState([]);
-  let location = window.location.href;
-  let patient_id = location.match(/\/([0-9]*)%20/)[1]; //get serial number as id
 
-  console.log(patient_id);
+  constructor(props) {
+    super(props);
+    let location = window.location.href;
+    let patient_id = location.match(/\/([0-9]*)%20/)[1]; //get serial number as id
+    this.state = {
+      isLoaded: false,
+      drawGraph: false,
+      patient: {}
+    };
+  }
 
-  React.useEffect(() => {
+  componentDidMount(){
+    let location = window.location.href;
+    let patient_id = location.match(/\/([0-9]*)%20/)[1]; //get serial number as id
     fetch("http://localhost:5000/thesis/patient/data/" + patient_id)
-    .then(response => response.json()
-    .then(data => {
-        setPatient(data.patient);
-      })
-    );
-  }, []);
+      .then(response => response.json()
+      .then(data => {
+        this.setState({isLoaded: true,
+                       patient: data});
+        })
+      );
+  }
 
-// console.log(Object.keys(patient).length);
-// console.log(patient);
+  onDraw = () => this.setState({drawGraph: true});
 
-  return (
+  render () {
+    let {isLoaded, drawGraph, patient} = this.state;
+
+    if (!isLoaded){
+      return <div> loading </div>;
+    }
+    else{
+    // console.log(drawGraph);
+    return(
     <div>
       <Clock />
       <hr/>
-      {Object.keys(patient).length ? <General_info info={patient.general_info}/> : null}
+      <General_info info={patient}/>
       <div className='app' style={{display: "flex", justifyContent: "center"}}>
         <div className='app__graph'>
-          {Object.keys(patient).length ? <Graph patient={patient}/> : null}
+          {drawGraph ? <Graph patient={patient} /> : null}
         </div>
         <div className="app__control-panel">
           Insert your control panel here
         </div>
+          <button onClick={this.onDraw}> plot </button>
       </div>
-    </div>
-  );
+    </div> );
+    }
+  }
 }
-
 
 export default App;
