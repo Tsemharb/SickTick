@@ -6,60 +6,30 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Clock = function (_React$Component) {
-    _inherits(Clock, _React$Component);
+var Temp_controller = function (_React$Component) {
+    _inherits(Temp_controller, _React$Component);
 
-    function Clock(props) {
-        _classCallCheck(this, Clock);
+    function Temp_controller() {
+        _classCallCheck(this, Temp_controller);
 
-        var _this = _possibleConstructorReturn(this, (Clock.__proto__ || Object.getPrototypeOf(Clock)).call(this, props));
-
-        var test_date = new Date();
-
-        test_date.setMonth(5);
-        _this.state = { date: new Date() };
-        return _this;
+        return _possibleConstructorReturn(this, (Temp_controller.__proto__ || Object.getPrototypeOf(Temp_controller)).apply(this, arguments));
     }
 
-    _createClass(Clock, [{
-        key: "componentDidMount",
-        value: function componentDidMount() {
-            var _this2 = this;
-
-            this.timerID = setInterval(function () {
-                return _this2.tick();
-            }, 1000);
-        }
-    }, {
-        key: "componentWillUnmount",
-        value: function componentWillUnmount() {
-            clearInterval(this.timerID);
-        }
-    }, {
-        key: "tick",
-        value: function tick() {
-            this.setState({
-                date: new Date()
-            });
-        }
-    }, {
+    _createClass(Temp_controller, [{
         key: "render",
         value: function render() {
-            return React.createElement(
-                "div",
-                null,
-                React.createElement(
-                    "h2",
+            var temp = Object.values(this.props.temp);
+            return temp.map(function (t) {
+                return React.createElement(
+                    "small",
                     null,
-                    "It is ",
-                    this.state.date.toLocaleTimeString(),
-                    "."
-                )
-            );
+                    t.temp
+                );
+            });
         }
     }]);
 
-    return Clock;
+    return Temp_controller;
 }(React.Component);
 
-export default Clock;
+export default Temp_controller;

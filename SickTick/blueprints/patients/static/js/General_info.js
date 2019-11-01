@@ -7,74 +7,74 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var General_info = function (_React$Component) {
-    _inherits(General_info, _React$Component);
+  _inherits(General_info, _React$Component);
 
-    function General_info() {
-        _classCallCheck(this, General_info);
+  function General_info() {
+    _classCallCheck(this, General_info);
 
-        return _possibleConstructorReturn(this, (General_info.__proto__ || Object.getPrototypeOf(General_info)).apply(this, arguments));
+    return _possibleConstructorReturn(this, (General_info.__proto__ || Object.getPrototypeOf(General_info)).apply(this, arguments));
+  }
+
+  _createClass(General_info, [{
+    key: 'render',
+    value: function render() {
+      return React.createElement(
+        'div',
+        { className: 'general_info' },
+        React.createElement(
+          'h2',
+          null,
+          ' ',
+          this.props.info.general_info.name,
+          ' '
+        ),
+        React.createElement(
+          'p',
+          null,
+          ' ',
+          this.props.info.general_info.address,
+          ' '
+        ),
+        React.createElement(
+          'p',
+          null,
+          ' ',
+          this.props.info.general_info.birthdate,
+          ' '
+        ),
+        React.createElement(
+          'p',
+          null,
+          ' ',
+          this.props.info.general_info.admission_date,
+          ' '
+        ),
+        React.createElement(
+          'p',
+          null,
+          ' ',
+          this.props.info.general_info.discharge_date,
+          ' '
+        ),
+        React.createElement(
+          'p',
+          null,
+          ' ',
+          this.props.info.general_info.department,
+          ' '
+        ),
+        React.createElement(
+          'p',
+          null,
+          ' ',
+          this.props.info.general_info.diagnosis,
+          ' '
+        )
+      );
     }
+  }]);
 
-    _createClass(General_info, [{
-        key: 'render',
-        value: function render() {
-            return React.createElement(
-                'div',
-                { className: 'general_info' },
-                React.createElement(
-                    'p',
-                    null,
-                    ' ',
-                    this.props.info.patient.general_info.name,
-                    ' '
-                ),
-                React.createElement(
-                    'p',
-                    null,
-                    ' ',
-                    this.props.info.patient.general_info.address,
-                    ' '
-                ),
-                React.createElement(
-                    'p',
-                    null,
-                    ' ',
-                    this.props.info.patient.general_info.birthdate,
-                    ' '
-                ),
-                React.createElement(
-                    'p',
-                    null,
-                    ' ',
-                    this.props.info.patient.general_info.admission_date,
-                    ' '
-                ),
-                React.createElement(
-                    'p',
-                    null,
-                    ' ',
-                    this.props.info.patient.general_info.discharge_date,
-                    ' '
-                ),
-                React.createElement(
-                    'p',
-                    null,
-                    ' ',
-                    this.props.info.patient.general_info.department,
-                    ' '
-                ),
-                React.createElement(
-                    'p',
-                    null,
-                    ' ',
-                    this.props.info.patient.general_info.diagnosis,
-                    ' '
-                )
-            );
-        }
-    }]);
-
-    return General_info;
+  return General_info;
 }(React.Component);
 
 export default General_info;

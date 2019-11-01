@@ -1,8 +1,10 @@
 from os import listdir
+from datetime import datetime
+import time
 import docx
 
 # TODO: check dates by regexp (sometimes additional info presents)
-# TODO: consider adding year info to dates of lab get_tests
+# TODO: deal with get_correct_timestamp function variables outside of function
 
 class Patient_parser:
     def __init__(self, id):
@@ -24,8 +26,11 @@ class Patient_parser:
         for table in self.doc.tables:  #get tables of doc file ('table_name': table_obj)
             self.tables[self.tables_mapping[table.rows[0].cells[0].text.strip()]] = table
 
+        self.current_date = None;
+        self.date_counter = 1;
+
         self.general_info = self.get_general_info()
-        self.temperature = self.get_temperature()
+        self.temperature = self.get_temperature(self.general_info['admission_date'][-4:], self.general_info['discharge_date'][-4:])
 
 
     @staticmethod
@@ -34,6 +39,22 @@ class Patient_parser:
         for file in files:
             if file.split(' ')[0] == id:
                 return file + '.docx'
+
+
+# method sets different timestamps for date duplicates (same dates won't have same x-coords)
+    # @staticmethod
+    def get_correct_timestamp(self, date, count):
+        date_shift = 0;
+        print(self.current_date)
+        if date == self.current_date: 
+            date_shift = self.date_counter / count * 24 * 60 * 60 * 1000;
+            self.date_counter+=1;
+        else:
+            self.current_date = date;
+            self.date_counter = 1;
+            date_shift = 0;
+        return int(datetime.timestamp(datetime.strptime(date, '%d.%m.%Y')) * 1000 + date_shift)
+
 
 
     def get_general_info(self):
@@ -51,7 +72,10 @@ class Patient_parser:
         return general_info
 
 
-    def get_temperature(self):
+    def get_temperature(self, admission_year, discharge_year):
+        same_year = admission_year == discharge_year  # check for change of the year while in hospital
+        month = int(self.general_info['admission_date'][3:5])
+        year = admission_year
         temperature = {}
         the_table = self.tables['temperature']
         rows_num = len(the_table.rows)
@@ -61,11 +85,29 @@ class Patient_parser:
             for cell in range(0, cells_num):
                 date = the_table.rows[row].cells[cell].text
                 if date != '':
-                    temperature[temp_id] = {'date':date,
+                    if not same_year and month > int(date[-2:]):
+                        year = discharge_year
+                        month = int(date[-2:])
+                    else:
+                        month = int(date[-2:])
+                    temperature[temp_id] = {'date':date + '.' + year,
                                             'temp': the_table.rows[row+1].cells[cell].text}
-                    temp_id+=1
+                    temp_id += 1
                 else:
                     break
+
+        # add count for each unique date
+        counts = {}
+        dates = [temperature[i]['date'] for i in range(len(temperature))]
+        for date in set(dates):
+            for i in range(len(temperature)):
+                counts[i] = dates.count(temperature[i]['date'])
+
+        # add timestamp for every temperature measurement
+        for i in range(len(temperature)):
+            timestamp = self.get_correct_timestamp(temperature[i]['date'], counts[i])
+            temperature[i]['timestamp'] = timestamp;
+
         return temperature
 
 

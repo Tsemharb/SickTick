@@ -12,7 +12,7 @@ from .patient import Patient_parser
 @patient_visualizer.route('/')
 def patients():
     content_string = 'Patients list'
-    files = [f.replace('.docx', '') for f in listdir('data')]
+    files = [f.replace('.docx', '') for f in listdir('data') if '~$' not in f]
     files = sorted(files, key = lambda x: int(x.split(' ')[0]))
     return render_template('patients/patients.html', str=content_string, files=files)
 
@@ -25,12 +25,10 @@ def patient(file_name):
 @patient_visualizer.route('/patient/data/<patient_id>')
 def get_patient_data(patient_id):
     patient_data = Patient_parser(patient_id)
-    return jsonify({'patient': {
-                                'general_info': patient_data.general_info,
-                                'temperature': patient_data.temperature
-                                }
-                        }
-                    )
+    return jsonify({
+                    'general_info': patient_data.general_info,
+                    'temperature': patient_data.temperature
+                   })
 
     # patients_list = Patient.query.all()
     # patients = [{'as': 's'}]

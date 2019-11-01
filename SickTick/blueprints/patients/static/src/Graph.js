@@ -1,17 +1,17 @@
 import draw_everything from './graph_components/draw_everything.js'
 
-class Graph extends React.Component{
-    componentDidMount(){
+class Graph extends React.Component {
+    componentDidMount() {
         draw_everything(this.props)
 
     }
 
-    componentDidUpdate(){
+    componentDidUpdate() {
         draw_everything(this.props)
     }
 
-    render(){
-        return(
+    render() {
+        return (
             <div className='graph' />
         )
     }
