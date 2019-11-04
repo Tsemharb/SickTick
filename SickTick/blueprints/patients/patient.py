@@ -2,6 +2,7 @@ from os import listdir
 from datetime import datetime
 import time
 import docx
+import re
 
 # TODO: check dates by regexp (sometimes additional info presents)
 # TODO: deal with get_correct_timestamp function variables outside of function
@@ -31,6 +32,7 @@ class Patient_parser:
 
         self.general_info = self.get_general_info()
         self.temperature = self.get_temperature(self.general_info['admission_date'][-4:], self.general_info['discharge_date'][-4:])
+        self.antibiotics = self.get_antibiotics(self.tables['antibiotics'])
 
 
     @staticmethod
@@ -95,7 +97,6 @@ class Patient_parser:
                     temp_id += 1
                 else:
                     break
-
         # add count for each unique date
         counts = {}
         dates = [temperature[i]['date'] for i in range(len(temperature))]
@@ -109,6 +110,31 @@ class Patient_parser:
             temperature[i]['timestamp'] = timestamp;
 
         return temperature
+
+
+    def get_antibiotics(self, table):
+        antibiotics = {}
+        rows_num = len(table.rows)
+        cells_num = len(table.rows[1].cells)
+        for row in range(1, rows_num):
+            row_content = []
+            # get info from each row
+            for cell in range(cells_num):
+                row_content.append(table.rows[row].cells[cell].text)
+            # row_content example: ['с 04.09.2018 по 05.09.2018', 'Цефепим 2,0 * 2р. в/в']
+            # add antibiotics name
+            ab_name = row_content[1]
+            ab_name = re.split("(\d)+", ab_name)[0]
+            ab_dose = row_content[1].replace(ab_name, '')
+            antibiotics[row-1] = {'name': ab_name.strip()}
+            antibiotics[row-1]['dose'] = ab_dose
+            antibiotics[row-1]['dates'] = []
+            # add antibiotics dates could be several runs for each ab
+            dates = row_content[0].split(',')
+            for date in dates:
+                d = date.strip().split(' ')
+                antibiotics[row-1]['dates'].append({'from': d[1][:10], 'to':d[3][:10]})
+        return antibiotics
 
 
     def get_tests(table):

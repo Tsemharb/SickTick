@@ -28,6 +28,10 @@
     margin-bottom: 40px;
 }
 
+.viewport_data{
+    display: none;
+}
+
 .chart {
     width: 300px;
 }

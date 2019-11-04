@@ -9,10 +9,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 import Clock from './Clock.js';
 import Graph from './Graph.js';
 import General_info from './General_info.js';
-import Temp_controller from './Temp_controller.js';
+import Temp_controller from './controller_components/Temp_controller.js';
+import Ab_controller from './controller_components/Ab_controller.js';
 import path from './path.js';
-
-// function App() {
 
 var App = function (_React$Component) {
     _inherits(App, _React$Component);
@@ -23,14 +22,25 @@ var App = function (_React$Component) {
         var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
         _this.onDraw = function () {
-            return _this.setState({ drawGraph: true });
+            return _this.setState({ drawGraph: true, viewport: false });
         };
 
-        var location = window.location.href;
-        var patient_id = location.match(/\/([0-9]*)%20/)[1]; //get serial number as id
+        _this.toggleTemp = function () {
+            return _this.setState({ drawTemp: !_this.state.drawTemp, viewport: false });
+        };
+
+        _this.toggleAb = function () {
+            return _this.setState({ drawAb: !_this.state.drawAb, viewport: false });
+        };
+
+        _this.handleViewportPosition = function (e) {
+            e.target.id === 'viewport_x1' ? _this.setState({ viewport_start: e.target.value, viewport: true }) : _this.setState({ viewport_end: e.target.value, viewport: true });
+        };
+
         _this.state = {
             isLoaded: false,
             drawGraph: false,
+            viewport: false,
             patient: {}
         };
         return _this;
@@ -47,10 +57,20 @@ var App = function (_React$Component) {
                 return response.json().then(function (data) {
                     _this2.setState({
                         isLoaded: true,
+                        drawGraph: false,
+                        drawTemp: true,
+                        drawAb: true,
+                        viewport: false,
                         patient: data
                     });
                 });
             });
+        }
+    }, {
+        key: 'shouldComponentUpdate',
+        value: function shouldComponentUpdate(nextProps, nextState) {
+            // console.log(nextState.viewport);
+            return !nextState.viewport;
         }
     }, {
         key: 'render',
@@ -58,17 +78,19 @@ var App = function (_React$Component) {
             var _state = this.state,
                 isLoaded = _state.isLoaded,
                 drawGraph = _state.drawGraph,
-                patient = _state.patient;
-            // let r = Object.values(patient.temperature);
+                drawTemp = _state.drawTemp,
+                drawAb = _state.drawAb,
+                patient = _state.patient,
+                viewport_start = _state.viewport_start,
+                viewport_end = _state.viewport_end;
 
             if (!isLoaded) {
                 return React.createElement(
                     'div',
                     null,
-                    ' loading '
+                    ' loading... '
                 );
             } else {
-                // console.log(drawGraph);
                 return React.createElement(
                     'div',
                     null,
@@ -81,17 +103,32 @@ var App = function (_React$Component) {
                         React.createElement(
                             'div',
                             { className: 'app__graph' },
-                            drawGraph ? React.createElement(Graph, { patient: patient }) : null
+                            drawGraph ? React.createElement(Graph, { graphData: { patient: patient, drawTemp: drawTemp, drawAb: drawAb, viewport_start: viewport_start, viewport_end: viewport_end } }) : React.createElement('div', { className: 'placeholder' })
                         ),
                         React.createElement(
                             'div',
                             { className: 'app__control-panel' },
-                            isLoaded ? React.createElement(Temp_controller, { temp: patient.temperature }) : null,
+                            isLoaded ? React.createElement(
+                                'div',
+                                null,
+                                React.createElement(Temp_controller, { temp: patient.temperature,
+                                    drawTemp: this.state.drawTemp,
+                                    toggleTemp: this.toggleTemp }),
+                                React.createElement(Ab_controller, { temp: patient.temperature,
+                                    drawAb: this.state.drawAb,
+                                    toggleAb: this.toggleAb })
+                            ) : null,
                             React.createElement(
                                 'button',
                                 { onClick: this.onDraw },
                                 ' plot '
                             )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'viewport_data' },
+                            React.createElement('input', { id: 'viewport_x1', type: 'text', pattern: '[0-9]*', onChange: this.handleViewportPosition }),
+                            React.createElement('input', { id: 'viewport_x2', type: 'text', pattern: '[0-9]*', onChange: this.handleViewportPosition })
                         )
                     )
                 );

@@ -19,13 +19,15 @@ var Temp_controller = function (_React$Component) {
         key: "render",
         value: function render() {
             var temp = Object.values(this.props.temp);
-            return temp.map(function (t) {
-                return React.createElement(
-                    "small",
-                    null,
-                    t.temp
-                );
-            });
+            return React.createElement(
+                "div",
+                null,
+                React.createElement("input", { id: "showTemp", type: "checkbox", checked: this.props.drawTemp ? "checked" : null,
+                    onChange: this.props.toggleTemp }),
+                " show temperature"
+            )
+            //temp.map(t => <small>{t.temp}</small>);
+            ;
         }
     }]);
 

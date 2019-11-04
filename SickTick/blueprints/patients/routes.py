@@ -27,7 +27,8 @@ def get_patient_data(patient_id):
     patient_data = Patient_parser(patient_id)
     return jsonify({
                     'general_info': patient_data.general_info,
-                    'temperature': patient_data.temperature
+                    'temperature': patient_data.temperature,
+                    'antibiotics': patient_data.antibiotics
                    })
 
     # patients_list = Patient.query.all()

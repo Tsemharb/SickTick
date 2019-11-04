@@ -1,19 +1,17 @@
 import Clock from './Clock.js'
 import Graph from './Graph.js'
 import General_info from './General_info.js'
-import Temp_controller from './Temp_controller.js'
+import Temp_controller from './controller_components/Temp_controller.js'
+import Ab_controller from './controller_components/Ab_controller.js'
 import path from './path.js'
 
-// function App() {
 class App extends React.Component {
-
     constructor(props) {
         super(props);
-        let location = window.location.href;
-        let patient_id = location.match(/\/([0-9]*)%20/)[1]; //get serial number as id
         this.state = {
             isLoaded: false,
             drawGraph: false,
+            viewport: false,
             patient: {}
         };
     }
@@ -26,35 +24,65 @@ class App extends React.Component {
                 .then(data => {
                     this.setState({
                         isLoaded: true,
+                        drawGraph: false,
+                        drawTemp: true,
+                        drawAb: true,
+                        viewport: false,
                         patient: data
                     });
                 })
             );
     }
-    onDraw = () => this.setState({ drawGraph: true });
+
+    shouldComponentUpdate(nextProps, nextState) {
+        // console.log(nextState.viewport);
+        return !nextState.viewport;
+    }
+
+    onDraw = () => this.setState({ drawGraph: true, viewport: false });
+    toggleTemp = () => this.setState({ drawTemp: !this.state.drawTemp, viewport: false });
+    toggleAb = () => this.setState({ drawAb: !this.state.drawAb, viewport: false });
+
+    handleViewportPosition = (e) => {
+        e.target.id === 'viewport_x1' ?
+            this.setState({ viewport_start: e.target.value, viewport: true }) :
+            this.setState({ viewport_end: e.target.value, viewport: true })
+    }
 
     render() {
-        let { isLoaded, drawGraph, patient } = this.state;
-        // let r = Object.values(patient.temperature);
+        let { isLoaded, drawGraph, drawTemp, drawAb, patient, viewport_start, viewport_end } = this.state;
         if (!isLoaded) {
-            return <div> loading </div>;
+            return <div> loading... </div>;
         } else {
-            // console.log(drawGraph);
             return (
                 <div>
-      <Clock />
-      <hr/>
-      <General_info info={patient}/>
-      <div className='app'>
-        <div className='app__graph'>
-          {drawGraph ? <Graph patient={patient} /> : null}
-        </div>
-        <div className="app__control-panel">
-          {isLoaded ? <Temp_controller temp={patient.temperature} /> : null}
-          <button onClick={this.onDraw}> plot </button>
-        </div>
-      </div>
-    </div>);
+                  <Clock />
+                  <hr/>
+                  <General_info info={patient}/>
+                  <div className='app'>
+                    <div className='app__graph'>
+                      {drawGraph ? <Graph graphData={{patient, drawTemp, drawAb, viewport_start, viewport_end}} /> 
+                                 : <div className='placeholder'></div>}
+                    </div>
+                    <div className="app__control-panel">
+                      {isLoaded ? <div>
+                                    <Temp_controller temp = {patient.temperature} 
+                                                     drawTemp = {this.state.drawTemp} 
+                                                     toggleTemp = {this.toggleTemp} />
+                                    <Ab_controller temp = {patient.temperature} 
+                                                   drawAb = {this.state.drawAb} 
+                                                   toggleAb = {this.toggleAb} />
+                                  </div>
+                                : null}
+                      <button onClick = {this.onDraw}> plot </button>
+                    </div>
+                    <div className="viewport_data">
+                      <input id="viewport_x1"type="text" pattern="[0-9]*" onChange={this.handleViewportPosition}/>
+                      <input id="viewport_x2"type="text" pattern="[0-9]*" onChange={this.handleViewportPosition}/>
+                    </div>
+                  </div>
+                </div>
+            );
         }
     }
 }

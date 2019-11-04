@@ -10,4 +10,4 @@ db = SQLAlchemy(app)
 from SickTick import routes
 from SickTick.blueprints.patients.routes import patient_visualizer
 
-app.register_blueprint(patient_visualizer, url_prefix='/thesis')
+app.register_blueprint(patient_visualizer, url_prefix="/show_me_what_he's_got")

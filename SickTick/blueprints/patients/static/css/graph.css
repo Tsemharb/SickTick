@@ -1,3 +1,12 @@
+svg {
+    user-select: none;
+}
+
 .dot {
     fill: #ffab00;
     stroke: #fff;
+}
+
+.color-label {
+    opacity: 0.3;
+}
