@@ -8,5 +8,9 @@ svg {
 }
 
 .color-label {
-    opacity: 0.3;
+    opacity: 0.2;
+}
+
+.antibiotic{
+    opacity: 0.1;
 }

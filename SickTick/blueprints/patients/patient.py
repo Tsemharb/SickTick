@@ -34,6 +34,10 @@ class Patient_parser:
         self.temperature = self.get_temperature(self.general_info['admission_date'][-4:], self.general_info['discharge_date'][-4:])
         self.antibiotics = self.get_antibiotics(self.tables['antibiotics'])
 
+    @staticmethod
+    def get_timestamp(date_str):
+        a = int(datetime.timestamp(datetime.strptime(date_str, '%d.%m.%Y')) * 1000)
+        return a
 
     @staticmethod
     def get_patient_file_name(id):
@@ -42,20 +46,19 @@ class Patient_parser:
             if file.split(' ')[0] == id:
                 return file + '.docx'
 
-
 # method sets different timestamps for date duplicates (same dates won't have same x-coords)
     # @staticmethod
     def get_correct_timestamp(self, date, count):
         date_shift = 0;
-        print(self.current_date)
+        # print(self.current_date)
         if date == self.current_date: 
-            date_shift = self.date_counter / count * 24 * 60 * 60 * 1000;
-            self.date_counter+=1;
+            date_shift = self.date_counter / count * 24 * 60 * 60 * 1000
+            self.date_counter+=1
         else:
-            self.current_date = date;
-            self.date_counter = 1;
-            date_shift = 0;
-        return int(datetime.timestamp(datetime.strptime(date, '%d.%m.%Y')) * 1000 + date_shift)
+            self.current_date = date
+            self.date_counter = 1
+            date_shift = 0
+        return self.get_timestamp(date) + date_shift
 
 
 
@@ -93,7 +96,7 @@ class Patient_parser:
                     else:
                         month = int(date[-2:])
                     temperature[temp_id] = {'date':date + '.' + year,
-                                            'temp': the_table.rows[row+1].cells[cell].text}
+                                            'temp': the_table.rows[row+1].cells[cell].text.replace(',', '.')}
                     temp_id += 1
                 else:
                     break
@@ -108,12 +111,14 @@ class Patient_parser:
         for i in range(len(temperature)):
             timestamp = self.get_correct_timestamp(temperature[i]['date'], counts[i])
             temperature[i]['timestamp'] = timestamp;
-
         return temperature
 
 
     def get_antibiotics(self, table):
-        antibiotics = {}
+        ab_colors = ['aqua', 'brown', 'cyan', 'darkred','deeppink', 
+                     'fuchsia', 'lightgrey', 'olive', 'peru', 'tan',
+                     'mediumblue', 'palegreen', 'rebeccapurple']
+        antibiotics = []
         rows_num = len(table.rows)
         cells_num = len(table.rows[1].cells)
         for row in range(1, rows_num):
@@ -122,18 +127,20 @@ class Patient_parser:
             for cell in range(cells_num):
                 row_content.append(table.rows[row].cells[cell].text)
             # row_content example: ['с 04.09.2018 по 05.09.2018', 'Цефепим 2,0 * 2р. в/в']
-            # add antibiotics name
             ab_name = row_content[1]
             ab_name = re.split("(\d)+", ab_name)[0]
             ab_dose = row_content[1].replace(ab_name, '')
-            antibiotics[row-1] = {'name': ab_name.strip()}
-            antibiotics[row-1]['dose'] = ab_dose
-            antibiotics[row-1]['dates'] = []
             # add antibiotics dates could be several runs for each ab
             dates = row_content[0].split(',')
             for date in dates:
+                antibiotic = {}
+                antibiotic['name'] = ab_name.strip()
+                antibiotic['dose'] = ab_dose
+                antibiotic['color'] = ab_colors[row-1]
                 d = date.strip().split(' ')
-                antibiotics[row-1]['dates'].append({'from': d[1][:10], 'to':d[3][:10]})
+                antibiotic['dates'] = {'begin': d[1][:10], 'end': d[3][:10]}
+                antibiotic['timestamps'] = {'begin': self.get_timestamp(d[1][:10]), 'end': self.get_timestamp(d[3][:10])}
+                antibiotics.append(antibiotic)
         return antibiotics
 
 

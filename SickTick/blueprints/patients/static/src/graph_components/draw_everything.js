@@ -8,7 +8,7 @@ import svgString2Image from '../controller_components/svgString2Image.js'
 import d3_react_link from '../controller_components/d3-react-link.js'
 
 const margin = { top: 15, right: 40, bottom: 20, left: 80 };
-const navSize = { height: 40, margin: 45 };
+const navSize = { height: 30, margin: 45 };
 const width = window.innerWidth * 0.7;
 const height = width * 0.52 + navSize.height + navSize.margin;
 const innerHeight = height - margin.top - margin.bottom - navSize.height - navSize.margin;
@@ -30,8 +30,8 @@ const getValidDate = date_string => {
 
 
 const draw_everything = (props) => {
+    // console.log(props)
     let { patient, drawTemp, drawAb, viewport_start, viewport_end } = props.graphData;
-    console.log(patient);
     const admission_timestamp = getValidDate(patient.general_info.admission_date);
     const discharge_timestamp = getValidDate(patient.general_info.discharge_date);
     const dateFormat = date => {
@@ -76,22 +76,31 @@ const draw_everything = (props) => {
             // .ticks(d3.timeDay.every(1))
             .tickFormat(dateFormat))
 
-
     // let ticks = d3.selectAll(".xAxis text");
     // ticks.each(function(_, i) {
     //     if (i % 2 !== 0) d3.select(this).remove();
     // });
 
-    //get temperature data
+    //get data to draw
     const temp = Object.values(patient.temperature);
+    // console.log(temp)
+    let tempChunks = []
+    let chunk = [temp[0]]
+    for (let i = 1; i < temp.length; i++) {
+        if (temp[i].timestamp - temp[i - 1].timestamp <= 86400000) {
+            chunk.push(temp[i])
+        } else {
+            tempChunks.push(chunk)
+            chunk = [temp[i]]
+        }
+        if (i === temp.length - 1) {
+            tempChunks.push(chunk)
+        }
+    }
+
     // let temp = Array.from({ length: treatmentDuration + 1 }, (v, k) => Math.random() * (42.0 - 35.0) + 35.0);
-    const antibiotics = Object.values(patient.antibiotics);
-
-
-    const abColors = ['aliceblue', 'aqua', 'brown', 'cyan', 'darkred',
-        'deeppink', 'fuchsia', 'lightgrey', 'olive', 'peru', 'tan'
-    ]
-
+    const antibiotics = patient.antibiotics;
+    const ab_set = Array.from(new Set(antibiotics.map(ab => ab.name)));
 
     // define max/min temeperatures to set proper temperature domain
     let max_temp = Math.max.apply(Math, temp.map(o => parseFloat(o.temp)));
@@ -100,9 +109,7 @@ const draw_everything = (props) => {
     min_temp = (min_temp - 1 < 35) ? 35.0 : min_temp - 0.5;
 
     const tempFormat = temp => {
-        if (temp === 35.0 || temp === 42.0) {
-            return ''
-        } else return temp
+        if (temp === 35.0 || temp === 42.0) { return '' } else return temp
     }
 
     // temperature y scale
@@ -119,38 +126,59 @@ const draw_everything = (props) => {
         .curve(d3.curveMonotoneX)
 
 
-    //antibiotics
-    const yAbLabel = ab => ab.name.toUpperCase().substring(0, 3);
-    const abColor = ab => abColors[Math.floor(Math.random() * abColors.length)];
+    ///////////antibiotics
+    const yAbLabel = ab => ab.name;
+    const abColorInit = ab => {
+        for (let i = 0; i < antibiotics.length; i++) {
+            if (antibiotics[i].name === ab) {
+                return antibiotics[i].color;
+            }
+        }
+    }
+    const abColor = ab => ab.color;
+    const abFormat = ab => ab.toUpperCase().substring(0, 3);
 
     const yAbScale = d3.scaleBand()
         .domain(antibiotics.map(yAbLabel))
         .range([0, innerHeight])
     const yAbAxis = d3.axisLeft(yAbScale);
+    if (drawAb) {
+        // append yAbAxis
+        svg.append('g')
+            .attr('class', 'yAbAxis')
+            .call(yAbAxis.tickFormat(abFormat))
+            .attr('transform', `translate(${margin.left}, ${margin.top})`)
+            .selectAll('text')
+            .attr('transform', 'rotate(-90)')
+            .attr('dy', '-2em')
+            .attr('x', '0')
+            .attr('font-weight', '700')
+            .style('text-anchor', 'middle');
+        d3.selectAll('.yAbAxis .tick line')
+            .remove();
 
-    svg.append('g')
-        .attr('class', 'yAbAxis')
-        .call(yAbAxis)
-        .attr('transform', `translate(${margin.left}, ${margin.top})`)
-        .selectAll('text')
-        .attr('transform', 'rotate(-90)')
-        .attr('dy', '-2em')
-        .attr('x', '0')
-        .attr('font-weight', '700')
-        .style('text-anchor', 'middle');
-    d3.selectAll('.yAbAxis .tick line')
-        .remove();
+        // append abColorAxis
+        svg.selectAll('.color-label').data(ab_set).enter()
+            .append('rect')
+            .attr('class', 'color-label')
+            .attr('transform', `translate(${margin.left}, ${margin.top})`)
+            .attr('x', -30)
+            .attr('y', ab => yAbScale(ab))
+            .attr('width', 30)
+            .attr('height', yAbScale.bandwidth())
+            .style('fill', ab => abColorInit(ab))
 
-    svg.selectAll('.color-label rect').data(antibiotics).enter()
-        .append('rect')
-        .attr('class', 'color-label')
-        .attr('transform', `translate(${margin.left}, ${margin.top})`)
-        .attr('x', -30)
-        .attr('y', ab => yAbScale(yAbLabel(ab)))
-        .attr('width', 30)
-        .attr('height', yAbScale.bandwidth())
-        .style('fill', ab => abColor(ab));
-
+        // render antibiotics
+        chart.selectAll('.antibiotic').data(antibiotics).enter()
+            .append('rect')
+            .attr('class', 'antibiotic')
+            .attr('y', ab => yAbScale(yAbLabel(ab)))
+            .attr('x', ab => xScale(ab.timestamps.begin))
+            .attr('rx', 5)
+            .attr('width', ab => xScale(ab.timestamps.end) - xScale(ab.timestamps.begin))
+            .attr('height', yAbScale.bandwidth())
+            .style('fill', ab => abColor(ab));
+    }
 
     //////// display temperature block
     if (drawTemp) {
@@ -163,12 +191,14 @@ const draw_everything = (props) => {
             .attr('dx', '1em')
             .style('text-anchor', 'middle');
 
-        chart.append('path')
-            .attr('class', 'temp_curve')
-            .attr('d', tempPathGen(temp))
-            .style('fill', 'none')
-            .style('stroke', 'black')
-            .style('stroke-width', '2');
+        tempChunks.forEach((chunk) => {
+            chart.append('path')
+                .attr('class', `temp_curve_${chunk[0].timestamp}`)
+                .attr('d', tempPathGen(chunk))
+                .style('fill', 'none')
+                .style('stroke', 'black')
+                .style('stroke-width', '2');
+        })
 
         chart.selectAll(".dot")
             .data(temp)
@@ -193,7 +223,6 @@ const draw_everything = (props) => {
     }
 
     function updateChart() {
-        // console.log('update')
         // return
         let extent = d3.event.selection;
         // get treatment days brushed by user
@@ -202,18 +231,69 @@ const draw_everything = (props) => {
         // reset and rescale xAxis
         xScale.domain([domain_min, domain_max]);
         svg.select('.xAxis')
-            .transition().duration(1000)
+            .transition() //.duration(1000)
             .call(d3.axisBottom(xScale).tickFormat(dateFormat));
+
+        //get antibiotics brushed by user
+        const selected_ab = []
+        for (let i = 0; i < antibiotics.length; i++) {
+            if (antibiotics[i].timestamps.end >= domain_min && antibiotics[i].timestamps.begin <= domain_max) {
+                selected_ab.push(antibiotics[i])
+            }
+        }
+        const selected_ab_set = Array.from(new Set(selected_ab.map(ab => ab.name)));
+        // let selected_ab_set = Array.from(new Set(selected_ab.map(ab => ab.name)));
+        if (drawAb) {
+            yAbScale.domain(selected_ab.map(yAbLabel));
+            //redraw yAbAxis
+            svg.select('.yAbAxis')
+                .transition() //.duration(1000)
+                .call(yAbAxis.tickFormat(abFormat))
+                .selectAll('text')
+                .attr('x', '0')
+                .attr('transform', 'rotate(-90)')
+                .attr('dy', '-2em')
+                .attr('font-weight', '700')
+                .style('text-anchor', 'middle');
+            d3.selectAll('.yAbAxis .tick line')
+                .remove();
+
+            //redraw abColorAxis
+            const abColorLabels = svg.selectAll('.color-label').data(selected_ab_set);
+            abColorLabels.exit().remove();
+            abColorLabels.enter().append('rect')
+                .attr('class', 'color-label')
+                .attr('transform', `translate(${margin.left}, ${margin.top})`)
+                .attr('x', -30)
+                .attr('width', 30);
+            abColorLabels.transition()
+                .attr('y', ab => yAbScale(ab))
+                .attr('height', yAbScale.bandwidth())
+                .style('fill', ab => abColorInit(ab))
+
+            // redraw antibiotics
+            const abRender = chart.selectAll('.antibiotic').data(selected_ab);
+            abRender.exit().remove();
+            abRender.enter().append('rect')
+                .attr('class', 'antibiotic');
+            abRender
+                .attr('class', 'antibiotic')
+                .attr('y', ab => yAbScale(yAbLabel(ab)))
+                .attr('x', ab => xScale(ab.timestamps.begin))
+                .attr('rx', 5)
+                .attr('width', ab => xScale(ab.timestamps.end) - xScale(ab.timestamps.begin))
+                .attr('height', yAbScale.bandwidth())
+                .style('fill', ab => abColor(ab));
+        }
 
         if (drawTemp) {
             //get temperature data brushed by user
-            let selected_temp = []
-            for (let i = 0; i <= temp.length - 1; i++) {
+            const selected_temp = []
+            for (let i = 0; i < temp.length; i++) {
                 if (temp[i].timestamp >= domain_min && temp[i].timestamp <= domain_max) {
                     selected_temp.push(temp[i]['temp'])
                 }
             }
-            // console.log(selected_temp);
 
             // get max/min from selected temperatures
             let max_t = Math.max(...selected_temp);
@@ -223,7 +303,7 @@ const draw_everything = (props) => {
             // reset and rescale temperature axis
             yTempScale.domain([max_t, min_t]);
             svg.select('.yTempAxis')
-                .transition().duration(1000)
+                .transition() //.duration(1000)
                 .call(d3.axisLeft(yTempScale).tickFormat(tempFormat))
                 .selectAll('text')
                 .attr('transform', 'rotate(-90)')
@@ -233,27 +313,30 @@ const draw_everything = (props) => {
 
             // redraw temperature curve, dots and text
             chart.selectAll(".dot")
-                .transition().duration(300)
+                .transition() //.duration(300)
                 .attr("cx", d => xScale(d.timestamp))
                 .attr("cy", d => yTempScale(d.temp))
             chart.selectAll(".temptext")
-                .transition().duration(250)
+                .transition() //.duration(250)
                 .attr("x", d => xScale(d.timestamp) + 15)
                 .attr("y", d => yTempScale(d.temp) - 5)
-            chart.selectAll(".temp_curve")
-                .transition().duration(350)
-                .attr('d', tempPathGen(temp))
+            tempChunks.forEach((chunk) => {
+                chart.selectAll(`.temp_curve_${chunk[0].timestamp}`)
+                    .transition() //.duration(350)
+                    .attr('d', tempPathGen(chunk))
+            })
         }
-        // console.log(min_t);
-        // console.log(max_t);
         d3_react_link();
-
     }
 
     //save to png
     const png_save_btn = d3.select('button.png_save');
     png_save_btn.on('click', function() {
-        var svgString = getSVGString(svg.node());
+        let svgString = getSVGString(svg.node());
+        let viewport = new XMLSerializer().serializeToString(svg.node().querySelector('.navGroup'));
+        viewport = viewport.replace('xmlns="http://www.w3.org/2000/svg" ', '');
+        svgString = svgString.replace(viewport, '');
+        svgString = svgString.replace(/(height=")[\d.]+"/, `height="${width * 0.52}"`)
         svgString2Image(svgString, 2 * width, 2 * height, 'png', save); // passes Blob and filesize String to the callback
 
         function save(dataBlob, filesize) {
@@ -287,8 +370,8 @@ const draw_everything = (props) => {
         ])
         .on("brush", updateChart)
 
-     const x1 = viewport_start ? viewport_start : xScale(admission_timestamp)
-     const x2 = viewport_end ? viewport_end : xScale(discharge_timestamp)
+    const x1 = viewport_start ? viewport_start : xScale(admission_timestamp)
+    const x2 = viewport_end ? viewport_end : xScale(discharge_timestamp)
 
     let brushSelection = navGroup.selectAll('.brush').data([viewport]);
     brushSelection
