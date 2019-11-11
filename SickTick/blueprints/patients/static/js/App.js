@@ -33,6 +33,16 @@ var App = function (_React$Component) {
             return _this.setState({ drawAb: !_this.state.drawAb, viewport: false });
         };
 
+        _this.toggleSingleAb = function (e) {
+            var data = _this.state.patient;
+            for (var i = 0; i < data.antibiotics.length; i++) {
+                if (data.antibiotics[i].name == e.target.id) {
+                    data.antibiotics[i].draw = e.target.checked;
+                }
+            }
+            _this.setState({ patient: data, viewport: false });
+        };
+
         _this.handleViewportPosition = function (e) {
             e.target.id === 'viewport_x1' ? _this.setState({ viewport_start: e.target.value, viewport: true }) : _this.setState({ viewport_end: e.target.value, viewport: true });
         };
@@ -114,9 +124,10 @@ var App = function (_React$Component) {
                                 React.createElement(Temp_controller, { temp: patient.temperature,
                                     drawTemp: this.state.drawTemp,
                                     toggleTemp: this.toggleTemp }),
-                                React.createElement(Ab_controller, { temp: patient.temperature,
+                                React.createElement(Ab_controller, { antibiotics: patient.antibiotics,
                                     drawAb: this.state.drawAb,
-                                    toggleAb: this.toggleAb })
+                                    toggleAb: this.toggleAb,
+                                    toggleSingleAb: this.toggleSingleAb })
                             ) : null,
                             React.createElement(
                                 'button',

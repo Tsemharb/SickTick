@@ -7,31 +7,53 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var Ab_controller = function (_React$Component) {
-    _inherits(Ab_controller, _React$Component);
+  _inherits(Ab_controller, _React$Component);
 
-    function Ab_controller() {
-        _classCallCheck(this, Ab_controller);
+  function Ab_controller() {
+    _classCallCheck(this, Ab_controller);
 
-        return _possibleConstructorReturn(this, (Ab_controller.__proto__ || Object.getPrototypeOf(Ab_controller)).apply(this, arguments));
-    }
+    return _possibleConstructorReturn(this, (Ab_controller.__proto__ || Object.getPrototypeOf(Ab_controller)).apply(this, arguments));
+  }
 
-    _createClass(Ab_controller, [{
-        key: "render",
-        value: function render() {
-            var temp = Object.values(this.props.temp);
-            return React.createElement(
+  _createClass(Ab_controller, [{
+    key: "render",
+    value: function render() {
+      var _this2 = this;
+
+      var antibiotics = this.props.antibiotics;
+      // const ans = Array.from(new Set(this.props.antibiotics.map(ab => {name: ab.name, draw: ab.draw})));
+      var renderedAb = [];
+      return React.createElement(
+        "div",
+        null,
+        React.createElement("input", { type: "checkbox", checked: this.props.drawAb ? "checked" : null,
+          onChange: this.props.toggleAb }),
+        " show antibiotics",
+        this.props.drawAb ? React.createElement(
+          "div",
+          { className: "abList" },
+          antibiotics.map(function (ab) {
+            if (!renderedAb.includes(ab.name)) {
+              renderedAb.push(ab.name);
+              return React.createElement(
                 "div",
                 null,
-                React.createElement("input", { type: "checkbox", checked: this.props.drawAb ? "checked" : null,
-                    onChange: this.props.toggleAb }),
-                " show antibiotics"
-            )
-            //temp.map(t => <small>{t.temp}</small>);
-            ;
-        }
-    }]);
+                React.createElement("input", { id: ab.name, type: "checkbox", checked: ab.draw ? "checked" : null,
+                  onChange: _this2.props.toggleSingleAb }),
+                React.createElement(
+                  "span",
+                  null,
+                  ab.name
+                )
+              );
+            }
+          })
+        ) : null
+      );
+    }
+  }]);
 
-    return Ab_controller;
+  return Ab_controller;
 }(React.Component);
 
 export default Ab_controller;

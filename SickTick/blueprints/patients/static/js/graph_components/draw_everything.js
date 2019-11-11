@@ -1,5 +1,4 @@
 // set min brush width to avoid non-selecting temperature elements
-// change brush event to brushing insted of end
 // svg resize
 // remove last tick in xAxis
 
@@ -86,7 +85,13 @@ var draw_everything = function draw_everything(props) {
     }
 
     // let temp = Array.from({ length: treatmentDuration + 1 }, (v, k) => Math.random() * (42.0 - 35.0) + 35.0);
-    var antibiotics = patient.antibiotics;
+    // const antibiotics = patient.antibiotics;
+    var antibiotics = [];
+    for (var _i = 0; _i < patient.antibiotics.length; _i++) {
+        if (patient.antibiotics[_i].draw) {
+            antibiotics.push(patient.antibiotics[_i]);
+        }
+    }
     var ab_set = Array.from(new Set(antibiotics.map(function (ab) {
         return ab.name;
     })));
@@ -123,9 +128,9 @@ var draw_everything = function draw_everything(props) {
         return ab.name;
     };
     var abColorInit = function abColorInit(ab) {
-        for (var _i = 0; _i < antibiotics.length; _i++) {
-            if (antibiotics[_i].name === ab) {
-                return antibiotics[_i].color;
+        for (var _i2 = 0; _i2 < antibiotics.length; _i2++) {
+            if (antibiotics[_i2].name === ab) {
+                return antibiotics[_i2].color;
             }
         }
     };
@@ -200,9 +205,9 @@ var draw_everything = function draw_everything(props) {
 
         //get antibiotics brushed by user
         var selected_ab = [];
-        for (var _i2 = 0; _i2 < antibiotics.length; _i2++) {
-            if (antibiotics[_i2].timestamps.end >= domain_min && antibiotics[_i2].timestamps.begin <= domain_max) {
-                selected_ab.push(antibiotics[_i2]);
+        for (var _i3 = 0; _i3 < antibiotics.length; _i3++) {
+            if (antibiotics[_i3].timestamps.end >= domain_min && antibiotics[_i3].timestamps.begin <= domain_max) {
+                selected_ab.push(antibiotics[_i3]);
             }
         }
         var selected_ab_set = Array.from(new Set(selected_ab.map(function (ab) {
@@ -244,9 +249,9 @@ var draw_everything = function draw_everything(props) {
         if (drawTemp) {
             //get temperature data brushed by user
             var selected_temp = [];
-            for (var _i3 = 0; _i3 < temp.length; _i3++) {
-                if (temp[_i3].timestamp >= domain_min && temp[_i3].timestamp <= domain_max) {
-                    selected_temp.push(temp[_i3]['temp']);
+            for (var _i4 = 0; _i4 < temp.length; _i4++) {
+                if (temp[_i4].timestamp >= domain_min && temp[_i4].timestamp <= domain_max) {
+                    selected_temp.push(temp[_i4]['temp']);
                 }
             }
 
@@ -257,24 +262,28 @@ var draw_everything = function draw_everything(props) {
             min_t = min_t - 1 < 35 ? 35.0 : min_t - 0.5;
             // reset and rescale temperature axis
             yTempScale.domain([max_t, min_t]);
-            svg.select('.yTempAxis').transition() //.duration(1000)
+            svg.select('.yTempAxis')
+            //.transition() //.duration(1000)
             .call(d3.axisLeft(yTempScale).tickFormat(tempFormat)).selectAll('text').attr('transform', 'rotate(-90)').attr('dy', '-.8em').attr('dx', '1em').style('text-anchor', 'middle');
 
             // redraw temperature curve, dots and text
-            chart.selectAll(".dot").transition() //.duration(300)
+            chart.selectAll(".dot")
+            //.transition() //.duration(300)
             .attr("cx", function (d) {
                 return xScale(d.timestamp);
             }).attr("cy", function (d) {
                 return yTempScale(d.temp);
             });
-            chart.selectAll(".temptext").transition() //.duration(250)
+            chart.selectAll(".temptext")
+            //.transition() //.duration(250)
             .attr("x", function (d) {
                 return xScale(d.timestamp) + 15;
             }).attr("y", function (d) {
                 return yTempScale(d.temp) - 5;
             });
             tempChunks.forEach(function (chunk) {
-                chart.selectAll('.temp_curve_' + chunk[0].timestamp).transition() //.duration(350)
+                chart.selectAll('.temp_curve_' + chunk[0].timestamp)
+                //.transition() //.duration(350)
                 .attr('d', tempPathGen(chunk));
             });
         }

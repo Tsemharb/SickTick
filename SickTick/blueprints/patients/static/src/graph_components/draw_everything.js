@@ -1,5 +1,4 @@
 // set min brush width to avoid non-selecting temperature elements
-// change brush event to brushing insted of end
 // svg resize
 // remove last tick in xAxis
 
@@ -99,7 +98,13 @@ const draw_everything = (props) => {
     }
 
     // let temp = Array.from({ length: treatmentDuration + 1 }, (v, k) => Math.random() * (42.0 - 35.0) + 35.0);
-    const antibiotics = patient.antibiotics;
+    // const antibiotics = patient.antibiotics;
+    let antibiotics = []
+    for (let i = 0; i < patient.antibiotics.length; i++){
+        if (patient.antibiotics[i].draw){
+            antibiotics.push(patient.antibiotics[i])
+        }
+    }
     const ab_set = Array.from(new Set(antibiotics.map(ab => ab.name)));
 
     // define max/min temeperatures to set proper temperature domain
@@ -303,7 +308,7 @@ const draw_everything = (props) => {
             // reset and rescale temperature axis
             yTempScale.domain([max_t, min_t]);
             svg.select('.yTempAxis')
-                .transition() //.duration(1000)
+                //.transition() //.duration(1000)
                 .call(d3.axisLeft(yTempScale).tickFormat(tempFormat))
                 .selectAll('text')
                 .attr('transform', 'rotate(-90)')
@@ -313,16 +318,16 @@ const draw_everything = (props) => {
 
             // redraw temperature curve, dots and text
             chart.selectAll(".dot")
-                .transition() //.duration(300)
+                //.transition() //.duration(300)
                 .attr("cx", d => xScale(d.timestamp))
                 .attr("cy", d => yTempScale(d.temp))
             chart.selectAll(".temptext")
-                .transition() //.duration(250)
+                //.transition() //.duration(250)
                 .attr("x", d => xScale(d.timestamp) + 15)
                 .attr("y", d => yTempScale(d.temp) - 5)
             tempChunks.forEach((chunk) => {
                 chart.selectAll(`.temp_curve_${chunk[0].timestamp}`)
-                    .transition() //.duration(350)
+                    //.transition() //.duration(350)
                     .attr('d', tempPathGen(chunk))
             })
         }

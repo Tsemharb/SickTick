@@ -3,6 +3,7 @@ from datetime import datetime
 import time
 import docx
 import re
+# import random
 
 # TODO: check dates by regexp (sometimes additional info presents)
 # TODO: deal with get_correct_timestamp function variables outside of function
@@ -140,6 +141,8 @@ class Patient_parser:
                 d = date.strip().split(' ')
                 antibiotic['dates'] = {'begin': d[1][:10], 'end': d[3][:10]}
                 antibiotic['timestamps'] = {'begin': self.get_timestamp(d[1][:10]), 'end': self.get_timestamp(d[3][:10])}
+                antibiotic['draw'] = True
+                # antibiotic['draw'] = random.choice([True, False])
                 antibiotics.append(antibiotic)
         return antibiotics
 

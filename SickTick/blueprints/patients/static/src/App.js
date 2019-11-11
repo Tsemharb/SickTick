@@ -42,6 +42,15 @@ class App extends React.Component {
     onDraw = () => this.setState({ drawGraph: true, viewport: false });
     toggleTemp = () => this.setState({ drawTemp: !this.state.drawTemp, viewport: false });
     toggleAb = () => this.setState({ drawAb: !this.state.drawAb, viewport: false });
+    toggleSingleAb = e => {
+        let data = this.state.patient;
+        for (let i = 0; i < data.antibiotics.length; i++) {
+            if (data.antibiotics[i].name == e.target.id) {
+                data.antibiotics[i].draw = e.target.checked
+            }
+        }
+        this.setState({ patient: data, viewport: false })
+    };
 
     handleViewportPosition = (e) => {
         e.target.id === 'viewport_x1' ?
@@ -69,9 +78,10 @@ class App extends React.Component {
                                     <Temp_controller temp = {patient.temperature} 
                                                      drawTemp = {this.state.drawTemp} 
                                                      toggleTemp = {this.toggleTemp} />
-                                    <Ab_controller temp = {patient.temperature} 
+                                    <Ab_controller antibiotics = {patient.antibiotics} 
                                                    drawAb = {this.state.drawAb} 
-                                                   toggleAb = {this.toggleAb} />
+                                                   toggleAb = {this.toggleAb}
+                                                   toggleSingleAb = {this.toggleSingleAb} />
                                   </div>
                                 : null}
                       <button onClick = {this.onDraw}> plot </button>
