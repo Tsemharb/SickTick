@@ -3,6 +3,7 @@ import Graph from './Graph.js'
 import General_info from './General_info.js'
 import Temp_controller from './controller_components/Temp_controller.js'
 import Ab_controller from './controller_components/Ab_controller.js'
+import Add_tests_controller from './controller_components/Add_tests_controller.js'
 import path from './path.js'
 
 class App extends React.Component {
@@ -39,7 +40,7 @@ class App extends React.Component {
         return !nextState.viewport;
     }
 
-    onDraw = () => this.setState({ drawGraph: true, viewport: false });
+    // onDraw = () => this.setState({ drawGraph: true, viewport: false });
     toggleTemp = () => this.setState({ drawTemp: !this.state.drawTemp, viewport: false });
     toggleAb = () => this.setState({ drawAb: !this.state.drawAb, viewport: false });
     toggleSingleAb = e => {
@@ -70,8 +71,7 @@ class App extends React.Component {
                   <General_info info={patient}/>
                   <div className='app'>
                     <div className='app__graph'>
-                      {drawGraph ? <Graph graphData={{patient, drawTemp, drawAb, viewport_start, viewport_end}} /> 
-                                 : <div className='placeholder'></div>}
+                      <Graph graphData={{patient, drawTemp, drawAb, viewport_start, viewport_end}} /> 
                     </div>
                     <div className="app__control-panel">
                       {isLoaded ? <div>
@@ -82,9 +82,9 @@ class App extends React.Component {
                                                    drawAb = {this.state.drawAb} 
                                                    toggleAb = {this.toggleAb}
                                                    toggleSingleAb = {this.toggleSingleAb} />
+                                    <Add_tests_controller additional_tests = {patient.additional_tests} />
                                   </div>
                                 : null}
-                      <button onClick = {this.onDraw}> plot </button>
                     </div>
                     <div className="viewport_data">
                       <input id="viewport_x1"type="text" pattern="[0-9]*" onChange={this.handleViewportPosition}/>

@@ -1,14 +1,27 @@
 class Ab_controller extends React.Component {
 
+    constructor() {
+        super();
+        this.state = { open: false };
+    }
+
+    onPanelToggle = () => this.setState({ open: !this.state.open });
+
     render() {
         const antibiotics = this.props.antibiotics
-        // const ans = Array.from(new Set(this.props.antibiotics.map(ab => {name: ab.name, draw: ab.draw})));
         let renderedAb = []
         return (
-            <div>
-              <input type="checkbox" checked={this.props.drawAb ? "checked" : null} 
+            <div className="panel">
+                <div className="panel-header">
+                    <h6>Antibiotics</h6>
+                    <button className="panel-header-btn" onClick = {this.onPanelToggle}>
+                        {this.state.open? 'hide' : 'show'}
+                    </button>
+                </div>
+                <div className={"panel-content" + (!this.state.open? " hidden" : "")} > 
+                    <input type="checkbox" checked={this.props.drawAb ? "checked" : null} 
                                      onChange={this.props.toggleAb}/> show antibiotics
-                {this.props.drawAb ? <div className="abList">
+                    {this.props.drawAb ? <div className="abList">
                                        {antibiotics.map(ab =>{
                                          if(!renderedAb.includes(ab.name)){
                                             renderedAb.push(ab.name);
@@ -19,10 +32,11 @@ class Ab_controller extends React.Component {
                                                 <span>{ab.name}</span>
                                               </div>
                                             )
-                                         }
-                                        })}
-                                     </div>
-                                   : null}
+                                          }
+                                         })}
+                                         </div>
+                                       : null}
+                </div>
             </div>
         )
     }

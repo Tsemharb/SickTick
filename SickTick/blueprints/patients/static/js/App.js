@@ -11,6 +11,7 @@ import Graph from './Graph.js';
 import General_info from './General_info.js';
 import Temp_controller from './controller_components/Temp_controller.js';
 import Ab_controller from './controller_components/Ab_controller.js';
+import Add_tests_controller from './controller_components/Add_tests_controller.js';
 import path from './path.js';
 
 var App = function (_React$Component) {
@@ -20,10 +21,6 @@ var App = function (_React$Component) {
         _classCallCheck(this, App);
 
         var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
-
-        _this.onDraw = function () {
-            return _this.setState({ drawGraph: true, viewport: false });
-        };
 
         _this.toggleTemp = function () {
             return _this.setState({ drawTemp: !_this.state.drawTemp, viewport: false });
@@ -82,6 +79,9 @@ var App = function (_React$Component) {
             // console.log(nextState.viewport);
             return !nextState.viewport;
         }
+
+        // onDraw = () => this.setState({ drawGraph: true, viewport: false });
+
     }, {
         key: 'render',
         value: function render() {
@@ -113,7 +113,7 @@ var App = function (_React$Component) {
                         React.createElement(
                             'div',
                             { className: 'app__graph' },
-                            drawGraph ? React.createElement(Graph, { graphData: { patient: patient, drawTemp: drawTemp, drawAb: drawAb, viewport_start: viewport_start, viewport_end: viewport_end } }) : React.createElement('div', { className: 'placeholder' })
+                            React.createElement(Graph, { graphData: { patient: patient, drawTemp: drawTemp, drawAb: drawAb, viewport_start: viewport_start, viewport_end: viewport_end } })
                         ),
                         React.createElement(
                             'div',
@@ -127,13 +127,9 @@ var App = function (_React$Component) {
                                 React.createElement(Ab_controller, { antibiotics: patient.antibiotics,
                                     drawAb: this.state.drawAb,
                                     toggleAb: this.toggleAb,
-                                    toggleSingleAb: this.toggleSingleAb })
-                            ) : null,
-                            React.createElement(
-                                'button',
-                                { onClick: this.onDraw },
-                                ' plot '
-                            )
+                                    toggleSingleAb: this.toggleSingleAb }),
+                                React.createElement(Add_tests_controller, { additional_tests: patient.additional_tests })
+                            ) : null
                         ),
                         React.createElement(
                             'div',

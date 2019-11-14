@@ -32,14 +32,70 @@
     display: none;
 }
 
-.chart {
-    width: 300px;
+small {
+    display: block;
+}
+
+.general_info {
+    margin-bottom: 40px;
+}
+
+.graph {
+    border: 1px solid dimgray;
+    border-radius: 2px;
+    margin: 0 5px
+}
+
+.app__control-panel {
+    margin: 0 5px;
+    max-height: 100vh;
+}
+
+.panel {
+    background: ghostwhite;
+    padding: 5px;
+    border-radius: 2px;
+    border: 1px solid dimgray;
+    margin-bottom: 5px;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-header h6 {
+    margin-bottom: 0;
+}
+
+.panel-header-btn {
+    border: none;
+    background: none;
+    padding: 0;
+    font-size: 1rem;
+    color: gray;
+    margin-right: 20px;
+}
+
+.panel-header-btn:focus {
+    outline: none;
+}
+
+.panel hr {
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.panel .hidden {
+    height: 0;
+    overflow: hidden;
+}
+
+.panel-content {
+    margin-left: 15px;
 }
 
 .abList {
     margin-left: 25px;
-}
-
-small {
-    display: block;
 }

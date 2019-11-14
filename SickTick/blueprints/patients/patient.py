@@ -34,6 +34,7 @@ class Patient_parser:
         self.general_info = self.get_general_info()
         self.temperature = self.get_temperature(self.general_info['admission_date'][-4:], self.general_info['discharge_date'][-4:])
         self.antibiotics = self.get_antibiotics(self.tables['antibiotics'])
+        self.additional_tests = self.get_additional_tests(self.tables['additional_tests'])
 
     @staticmethod
     def get_timestamp(date_str):
@@ -145,6 +146,16 @@ class Patient_parser:
                 # antibiotic['draw'] = random.choice([True, False])
                 antibiotics.append(antibiotic)
         return antibiotics
+
+    def get_additional_tests(self, table):
+        additional_tests = []
+        rows_num = len(table.rows)
+        for r_num in range(1, rows_num):
+            test = {}
+            test['date'] = table.rows[r_num].cells[0].text
+            test['result'] = table.rows[r_num].cells[1].text
+            additional_tests.append(test)
+        return additional_tests
 
 
     def get_tests(table):

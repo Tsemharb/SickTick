@@ -6,13 +6,13 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Temp_controller = function (_React$Component) {
-    _inherits(Temp_controller, _React$Component);
+var Add_tests_controller = function (_React$Component) {
+    _inherits(Add_tests_controller, _React$Component);
 
-    function Temp_controller() {
-        _classCallCheck(this, Temp_controller);
+    function Add_tests_controller() {
+        _classCallCheck(this, Add_tests_controller);
 
-        var _this = _possibleConstructorReturn(this, (Temp_controller.__proto__ || Object.getPrototypeOf(Temp_controller)).call(this));
+        var _this = _possibleConstructorReturn(this, (Add_tests_controller.__proto__ || Object.getPrototypeOf(Add_tests_controller)).call(this));
 
         _this.onPanelToggle = function () {
             return _this.setState({ open: !_this.state.open });
@@ -22,10 +22,10 @@ var Temp_controller = function (_React$Component) {
         return _this;
     }
 
-    _createClass(Temp_controller, [{
+    _createClass(Add_tests_controller, [{
         key: "render",
         value: function render() {
-            var temp = Object.values(this.props.temp);
+            var tests = this.props.additional_tests;
             return React.createElement(
                 "div",
                 { className: "panel" },
@@ -35,7 +35,7 @@ var Temp_controller = function (_React$Component) {
                     React.createElement(
                         "h6",
                         null,
-                        "Temperature"
+                        "Additional Tests"
                     ),
                     React.createElement(
                         "button",
@@ -46,15 +46,23 @@ var Temp_controller = function (_React$Component) {
                 React.createElement(
                     "div",
                     { className: "panel-content" + (!this.state.open ? " hidden" : "") },
-                    React.createElement("input", { id: "showTemp", type: "checkbox", checked: this.props.drawTemp ? "checked" : null,
-                        onChange: this.props.toggleTemp }),
-                    " show temperature"
+                    React.createElement(
+                        "div",
+                        null,
+                        tests.map(function (test) {
+                            return React.createElement(
+                                "p",
+                                null,
+                                test.result
+                            );
+                        })
+                    )
                 )
             );
         }
     }]);
 
-    return Temp_controller;
+    return Add_tests_controller;
 }(React.Component);
 
-export default Temp_controller;
+export default Add_tests_controller;

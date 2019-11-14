@@ -1,4 +1,4 @@
-class Temp_controller extends React.Component {
+class Add_tests_controller extends React.Component {
 
     constructor() {
         super();
@@ -8,22 +8,23 @@ class Temp_controller extends React.Component {
     onPanelToggle = () => this.setState({ open: !this.state.open });
 
     render() {
-        let temp = Object.values(this.props.temp);
+        const tests = this.props.additional_tests;
         return (
             <div className="panel">
                 <div className="panel-header">
-                    <h6>Temperature</h6> 
+                    <h6>Additional Tests</h6>
                     <button className="panel-header-btn" onClick = {this.onPanelToggle}>
                         {this.state.open? 'hide' : 'show'}
                     </button>
-                </div> 
+                </div>
                 <div className={"panel-content" + (!this.state.open? " hidden" : "")} >
-                  <input id="showTemp" type="checkbox" checked={this.props.drawTemp ? "checked" : null} 
-                                       onChange={this.props.toggleTemp}/> show temperature
+                  <div>
+                    {tests.map(test => <p>{test.result}</p>)}
+                  </div>
                 </div>
             </div>
         )
     }
 }
 
-export default Temp_controller;
+export default Add_tests_controller;
