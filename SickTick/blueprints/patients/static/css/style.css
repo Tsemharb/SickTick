@@ -49,6 +49,7 @@ small {
 .app__control-panel {
     margin: 0 5px;
     max-height: 100vh;
+    width: 400px;
 }
 
 .panel {
@@ -69,23 +70,23 @@ small {
     margin-bottom: 0;
 }
 
-.panel-header-btn {
+.toggle-button {
     border: none;
     background: none;
     padding: 0;
-    font-size: 1rem;
-    color: gray;
-    margin-right: 20px;
+    cursor: pointer;
 }
 
-.panel-header-btn:focus {
+.toggle-button:focus {
     outline: none;
 }
 
-.panel hr {
-    margin-top: 10px;
-    margin-bottom: 5px;
+.panel-header-btn {
+    font-size: 1rem;
+    color: gray;
+    margin-right: 15px;
 }
+
 
 .panel .hidden {
     height: 0;
@@ -93,8 +94,40 @@ small {
 }
 
 .panel-content {
-    margin-left: 15px;
+    margin: 0 15px;
 }
+
+.test-group-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.test-group-header:hover {
+    background: whitesmoke;
+}
+
+.test-group-title {
+    margin-bottom: 5px;
+    margin-top: 10px;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.test-info {
+    display: flex;
+    flex-flow: column;
+    margin: 0 15px 10px 10px;
+    line-height: 1.2;
+    font-size: 12px;
+}
+
+.test-info textarea{
+    font-size: 11px;
+    text-align: justify;
+    resize: none;
+    line-height: 12px;
+}
+
 
 .abList {
     margin-left: 25px;

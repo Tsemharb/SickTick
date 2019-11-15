@@ -172,7 +172,7 @@ var draw_everything = function draw_everything(props) {
         yTempAxis.attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')').call(d3.axisLeft(yTempScale).tickFormat(tempFormat)).selectAll('text').attr('transform', 'rotate(-90)').attr('dy', '-.8em').attr('dx', '1em').style('text-anchor', 'middle');
 
         tempChunks.forEach(function (chunk) {
-            chart.append('path').attr('class', 'temp_curve_' + chunk[0].timestamp).attr('d', tempPathGen(chunk)).style('fill', 'none').style('stroke', 'black').style('stroke-width', '2');
+            chart.append('path').attr('class', 'temp_curve_' + chunk[0].timestamp).attr('d', tempPathGen(chunk)).style('fill', 'none').style('stroke', 'black').style('stroke-width', '1');
         });
 
         chart.selectAll(".dot").data(temp).enter().append("circle").attr("class", "dot").attr('id', function (d, i) {
@@ -181,7 +181,7 @@ var draw_everything = function draw_everything(props) {
             return xScale(d.timestamp);
         }).attr("cy", function (d) {
             return yTempScale(d.temp);
-        }).attr("r", 4);
+        }).attr("r", 3);
 
         chart.selectAll(".temptext").data(temp).enter().append("text").attr('class', 'temptext').text(function (d) {
             return parseFloat(d.temp).toFixed(1);

@@ -42,7 +42,7 @@ var Ab_controller = function (_React$Component) {
                     ),
                     React.createElement(
                         "button",
-                        { className: "panel-header-btn", onClick: this.onPanelToggle },
+                        { className: "toggle-button panel-header-btn", onClick: this.onPanelToggle },
                         this.state.open ? 'hide' : 'show'
                     )
                 ),

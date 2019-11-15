@@ -147,14 +147,20 @@ class Patient_parser:
                 antibiotics.append(antibiotic)
         return antibiotics
 
-    def get_additional_tests(self, table):
-        additional_tests = []
+    def get_additional_tests(self, table): # group by test name
+        additional_tests = {}
         rows_num = len(table.rows)
         for r_num in range(1, rows_num):
             test = {}
             test['date'] = table.rows[r_num].cells[0].text
-            test['result'] = table.rows[r_num].cells[1].text
-            additional_tests.append(test)
+            test_raw_name = table.rows[r_num].cells[1].text.split(':')[0]
+            test['result'] = table.rows[r_num].cells[1].text.replace(test_raw_name + ':', '').strip()
+            name = test_raw_name.replace(' Заключение', '').replace(' Результат', '')
+            try:
+                additional_tests[name]
+            except:
+                additional_tests[name] = []
+            additional_tests[name].append(test)
         return additional_tests
 
 

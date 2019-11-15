@@ -202,7 +202,7 @@ const draw_everything = (props) => {
                 .attr('d', tempPathGen(chunk))
                 .style('fill', 'none')
                 .style('stroke', 'black')
-                .style('stroke-width', '2');
+                .style('stroke-width', '1');
         })
 
         chart.selectAll(".dot")
@@ -212,7 +212,7 @@ const draw_everything = (props) => {
             .attr('id', (d, i) => (i))
             .attr("cx", d => xScale(d.timestamp))
             .attr("cy", d => yTempScale(d.temp))
-            .attr("r", 4);
+            .attr("r", 3);
 
         chart.selectAll(".temptext")
             .data(temp)

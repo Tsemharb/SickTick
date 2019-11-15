@@ -18,14 +18,77 @@ var Add_tests_controller = function (_React$Component) {
             return _this.setState({ open: !_this.state.open });
         };
 
+        _this.toggleTest = function (e) {
+            var toggle_state = _this.state.test_info_tab_open;
+            toggle_state[e.target.id] = !toggle_state[e.target.id];
+            _this.setState({ test_info_tab_open: toggle_state });
+        };
+
+        _this.handleTextareaChange = function (e) {
+            var textareaLineHeight = 12;
+            var previousRows = e.target.rows;
+            e.target.rows = 1;
+            var currentRows = Math.floor(e.target.scrollHeight / textareaLineHeight);
+            e.target.rows = currentRows;
+        };
+
         _this.state = { open: false };
         return _this;
     }
 
+    // hide all additional test tab
+
+
     _createClass(Add_tests_controller, [{
+        key: "componentWillMount",
+        value: function componentWillMount() {
+            var keys = Object.keys(this.props.additional_tests);
+            var test_info_tab_open = {};
+            keys.map(function (key) {
+                return test_info_tab_open[key] = false;
+            });
+            this.setState({ test_info_tab_open: test_info_tab_open });
+        }
+    }, {
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            var averageNumOfSymbolsInTextareaString = 44;
+            var textareas = document.getElementsByClassName('test-result');
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = textareas[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var textarea = _step.value;
+
+                    textarea.rows = Math.ceil(textarea.value.length / averageNumOfSymbolsInTextareaString);
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+        }
+
+        // set matching textarea height
+
+    }, {
         key: "render",
         value: function render() {
+            var _this2 = this;
+
             var tests = this.props.additional_tests;
+            var keys = Object.keys(this.props.additional_tests);
             return React.createElement(
                 "div",
                 { className: "panel" },
@@ -39,24 +102,55 @@ var Add_tests_controller = function (_React$Component) {
                     ),
                     React.createElement(
                         "button",
-                        { className: "panel-header-btn", onClick: this.onPanelToggle },
+                        { className: "toggle-button panel-header-btn", onClick: this.onPanelToggle },
                         this.state.open ? 'hide' : 'show'
                     )
                 ),
                 React.createElement(
                     "div",
                     { className: "panel-content" + (!this.state.open ? " hidden" : "") },
-                    React.createElement(
-                        "div",
-                        null,
-                        tests.map(function (test) {
-                            return React.createElement(
-                                "p",
-                                null,
-                                test.result
-                            );
-                        })
-                    )
+                    keys.map(function (key) {
+                        return React.createElement(
+                            "div",
+                            { className: "test-group-wrapper" },
+                            React.createElement(
+                                "div",
+                                { className: "test-group-header" },
+                                React.createElement(
+                                    "p",
+                                    { className: "test-group-title" },
+                                    " ",
+                                    key,
+                                    " "
+                                ),
+                                React.createElement(
+                                    "button",
+                                    { id: key, className: "toggle-button test-toggle", onClick: _this2.toggleTest },
+                                    !_this2.state.test_info_tab_open[key] ? "+" : "-"
+                                )
+                            ),
+                            React.createElement(
+                                "div",
+                                { className: "test-group" },
+                                tests[key].map(function (test) {
+                                    return React.createElement(
+                                        "div",
+                                        { className: "test-info", style: !_this2.state.test_info_tab_open[key] ? { display: "none" } : null },
+                                        React.createElement(
+                                            "span",
+                                            null,
+                                            test.date
+                                        ),
+                                        React.createElement(
+                                            "textarea",
+                                            { "class": "test-result", onChange: _this2.handleTextareaChange },
+                                            test.result
+                                        )
+                                    );
+                                })
+                            )
+                        );
+                    })
                 )
             );
         }
