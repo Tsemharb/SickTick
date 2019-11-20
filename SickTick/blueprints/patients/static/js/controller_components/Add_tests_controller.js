@@ -30,6 +30,7 @@ var Add_tests_controller = function (_React$Component) {
             e.target.rows = 1;
             var currentRows = Math.floor(e.target.scrollHeight / textareaLineHeight);
             e.target.rows = currentRows;
+            _this.props.updateAdditionalTestResult(e.target.id, e.target.value);
         };
 
         _this.state = { open: false };
@@ -49,10 +50,13 @@ var Add_tests_controller = function (_React$Component) {
             });
             this.setState({ test_info_tab_open: test_info_tab_open });
         }
+
+        // set roughly estimated textarea size for each test result
+
     }, {
         key: "componentDidMount",
         value: function componentDidMount() {
-            var averageNumOfSymbolsInTextareaString = 44;
+            var averageNumOfSymbolsInTextareaString = 54;
             var textareas = document.getElementsByClassName('test-result');
             var _iteratorNormalCompletion = true;
             var _didIteratorError = false;
@@ -115,7 +119,7 @@ var Add_tests_controller = function (_React$Component) {
                             { className: "test-group-wrapper" },
                             React.createElement(
                                 "div",
-                                { className: "test-group-header" },
+                                { id: key, className: "test-group-header", onClick: _this2.toggleTest },
                                 React.createElement(
                                     "p",
                                     { className: "test-group-title" },
@@ -124,9 +128,11 @@ var Add_tests_controller = function (_React$Component) {
                                     " "
                                 ),
                                 React.createElement(
-                                    "button",
-                                    { id: key, className: "toggle-button test-toggle", onClick: _this2.toggleTest },
-                                    !_this2.state.test_info_tab_open[key] ? "+" : "-"
+                                    "p",
+                                    null,
+                                    " ",
+                                    !_this2.state.test_info_tab_open[key] ? "+" : "-",
+                                    " "
                                 )
                             ),
                             React.createElement(
@@ -137,13 +143,19 @@ var Add_tests_controller = function (_React$Component) {
                                         "div",
                                         { className: "test-info", style: !_this2.state.test_info_tab_open[key] ? { display: "none" } : null },
                                         React.createElement(
-                                            "span",
+                                            "div",
                                             null,
-                                            test.date
+                                            React.createElement("input", { id: test.id + "-checkbox", type: "checkbox", checked: test.draw ? "checked" : null,
+                                                onChange: _this2.props.toggleSingleAddTest }),
+                                            React.createElement(
+                                                "span",
+                                                null,
+                                                test.date
+                                            )
                                         ),
                                         React.createElement(
                                             "textarea",
-                                            { "class": "test-result", onChange: _this2.handleTextareaChange },
+                                            { id: test.id, "class": "test-result", onChange: _this2.handleTextareaChange },
                                             test.result
                                         )
                                     );

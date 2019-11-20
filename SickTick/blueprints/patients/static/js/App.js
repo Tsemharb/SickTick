@@ -1,3 +1,5 @@
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -23,11 +25,11 @@ var App = function (_React$Component) {
         var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
         _this.toggleTemp = function () {
-            return _this.setState({ drawTemp: !_this.state.drawTemp, viewport: false });
+            return _this.setState({ drawTemp: !_this.state.drawTemp, update: true });
         };
 
         _this.toggleAb = function () {
-            return _this.setState({ drawAb: !_this.state.drawAb, viewport: false });
+            return _this.setState({ drawAb: !_this.state.drawAb, update: true });
         };
 
         _this.toggleSingleAb = function (e) {
@@ -37,17 +39,93 @@ var App = function (_React$Component) {
                     data.antibiotics[i].draw = e.target.checked;
                 }
             }
-            _this.setState({ patient: data, viewport: false });
+            _this.setState({ patient: data, update: true });
+        };
+
+        _this.updateAdditionalTestResult = function (id, updatedResult) {
+            var data = _this.state.patient;
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = Object.entries(data.additional_tests)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var _ref = _step.value;
+
+                    var _ref2 = _slicedToArray(_ref, 2);
+
+                    var key = _ref2[0];
+                    var value = _ref2[1];
+
+                    for (var i = 0; i < value.length; i++) {
+                        if (value[i].id === id) {
+                            data.additional_tests[key][i].result = updatedResult;
+                            _this.setState({ patient: data, update: true });
+                        }
+                    }
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+        };
+
+        _this.toggleSingleAddTest = function (e) {
+            var data = _this.state.patient;
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
+
+            try {
+                for (var _iterator2 = Object.entries(data.additional_tests)[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var _ref3 = _step2.value;
+
+                    var _ref4 = _slicedToArray(_ref3, 2);
+
+                    var key = _ref4[0];
+                    var value = _ref4[1];
+
+                    for (var i = 0; i < value.length; i++) {
+                        if (value[i].id + "-checkbox" === e.target.id) {
+                            data.additional_tests[key][i].draw = e.target.checked;
+                            _this.setState({ patient: data, update: true });
+                        }
+                    }
+                }
+            } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
+                    }
+                } finally {
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
+                    }
+                }
+            }
         };
 
         _this.handleViewportPosition = function (e) {
-            e.target.id === 'viewport_x1' ? _this.setState({ viewport_start: e.target.value, viewport: true }) : _this.setState({ viewport_end: e.target.value, viewport: true });
+            e.target.id === 'viewport_x1' ? _this.setState({ viewport_start: e.target.value, update: false }) : _this.setState({ viewport_end: e.target.value, update: false });
         };
 
         _this.state = {
             isLoaded: false,
             drawGraph: false,
-            viewport: false,
+            update: true,
             patient: {}
         };
         return _this;
@@ -65,9 +143,10 @@ var App = function (_React$Component) {
                     _this2.setState({
                         isLoaded: true,
                         drawGraph: false,
+                        update: true,
                         drawTemp: true,
                         drawAb: true,
-                        viewport: false,
+                        draw_annotations: true,
                         patient: data
                     });
                 });
@@ -76,12 +155,8 @@ var App = function (_React$Component) {
     }, {
         key: 'shouldComponentUpdate',
         value: function shouldComponentUpdate(nextProps, nextState) {
-            // console.log(nextState.viewport);
-            return !nextState.viewport;
+            return nextState.update;
         }
-
-        // onDraw = () => this.setState({ drawGraph: true, viewport: false });
-
     }, {
         key: 'render',
         value: function render() {
@@ -92,7 +167,8 @@ var App = function (_React$Component) {
                 drawAb = _state.drawAb,
                 patient = _state.patient,
                 viewport_start = _state.viewport_start,
-                viewport_end = _state.viewport_end;
+                viewport_end = _state.viewport_end,
+                draw_annotations = _state.draw_annotations;
 
             if (!isLoaded) {
                 return React.createElement(
@@ -113,7 +189,7 @@ var App = function (_React$Component) {
                         React.createElement(
                             'div',
                             { className: 'app__graph' },
-                            React.createElement(Graph, { graphData: { patient: patient, drawTemp: drawTemp, drawAb: drawAb, viewport_start: viewport_start, viewport_end: viewport_end } })
+                            React.createElement(Graph, { graphData: { patient: patient, drawTemp: drawTemp, drawAb: drawAb, viewport_start: viewport_start, viewport_end: viewport_end, draw_annotations: draw_annotations } })
                         ),
                         React.createElement(
                             'div',
@@ -128,7 +204,9 @@ var App = function (_React$Component) {
                                     drawAb: this.state.drawAb,
                                     toggleAb: this.toggleAb,
                                     toggleSingleAb: this.toggleSingleAb }),
-                                React.createElement(Add_tests_controller, { additional_tests: patient.additional_tests })
+                                React.createElement(Add_tests_controller, { additional_tests: patient.additional_tests,
+                                    updateAdditionalTestResult: this.updateAdditionalTestResult,
+                                    toggleSingleAddTest: this.toggleSingleAddTest })
                             ) : null
                         ),
                         React.createElement(

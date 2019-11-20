@@ -12,7 +12,7 @@ class App extends React.Component {
         this.state = {
             isLoaded: false,
             drawGraph: false,
-            viewport: false,
+            update: true,
             patient: {}
         };
     }
@@ -26,9 +26,10 @@ class App extends React.Component {
                     this.setState({
                         isLoaded: true,
                         drawGraph: false,
+                        update: true,
                         drawTemp: true,
                         drawAb: true,
-                        viewport: false,
+                        draw_annotations: true,
                         patient: data
                     });
                 })
@@ -36,13 +37,11 @@ class App extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        // console.log(nextState.viewport);
-        return !nextState.viewport;
+        return nextState.update;
     }
 
-    // onDraw = () => this.setState({ drawGraph: true, viewport: false });
-    toggleTemp = () => this.setState({ drawTemp: !this.state.drawTemp, viewport: false });
-    toggleAb = () => this.setState({ drawAb: !this.state.drawAb, viewport: false });
+    toggleTemp = () => this.setState({ drawTemp: !this.state.drawTemp, update: true })
+    toggleAb = () => this.setState({ drawAb: !this.state.drawAb, update: true })
     toggleSingleAb = e => {
         let data = this.state.patient;
         for (let i = 0; i < data.antibiotics.length; i++) {
@@ -50,17 +49,41 @@ class App extends React.Component {
                 data.antibiotics[i].draw = e.target.checked
             }
         }
-        this.setState({ patient: data, viewport: false })
-    };
+        this.setState({ patient: data, update: true })
+    }
+
+    updateAdditionalTestResult = (id, updatedResult) => {
+        let data = this.state.patient
+        for (let [key, value] of Object.entries(data.additional_tests)) {
+            for (let i = 0; i < value.length; i++) {
+                if (value[i].id === id) {
+                    data.additional_tests[key][i].result = updatedResult
+                    this.setState({ patient: data, update: true })
+                }
+            }
+        }
+    }
+
+    toggleSingleAddTest = e => {
+        let data = this.state.patient;
+        for (let [key, value] of Object.entries(data.additional_tests)) {
+            for (let i = 0; i < value.length; i++) {
+                if (value[i].id + "-checkbox" === e.target.id) {
+                    data.additional_tests[key][i].draw = e.target.checked
+                    this.setState({ patient: data, update: true })
+                }
+            }
+        }
+    }
 
     handleViewportPosition = (e) => {
         e.target.id === 'viewport_x1' ?
-            this.setState({ viewport_start: e.target.value, viewport: true }) :
-            this.setState({ viewport_end: e.target.value, viewport: true })
+            this.setState({ viewport_start: e.target.value, update: false }) :
+            this.setState({ viewport_end: e.target.value, update: false })
     }
 
     render() {
-        let { isLoaded, drawGraph, drawTemp, drawAb, patient, viewport_start, viewport_end } = this.state;
+        const { isLoaded, drawGraph, drawTemp, drawAb, patient, viewport_start, viewport_end, draw_annotations } = this.state;
         if (!isLoaded) {
             return <div> loading... </div>;
         } else {
@@ -71,18 +94,20 @@ class App extends React.Component {
                   <General_info info={patient}/>
                   <div className='app'>
                     <div className='app__graph'>
-                      <Graph graphData={{patient, drawTemp, drawAb, viewport_start, viewport_end}} /> 
+                      <Graph graphData={{patient, drawTemp, drawAb, viewport_start, viewport_end, draw_annotations}} /> 
                     </div>
                     <div className="app__control-panel">
                       {isLoaded ? <div>
-                                    <Temp_controller temp = {patient.temperature} 
-                                                     drawTemp = {this.state.drawTemp} 
+                                    <Temp_controller temp = {patient.temperature}
+                                                     drawTemp = {this.state.drawTemp}
                                                      toggleTemp = {this.toggleTemp} />
-                                    <Ab_controller antibiotics = {patient.antibiotics} 
-                                                   drawAb = {this.state.drawAb} 
+                                    <Ab_controller antibiotics = {patient.antibiotics}
+                                                   drawAb = {this.state.drawAb}
                                                    toggleAb = {this.toggleAb}
                                                    toggleSingleAb = {this.toggleSingleAb} />
-                                    <Add_tests_controller additional_tests = {patient.additional_tests} />
+                                    <Add_tests_controller additional_tests = {patient.additional_tests}
+                                                          updateAdditionalTestResult = {this.updateAdditionalTestResult}
+                                                          toggleSingleAddTest = {this.toggleSingleAddTest} />
                                   </div>
                                 : null}
                     </div>

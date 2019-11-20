@@ -152,7 +152,11 @@ class Patient_parser:
         rows_num = len(table.rows)
         for r_num in range(1, rows_num):
             test = {}
+            test['id'] = 'additional-' + str(r_num)
             test['date'] = table.rows[r_num].cells[0].text
+            test['y'] = 400
+            test['draw'] = False
+            test['timestamp'] = self.get_timestamp(test['date'])
             test_raw_name = table.rows[r_num].cells[1].text.split(':')[0]
             test['result'] = table.rows[r_num].cells[1].text.replace(test_raw_name + ':', '').strip()
             name = test_raw_name.replace(' Заключение', '').replace(' Результат', '')

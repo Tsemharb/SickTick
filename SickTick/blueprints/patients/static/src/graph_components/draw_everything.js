@@ -29,8 +29,14 @@ const getValidDate = date_string => {
 
 
 const draw_everything = (props) => {
+
     // console.log(props)
-    let { patient, drawTemp, drawAb, viewport_start, viewport_end } = props.graphData;
+
+    const add_tests_keys = Object.keys(props.graphData.patient.additional_tests)
+    // console.log(props.graphData.patient.additional_tests[add_tests_keys[0]][0])
+
+    let { patient, drawTemp, drawAb, viewport_start, viewport_end, additional_tests, draw_annotations } = props.graphData;
+    // console.log(draw_annotations);
     const admission_timestamp = getValidDate(patient.general_info.admission_date);
     const discharge_timestamp = getValidDate(patient.general_info.discharge_date);
     const dateFormat = date => {
@@ -82,7 +88,6 @@ const draw_everything = (props) => {
 
     //get data to draw
     const temp = Object.values(patient.temperature);
-    // console.log(temp)
     let tempChunks = []
     let chunk = [temp[0]]
     for (let i = 1; i < temp.length; i++) {
@@ -100,8 +105,8 @@ const draw_everything = (props) => {
     // let temp = Array.from({ length: treatmentDuration + 1 }, (v, k) => Math.random() * (42.0 - 35.0) + 35.0);
     // const antibiotics = patient.antibiotics;
     let antibiotics = []
-    for (let i = 0; i < patient.antibiotics.length; i++){
-        if (patient.antibiotics[i].draw){
+    for (let i = 0; i < patient.antibiotics.length; i++) {
+        if (patient.antibiotics[i].draw) {
             antibiotics.push(patient.antibiotics[i])
         }
     }
@@ -236,7 +241,7 @@ const draw_everything = (props) => {
         // reset and rescale xAxis
         xScale.domain([domain_min, domain_max]);
         svg.select('.xAxis')
-            .transition() //.duration(1000)
+            //.transition() //.duration(1000)
             .call(d3.axisBottom(xScale).tickFormat(dateFormat));
 
         //get antibiotics brushed by user
@@ -252,7 +257,7 @@ const draw_everything = (props) => {
             yAbScale.domain(selected_ab.map(yAbLabel));
             //redraw yAbAxis
             svg.select('.yAbAxis')
-                .transition() //.duration(1000)
+                // .transition() //.duration(1000)
                 .call(yAbAxis.tickFormat(abFormat))
                 .selectAll('text')
                 .attr('x', '0')
@@ -271,7 +276,7 @@ const draw_everything = (props) => {
                 .attr('transform', `translate(${margin.left}, ${margin.top})`)
                 .attr('x', -30)
                 .attr('width', 30);
-            abColorLabels.transition()
+            abColorLabels //.transition()
                 .attr('y', ab => yAbScale(ab))
                 .attr('height', yAbScale.bandwidth())
                 .style('fill', ab => abColorInit(ab))
@@ -331,6 +336,41 @@ const draw_everything = (props) => {
                     .attr('d', tempPathGen(chunk))
             })
         }
+
+        //redraw annotations
+        svg.selectAll('.annotation').remove();
+        let annotations = []
+        add_tests_keys.map(key => {
+            patient.additional_tests[key].forEach(test => {
+                if (test.draw) {
+                    let annotation = {};
+                    annotation.note = {};
+                    annotation.note.label = test.result;
+                    annotation.note.title = key;
+                    annotation.note.wrap = 250;
+                    annotation.note.align = "center";
+                    annotation.x = xScale(test.timestamp) + margin.left;
+                    annotation.timestamp = test.timestamp;
+                    annotation.y = test.y;
+                    annotation.dy = 60;
+                    annotation.dx = 60;
+                    annotation.connector = {};
+                    annotation.connector.end = "arrow";
+                    annotations.push(annotation);
+                }
+            })
+        })
+
+        // Add annotation to the chart
+        const makeAnnotations = d3.annotation()
+            .editMode(true)
+            .annotations(annotations)
+        svg
+            .append("g")
+            .style('font-size', 10)
+            .call(makeAnnotations)
+        // .attr('transform', 'translate(100, 100)')
+
         d3_react_link();
     }
 
@@ -348,6 +388,18 @@ const draw_everything = (props) => {
             saveAs(dataBlob, 'D3 vis exported to PNG.png'); // FileSaver.js function
         }
     });
+
+    //remove annotation handlers
+    const toggle_handlers = d3.select('.toggle-handlers');
+    toggle_handlers.on('change', function() {
+        if (this.checked) {
+            svg.selectAll('.handle')
+                .style('display', 'none');
+        } else {
+            svg.selectAll('.handle')
+                .style('display', 'inherit');
+        }
+    })
 
 
     // add nav chart

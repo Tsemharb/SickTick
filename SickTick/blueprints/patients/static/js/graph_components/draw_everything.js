@@ -26,13 +26,21 @@ var getValidDate = function getValidDate(date_string) {
 };
 
 var draw_everything = function draw_everything(props) {
+
     // console.log(props)
+
+    var add_tests_keys = Object.keys(props.graphData.patient.additional_tests);
+    // console.log(props.graphData.patient.additional_tests[add_tests_keys[0]][0])
+
     var _props$graphData = props.graphData,
         patient = _props$graphData.patient,
         drawTemp = _props$graphData.drawTemp,
         drawAb = _props$graphData.drawAb,
         viewport_start = _props$graphData.viewport_start,
-        viewport_end = _props$graphData.viewport_end;
+        viewport_end = _props$graphData.viewport_end,
+        additional_tests = _props$graphData.additional_tests,
+        draw_annotations = _props$graphData.draw_annotations;
+    // console.log(draw_annotations);
 
     var admission_timestamp = getValidDate(patient.general_info.admission_date);
     var discharge_timestamp = getValidDate(patient.general_info.discharge_date);
@@ -69,7 +77,6 @@ var draw_everything = function draw_everything(props) {
 
     //get data to draw
     var temp = Object.values(patient.temperature);
-    // console.log(temp)
     var tempChunks = [];
     var chunk = [temp[0]];
     for (var i = 1; i < temp.length; i++) {
@@ -200,7 +207,8 @@ var draw_everything = function draw_everything(props) {
         var domain_max = mapNumber(extent[1], 0, innerWidth, admission_timestamp, discharge_timestamp);
         // reset and rescale xAxis
         xScale.domain([domain_min, domain_max]);
-        svg.select('.xAxis').transition() //.duration(1000)
+        svg.select('.xAxis')
+        //.transition() //.duration(1000)
         .call(d3.axisBottom(xScale).tickFormat(dateFormat));
 
         //get antibiotics brushed by user
@@ -217,7 +225,8 @@ var draw_everything = function draw_everything(props) {
         if (drawAb) {
             yAbScale.domain(selected_ab.map(yAbLabel));
             //redraw yAbAxis
-            svg.select('.yAbAxis').transition() //.duration(1000)
+            svg.select('.yAbAxis')
+            // .transition() //.duration(1000)
             .call(yAbAxis.tickFormat(abFormat)).selectAll('text').attr('x', '0').attr('transform', 'rotate(-90)').attr('dy', '-2em').attr('font-weight', '700').style('text-anchor', 'middle');
             d3.selectAll('.yAbAxis .tick line').remove();
 
@@ -225,7 +234,8 @@ var draw_everything = function draw_everything(props) {
             var abColorLabels = svg.selectAll('.color-label').data(selected_ab_set);
             abColorLabels.exit().remove();
             abColorLabels.enter().append('rect').attr('class', 'color-label').attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')').attr('x', -30).attr('width', 30);
-            abColorLabels.transition().attr('y', function (ab) {
+            abColorLabels //.transition()
+            .attr('y', function (ab) {
                 return yAbScale(ab);
             }).attr('height', yAbScale.bandwidth()).style('fill', function (ab) {
                 return abColorInit(ab);
@@ -287,6 +297,36 @@ var draw_everything = function draw_everything(props) {
                 .attr('d', tempPathGen(chunk));
             });
         }
+
+        //redraw annotations
+        svg.selectAll('.annotation').remove();
+        var annotations = [];
+        add_tests_keys.map(function (key) {
+            patient.additional_tests[key].forEach(function (test) {
+                if (test.draw) {
+                    var annotation = {};
+                    annotation.note = {};
+                    annotation.note.label = test.result;
+                    annotation.note.title = key;
+                    annotation.note.wrap = 250;
+                    annotation.note.align = "center";
+                    annotation.x = xScale(test.timestamp) + margin.left;
+                    annotation.timestamp = test.timestamp;
+                    annotation.y = test.y;
+                    annotation.dy = 60;
+                    annotation.dx = 60;
+                    annotation.connector = {};
+                    annotation.connector.end = "arrow";
+                    annotations.push(annotation);
+                }
+            });
+        });
+
+        // Add annotation to the chart
+        var makeAnnotations = d3.annotation().editMode(true).annotations(annotations);
+        svg.append("g").style('font-size', 10).call(makeAnnotations);
+        // .attr('transform', 'translate(100, 100)')
+
         d3_react_link();
     }
 
@@ -302,6 +342,16 @@ var draw_everything = function draw_everything(props) {
 
         function save(dataBlob, filesize) {
             saveAs(dataBlob, 'D3 vis exported to PNG.png'); // FileSaver.js function
+        }
+    });
+
+    //remove annotation handlers
+    var toggle_handlers = d3.select('.toggle-handlers');
+    toggle_handlers.on('change', function () {
+        if (this.checked) {
+            svg.selectAll('.handle').style('display', 'none');
+        } else {
+            svg.selectAll('.handle').style('display', 'inherit');
         }
     });
 
