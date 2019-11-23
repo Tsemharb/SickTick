@@ -176,6 +176,18 @@ var App = function (_React$Component) {
                     null,
                     ' loading... '
                 );
+            } else if (patient.is_error) {
+                return React.createElement(
+                    'div',
+                    null,
+                    patient.errors.map(function (error) {
+                        return React.createElement(
+                            'div',
+                            null,
+                            error
+                        );
+                    })
+                );
             } else {
                 return React.createElement(
                     'div',

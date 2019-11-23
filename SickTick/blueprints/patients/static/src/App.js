@@ -86,7 +86,17 @@ class App extends React.Component {
         const { isLoaded, drawGraph, drawTemp, drawAb, patient, viewport_start, viewport_end, draw_annotations } = this.state;
         if (!isLoaded) {
             return <div> loading... </div>;
-        } else {
+        } else if (patient.is_error) {
+            return (
+              <div>
+                {patient.errors.map(error => {
+                  return (
+                    <div>{error}</div>
+                  )
+                })}
+              </div>
+          );
+        } else{
             return (
                 <div>
                   <Clock />
@@ -94,7 +104,7 @@ class App extends React.Component {
                   <General_info info={patient}/>
                   <div className='app'>
                     <div className='app__graph'>
-                      <Graph graphData={{patient, drawTemp, drawAb, viewport_start, viewport_end, draw_annotations}} /> 
+                      <Graph graphData={{patient, drawTemp, drawAb, viewport_start, viewport_end, draw_annotations}} />
                     </div>
                     <div className="app__control-panel">
                       {isLoaded ? <div>

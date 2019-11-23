@@ -330,6 +330,9 @@ var draw_everything = function draw_everything(props) {
         d3_react_link();
     }
 
+    //display general controls
+    d3.select('.general_controls').style('display', 'inherit');
+
     //save to png
     var png_save_btn = d3.select('button.png_save');
     png_save_btn.on('click', function () {

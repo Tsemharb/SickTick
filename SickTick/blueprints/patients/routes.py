@@ -26,6 +26,8 @@ def patient(file_name):
 def get_patient_data(patient_id):
     patient_data = Patient_parser(patient_id)
     return jsonify({
+                    'is_error': patient_data.is_error,
+                    'errors': patient_data.errors,
                     'general_info': patient_data.general_info,
                     'temperature': patient_data.temperature,
                     'antibiotics': patient_data.antibiotics,

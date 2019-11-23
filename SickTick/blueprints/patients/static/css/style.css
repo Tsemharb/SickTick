@@ -144,3 +144,7 @@ small {
     margin-left: 25px;
     column-count: 2;
 }
+
+.general_controls {
+  display: none;
+}

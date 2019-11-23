@@ -28,8 +28,10 @@ class Patient_parser:
         for table in self.doc.tables:  #get tables of doc file ('table_name': table_obj)
             self.tables[self.tables_mapping[table.rows[0].cells[0].text.strip()]] = table
 
-        self.current_date = None;
-        self.date_counter = 1;
+        self.current_date = None
+        self.date_counter = 1
+        self.errors = []
+        self.is_error = False
 
         self.general_info = self.get_general_info()
         self.temperature = self.get_temperature(self.general_info['admission_date'][-4:], self.general_info['discharge_date'][-4:])
@@ -53,7 +55,7 @@ class Patient_parser:
     def get_correct_timestamp(self, date, count):
         date_shift = 0;
         # print(self.current_date)
-        if date == self.current_date: 
+        if date == self.current_date:
             date_shift = self.date_counter / count * 24 * 60 * 60 * 1000
             self.date_counter+=1
         else:
@@ -65,106 +67,126 @@ class Patient_parser:
 
 
     def get_general_info(self):
-        gen_info_mapping = {'ФИО': 'name',
-                        'Дата рождения': 'birthdate',
-                        'Адрес домашний': 'address',
-                        'Отделение': 'department',
-                        'Дата госпитализации': 'admission_date',
-                        'Дата выписки': 'discharge_date',
-                        'Клинический диагноз': 'diagnosis'}
-        general_info = {}
-        the_table = self.tables['general_info']
-        for row in the_table.rows:
-            general_info[gen_info_mapping[row.cells[0].text.strip()]] = row.cells[1].text
+        try:
+            gen_info_mapping = {'ФИО': 'name',
+                            'Дата рождения': 'birthdate',
+                            'Адрес домашний': 'address',
+                            'Отделение': 'department',
+                            'Дата госпитализации': 'admission_date',
+                            'Дата выписки': 'discharge_date',
+                            'Клинический диагноз': 'diagnosis'}
+            general_info = {}
+            the_table = self.tables['general_info']
+            for row in the_table.rows:
+                general_info[gen_info_mapping[row.cells[0].text.strip()]] = row.cells[1].text
+        except:
+            self.is_error = True
+            self.errors.append('Something is wrong with general info')
+            return
         return general_info
 
 
     def get_temperature(self, admission_year, discharge_year):
-        same_year = admission_year == discharge_year  # check for change of the year while in hospital
-        month = int(self.general_info['admission_date'][3:5])
-        year = admission_year
-        temperature = {}
-        the_table = self.tables['temperature']
-        rows_num = len(the_table.rows)
-        cells_num = len(the_table.rows[1].cells)
-        temp_id = 0
-        for row in range(1, rows_num, 3):
-            for cell in range(0, cells_num):
-                date = the_table.rows[row].cells[cell].text
-                if date != '':
-                    if not same_year and month > int(date[-2:]):
-                        year = discharge_year
-                        month = int(date[-2:])
+        try:
+            same_year = admission_year == discharge_year  # check for change of the year while in hospital
+            month = int(self.general_info['admission_date'][3:5])
+            year = admission_year
+            temperature = {}
+            the_table = self.tables['temperature']
+            rows_num = len(the_table.rows)
+            cells_num = len(the_table.rows[1].cells)
+            temp_id = 0
+            for row in range(1, rows_num, 3):
+                for cell in range(0, cells_num):
+                    date = the_table.rows[row].cells[cell].text
+                    if date != '':
+                        if not same_year and month > int(date[-2:]):
+                            year = discharge_year
+                            month = int(date[-2:])
+                        else:
+                            month = int(date[-2:])
+                        temperature[temp_id] = {'date':date + '.' + year,
+                                                'temp': the_table.rows[row+1].cells[cell].text.replace(',', '.')}
+                        temp_id += 1
                     else:
-                        month = int(date[-2:])
-                    temperature[temp_id] = {'date':date + '.' + year,
-                                            'temp': the_table.rows[row+1].cells[cell].text.replace(',', '.')}
-                    temp_id += 1
-                else:
-                    break
-        # add count for each unique date
-        counts = {}
-        dates = [temperature[i]['date'] for i in range(len(temperature))]
-        for date in set(dates):
-            for i in range(len(temperature)):
-                counts[i] = dates.count(temperature[i]['date'])
+                        break
+            # add count for each unique date
+            counts = {}
+            dates = [temperature[i]['date'] for i in range(len(temperature))]
+            for date in set(dates):
+                for i in range(len(temperature)):
+                    counts[i] = dates.count(temperature[i]['date'])
 
-        # add timestamp for every temperature measurement
-        for i in range(len(temperature)):
-            timestamp = self.get_correct_timestamp(temperature[i]['date'], counts[i])
-            temperature[i]['timestamp'] = timestamp;
+            # add timestamp for every temperature measurement
+            for i in range(len(temperature)):
+                timestamp = self.get_correct_timestamp(temperature[i]['date'], counts[i])
+                temperature[i]['timestamp'] = timestamp;
+        except:
+            self.is_error = True
+            self.errors.append('Something is wrong with temperature')
+            return
         return temperature
 
 
     def get_antibiotics(self, table):
-        ab_colors = ['aqua', 'brown', 'cyan', 'darkred','deeppink', 
+        ab_colors = ['aqua', 'brown', 'cyan', 'darkred','deeppink',
                      'fuchsia', 'lightgrey', 'olive', 'peru', 'tan',
                      'mediumblue', 'palegreen', 'rebeccapurple']
         antibiotics = []
-        rows_num = len(table.rows)
-        cells_num = len(table.rows[1].cells)
-        for row in range(1, rows_num):
-            row_content = []
-            # get info from each row
-            for cell in range(cells_num):
-                row_content.append(table.rows[row].cells[cell].text)
-            # row_content example: ['с 04.09.2018 по 05.09.2018', 'Цефепим 2,0 * 2р. в/в']
-            ab_name = row_content[1]
-            ab_name = re.split("(\d)+", ab_name)[0]
-            ab_dose = row_content[1].replace(ab_name, '')
-            # add antibiotics dates could be several runs for each ab
-            dates = row_content[0].split(',')
-            for date in dates:
-                antibiotic = {}
-                antibiotic['name'] = ab_name.strip()
-                antibiotic['dose'] = ab_dose
-                antibiotic['color'] = ab_colors[row-1]
-                d = date.strip().split(' ')
-                antibiotic['dates'] = {'begin': d[1][:10], 'end': d[3][:10]}
-                antibiotic['timestamps'] = {'begin': self.get_timestamp(d[1][:10]), 'end': self.get_timestamp(d[3][:10])}
-                antibiotic['draw'] = True
-                # antibiotic['draw'] = random.choice([True, False])
-                antibiotics.append(antibiotic)
+        try:
+            rows_num = len(table.rows)
+            cells_num = len(table.rows[1].cells)
+            for row in range(1, rows_num):
+                row_content = []
+                # get info from each row
+                for cell in range(cells_num):
+                    row_content.append(table.rows[row].cells[cell].text)
+                # row_content example: ['с 04.09.2018 по 05.09.2018', 'Цефепим 2,0 * 2р. в/в']
+                ab_name = row_content[1]
+                ab_name = re.split("(\d)+", ab_name)[0]
+                ab_dose = row_content[1].replace(ab_name, '')
+                # add antibiotics dates could be several runs for each ab
+                dates = row_content[0].split(',')
+                for date in dates:
+                    antibiotic = {}
+                    antibiotic['name'] = ab_name.strip()
+                    antibiotic['dose'] = ab_dose
+                    antibiotic['color'] = ab_colors[row-1]
+                    d = date.strip().split(' ')
+                    antibiotic['dates'] = {'begin': d[1][:10], 'end': d[3][:10]}
+                    antibiotic['timestamps'] = {'begin': self.get_timestamp(d[1][:10]), 'end': self.get_timestamp(d[3][:10])}
+                    antibiotic['draw'] = True
+                    # antibiotic['draw'] = random.choice([True, False])
+                    antibiotics.append(antibiotic)
+        except:
+            self.is_error = True
+            self.errors.append('Something is wrong with antibiotics')
+            return
         return antibiotics
 
     def get_additional_tests(self, table): # group by test name
-        additional_tests = {}
-        rows_num = len(table.rows)
-        for r_num in range(1, rows_num):
-            test = {}
-            test['id'] = 'additional-' + str(r_num)
-            test['date'] = table.rows[r_num].cells[0].text
-            test['y'] = 400
-            test['draw'] = False
-            test['timestamp'] = self.get_timestamp(test['date'])
-            test_raw_name = table.rows[r_num].cells[1].text.split(':')[0]
-            test['result'] = table.rows[r_num].cells[1].text.replace(test_raw_name + ':', '').strip()
-            name = test_raw_name.replace(' Заключение', '').replace(' Результат', '')
-            try:
-                additional_tests[name]
-            except:
-                additional_tests[name] = []
-            additional_tests[name].append(test)
+        try:
+            additional_tests = {}
+            rows_num = len(table.rows)
+            for r_num in range(1, rows_num):
+                test = {}
+                test['id'] = 'additional-' + str(r_num)
+                test['date'] = table.rows[r_num].cells[0].text
+                test['y'] = 400
+                test['draw'] = False
+                test['timestamp'] = self.get_timestamp(test['date'])
+                test_raw_name = table.rows[r_num].cells[1].text.split(':')[0]
+                test['result'] = table.rows[r_num].cells[1].text.replace(test_raw_name + ':', '').strip()
+                name = test_raw_name.replace(' Заключение', '').replace(' Результат', '')
+                try:
+                    additional_tests[name]
+                except:
+                    additional_tests[name] = []
+                additional_tests[name].append(test)
+        except:
+            self.is_error = True
+            self.errors.append('Something is wrong with additional tests')
+            return
         return additional_tests
 
 
