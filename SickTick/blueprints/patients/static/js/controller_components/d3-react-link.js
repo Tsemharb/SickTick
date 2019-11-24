@@ -1,4 +1,5 @@
 var d3_react_link = function d3_react_link() {
+    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
     var viewport = document.getElementsByClassName("selection")[0];
 
     var x1 = document.getElementById('viewport_x1');
@@ -20,5 +21,8 @@ var d3_react_link = function d3_react_link() {
         tracker2.setValue(lastValue2);
     }
     x2.dispatchEvent(event2);
+
+    var innerWidth = document.getElementsByClassName('overlay')[0].getBBox().width;
+    document.getElementById('www').value = innerWidth;
 };
 export default d3_react_link;

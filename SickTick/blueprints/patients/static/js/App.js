@@ -122,6 +122,56 @@ var App = function (_React$Component) {
             e.target.id === 'viewport_x1' ? _this.setState({ viewport_start: e.target.value, update: false }) : _this.setState({ viewport_end: e.target.value, update: false });
         };
 
+        _this.updateAnnotationCoords = function () {
+            var add_tests_keys = Object.keys(_this.state.patient.additional_tests);
+            var id = document.querySelector('#annotation-id').value;
+            var x = parseInt(document.querySelector('#annotation-x').value);
+            var y = parseInt(document.querySelector('#annotation-y').value);
+            var dx = parseInt(document.querySelector('#annotation-dx').value);
+            var dy = parseInt(document.querySelector('#annotation-dy').value);
+            var width = parseFloat(document.querySelector('#www').value);
+            console.log(width);
+            var timestamp = (x - 80 - 0) * (_this.state.patient.general_info.discharge_timestamp - _this.state.patient.general_info.admission_timestamp) / (width - 0) + _this.state.patient.general_info.admission_timestamp;
+            var data = _this.state.patient;
+            var _iteratorNormalCompletion3 = true;
+            var _didIteratorError3 = false;
+            var _iteratorError3 = undefined;
+
+            try {
+                for (var _iterator3 = Object.entries(data.additional_tests)[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                    var _ref5 = _step3.value;
+
+                    var _ref6 = _slicedToArray(_ref5, 2);
+
+                    var key = _ref6[0];
+                    var value = _ref6[1];
+
+                    for (var i = 0; i < value.length; i++) {
+                        if (value[i].id === id) {
+                            data.additional_tests[key][i].timestamp = timestamp;
+                            data.additional_tests[key][i].y = y;
+                            data.additional_tests[key][i].dx = dx;
+                            data.additional_tests[key][i].dy = dy;
+                            _this.setState({ patient: data, update: false });
+                        }
+                    }
+                }
+            } catch (err) {
+                _didIteratorError3 = true;
+                _iteratorError3 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                        _iterator3.return();
+                    }
+                } finally {
+                    if (_didIteratorError3) {
+                        throw _iteratorError3;
+                    }
+                }
+            }
+        };
+
         _this.state = {
             isLoaded: false,
             drawGraph: false,
@@ -157,6 +207,12 @@ var App = function (_React$Component) {
         value: function shouldComponentUpdate(nextProps, nextState) {
             return nextState.update;
         }
+
+        // edit additional test result
+
+
+        // set new coordinates for annotation so that on rerender it will take up relevant position
+
     }, {
         key: 'render',
         value: function render() {
@@ -223,9 +279,16 @@ var App = function (_React$Component) {
                         ),
                         React.createElement(
                             'div',
-                            { className: 'viewport_data' },
+                            { className: 'data-from-graph' },
                             React.createElement('input', { id: 'viewport_x1', type: 'text', pattern: '[0-9]*', onChange: this.handleViewportPosition }),
-                            React.createElement('input', { id: 'viewport_x2', type: 'text', pattern: '[0-9]*', onChange: this.handleViewportPosition })
+                            React.createElement('input', { id: 'viewport_x2', type: 'text', pattern: '[0-9]*', onChange: this.handleViewportPosition }),
+                            React.createElement('input', { id: 'annotation-id', type: 'text' }),
+                            React.createElement('input', { id: 'annotation-x', type: 'text', pattern: '[0-9]*' }),
+                            React.createElement('input', { id: 'annotation-y', type: 'text', pattern: '[0-9]*' }),
+                            React.createElement('input', { id: 'annotation-dx', type: 'text', pattern: '[0-9]*' }),
+                            React.createElement('input', { id: 'annotation-dy', type: 'text', pattern: '[0-9]*' }),
+                            React.createElement('input', { id: 'www', type: 'text', pattern: '[0-9]*' }),
+                            React.createElement('button', { id: 'annotation-button', onMouseUp: this.updateAnnotationCoords })
                         )
                     )
                 );

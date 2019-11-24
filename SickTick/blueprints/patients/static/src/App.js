@@ -52,6 +52,7 @@ class App extends React.Component {
         this.setState({ patient: data, update: true })
     }
 
+    // edit additional test result
     updateAdditionalTestResult = (id, updatedResult) => {
         let data = this.state.patient
         for (let [key, value] of Object.entries(data.additional_tests)) {
@@ -82,21 +83,47 @@ class App extends React.Component {
             this.setState({ viewport_end: e.target.value, update: false })
     }
 
+    // set new coordinates for annotation so that on rerender it will take up relevant position
+    updateAnnotationCoords = () => {
+        const add_tests_keys = Object.keys(this.state.patient.additional_tests);
+        const id = document.querySelector('#annotation-id').value;
+        const x = parseInt(document.querySelector('#annotation-x').value);
+        const y = parseInt(document.querySelector('#annotation-y').value);
+        const dx = parseInt(document.querySelector('#annotation-dx').value);
+        const dy = parseInt(document.querySelector('#annotation-dy').value);
+        const width = parseFloat(document.querySelector('#www').value);
+        console.log(width)
+        const timestamp = ((x - 80 - 0) * (this.state.patient.general_info.discharge_timestamp - this.state.patient.general_info.admission_timestamp) /
+            (width - 0) + this.state.patient.general_info.admission_timestamp);
+        let data = this.state.patient;
+        for (let [key, value] of Object.entries(data.additional_tests)) {
+            for (let i = 0; i < value.length; i++) {
+                if (value[i].id === id) {
+                    data.additional_tests[key][i].timestamp = timestamp;
+                    data.additional_tests[key][i].y = y;
+                    data.additional_tests[key][i].dx = dx;
+                    data.additional_tests[key][i].dy = dy;
+                    this.setState({ patient: data, update: false })
+                }
+            }
+        }
+    }
+
     render() {
         const { isLoaded, drawGraph, drawTemp, drawAb, patient, viewport_start, viewport_end, draw_annotations } = this.state;
         if (!isLoaded) {
             return <div> loading... </div>;
         } else if (patient.is_error) {
             return (
-              <div>
+                <div>
                 {patient.errors.map(error => {
                   return (
                     <div>{error}</div>
                   )
                 })}
               </div>
-          );
-        } else{
+            );
+        } else {
             return (
                 <div>
                   <Clock />
@@ -121,9 +148,16 @@ class App extends React.Component {
                                   </div>
                                 : null}
                     </div>
-                    <div className="viewport_data">
+                    <div className="data-from-graph">
                       <input id="viewport_x1"type="text" pattern="[0-9]*" onChange={this.handleViewportPosition}/>
                       <input id="viewport_x2"type="text" pattern="[0-9]*" onChange={this.handleViewportPosition}/>
+                      <input id="annotation-id" type="text"/>
+                      <input id="annotation-x" type="text" pattern="[0-9]*"/>
+                      <input id="annotation-y" type="text" pattern="[0-9]*"/>
+                      <input id="annotation-dx" type="text" pattern="[0-9]*"/>
+                      <input id="annotation-dy" type="text" pattern="[0-9]*"/>
+                      <input id="www" type="text" pattern="[0-9]*"/>
+                      <button id="annotation-button" onMouseUp={this.updateAnnotationCoords}></button>
                     </div>
                   </div>
                 </div>

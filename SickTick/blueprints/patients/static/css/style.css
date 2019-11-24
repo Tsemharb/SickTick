@@ -28,7 +28,7 @@
     margin-bottom: 40px;
 }
 
-.viewport_data {
+.data-from-graph {
     display: none;
 }
 
@@ -103,12 +103,12 @@ small {
     align-items: center;
 }
 
-.test-group-header p{
+.test-group-header p {
     pointer-events: none;
     margin: 5px 0;
 }
 
-.test-group-header:hover{
+.test-group-header:hover {
     cursor: pointer;
 }
 
@@ -129,7 +129,7 @@ small {
     font-size: 12px;
 }
 
-.test-info textarea{
+.test-info textarea {
     background: #FAFEFF;
     font-size: 11px;
     text-align: justify;
@@ -146,5 +146,6 @@ small {
 }
 
 .general_controls {
-  display: none;
+    display: none;
+    margin-bottom: 50px;
 }

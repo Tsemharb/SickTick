@@ -79,6 +79,9 @@ class Patient_parser:
             the_table = self.tables['general_info']
             for row in the_table.rows:
                 general_info[gen_info_mapping[row.cells[0].text.strip()]] = row.cells[1].text
+            # print(self.get_timestamp(general_info['admission_date']))
+            general_info['admission_timestamp'] = self.get_timestamp(general_info['admission_date'])
+            general_info['discharge_timestamp'] = self.get_timestamp(general_info['discharge_date'])
         except:
             self.is_error = True
             self.errors.append('Something is wrong with general info')
@@ -173,6 +176,8 @@ class Patient_parser:
                 test['id'] = 'additional-' + str(r_num)
                 test['date'] = table.rows[r_num].cells[0].text
                 test['y'] = 400
+                test['dx'] = 60
+                test['dy'] = 60
                 test['draw'] = False
                 test['timestamp'] = self.get_timestamp(test['date'])
                 test_raw_name = table.rows[r_num].cells[1].text.split(':')[0]

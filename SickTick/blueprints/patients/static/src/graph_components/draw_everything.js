@@ -30,15 +30,18 @@ const getValidDate = date_string => {
 
 const draw_everything = (props) => {
 
-    // console.log(props)
+    console.log(props)
 
     const add_tests_keys = Object.keys(props.graphData.patient.additional_tests)
     // console.log(props.graphData.patient.additional_tests[add_tests_keys[0]][0])
 
     let { patient, drawTemp, drawAb, viewport_start, viewport_end, additional_tests, draw_annotations } = props.graphData;
     // console.log(draw_annotations);
-    const admission_timestamp = getValidDate(patient.general_info.admission_date);
-    const discharge_timestamp = getValidDate(patient.general_info.discharge_date);
+    // const admission_timestamp = getValidDate(patient.general_info.admission_date);
+    // const discharge_timestamp = getValidDate(patient.general_info.discharge_date);
+    const admission_timestamp = props.graphData.patient.general_info.admission_timestamp;
+    const discharge_timestamp = props.graphData.patient.general_info.discharge_timestamp;
+
     const dateFormat = date => {
         let day = date.getDate();
         let month = months[date.getMonth(date)];
@@ -343,17 +346,24 @@ const draw_everything = (props) => {
         add_tests_keys.map(key => {
             patient.additional_tests[key].forEach(test => {
                 if (test.draw) {
+                    // console.log(mapNumber(parseInt(test.timestamp), admission_timestamp, discharge_timestamp, 0, innerWidth))
+                    // console.log(parseInt(mapNumber(503, 0, innerWidth, admission_timestamp, discharge_timestamp )))
+
+                    // console.log(innerWidth)
+                    // console.log(admission_timestamp)
+                    // console.log(discharge_timestamp)
+                    // console.log(test.timestamp)
+
                     let annotation = {};
+                    annotation.id = test.id;
                     annotation.note = {};
                     annotation.note.label = test.result;
                     annotation.note.title = key;
                     annotation.note.wrap = 250;
-                    annotation.note.align = "center";
                     annotation.x = xScale(test.timestamp) + margin.left;
-                    annotation.timestamp = test.timestamp;
                     annotation.y = test.y;
-                    annotation.dy = 60;
-                    annotation.dx = 60;
+                    annotation.dx = test.dx;
+                    annotation.dy = test.dy;
                     annotation.connector = {};
                     annotation.connector.end = "arrow";
                     annotations.push(annotation);
@@ -447,6 +457,30 @@ const draw_everything = (props) => {
             ]);
         });
 
+    //drag events
+    const annotationDragHandler = d3.drag()
+        .on('end', function() { console.log('drag') })
+
+    // annotationDragHandler(svg.selectAll('.handle'));
+    let aa = svg.selectAll('.handle');
+    // let aa = svg.getElemetsByClassName('handle')
+    // console.log(aa)
+    // aa.addEventListener('mouseup', e => console.log('mouseUP'))
+
+    // const a = document.getElementsByClassName('handle');
+    // const a = document.getElementById('graph')
+    // a.addEventListener('mouseup', e => console.log('mouseUP'))
+
+
+    // console.log(document.querySelectorAll('.annotation'))
+
+    // document.querySelectorAll('.annotation').forEach(item => {
+    //     item.addEventListener('mouseover', event => {
+    //         // if (event.target.classList.contains('dragging')) {
+    //             console.log(event.target.classList)
+    //         // }
+    //     })
+    // })
 
 }
 
