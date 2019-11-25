@@ -37,6 +37,7 @@ class Patient_parser:
         self.temperature = self.get_temperature(self.general_info['admission_date'][-4:], self.general_info['discharge_date'][-4:])
         self.antibiotics = self.get_antibiotics(self.tables['antibiotics'])
         self.additional_tests = self.get_additional_tests(self.tables['additional_tests'])
+        # self.cbc = self.get_tests(self.tables['cbc'], self.general_info['admission_date'][-4:], self.general_info['discharge_date'][-4:])
 
     @staticmethod
     def get_timestamp(date_str):
@@ -109,6 +110,7 @@ class Patient_parser:
                         else:
                             month = int(date[-2:])
                         temperature[temp_id] = {'date':date + '.' + year,
+                                                'id': temp_id,
                                                 'temp': the_table.rows[row+1].cells[cell].text.replace(',', '.')}
                         temp_id += 1
                     else:
@@ -175,9 +177,9 @@ class Patient_parser:
                 test = {}
                 test['id'] = 'additional-' + str(r_num)
                 test['date'] = table.rows[r_num].cells[0].text
-                test['y'] = 400
+                test['y'] = None
                 test['dx'] = 60
-                test['dy'] = 60
+                test['dy'] = - 60
                 test['draw'] = False
                 test['timestamp'] = self.get_timestamp(test['date'])
                 test_raw_name = table.rows[r_num].cells[1].text.split(':')[0]
@@ -195,7 +197,10 @@ class Patient_parser:
         return additional_tests
 
 
-    def get_tests(table):
+    def get_tests(self, table, admission_year, discharge_year):
+        same_year = admission_year == discharge_year
+        month = int(self.general_info['admission_date'][3:5])
+        year = admission_year
         units = {}
         data = {}
         referent_col_name =''
@@ -225,22 +230,32 @@ class Patient_parser:
                 else:
                     continue
 
-        #get samples results
+        # get samples results
         start_row = 0
         start_col = 2 if is_referent_col else 1
         for blank in blank_rows_ind:
             for cell in range(start_col, cells_num):
                 date = table.rows[start_row+1].cells[cell].text.strip()
-                if date == '':
+        # add year to yearless date
+                if date != '':
+                    if not same_year and month > int(date[-2:]):
+                        year = discharge_year
+                        month = int(date[-2:])
+                    else:
+                        month = int(date[-2:])
+                else:
                     continue
+                date = date + '.' + year
                 test = {}
                 for row in range (start_row+2, blank):
                     observation = table.rows[row].cells[cell].text.strip()
                     if observation != '':
                         observation_name = table.rows[row].cells[0].text.strip()
                         test[observation_name] = observation
+                        test['date'] = date
+                        test['timestamp'] = self.get_timestamp(date)
                     else:
                         continue
-                data[date] = test
+                data[cell] = test
             start_row = blank
         return{'referent_col_name': referent_col_name, 'units': units, 'data': data}

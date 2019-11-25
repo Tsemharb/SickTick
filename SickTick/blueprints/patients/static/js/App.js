@@ -119,7 +119,7 @@ var App = function (_React$Component) {
         };
 
         _this.handleViewportPosition = function (e) {
-            e.target.id === 'viewport_x1' ? _this.setState({ viewport_start: e.target.value, update: false }) : _this.setState({ viewport_end: e.target.value, update: false });
+            e.target.id === 'viewport_x1' ? _this.setState({ viewport_start_timestamp: parseInt(e.target.value), update: false }) : _this.setState({ viewport_end_timestamp: parseInt(e.target.value), update: false });
         };
 
         _this.updateAnnotationCoords = function () {
@@ -130,8 +130,7 @@ var App = function (_React$Component) {
             var dx = parseInt(document.querySelector('#annotation-dx').value);
             var dy = parseInt(document.querySelector('#annotation-dy').value);
             var width = parseFloat(document.querySelector('#www').value);
-            console.log(width);
-            var timestamp = (x - 80 - 0) * (_this.state.patient.general_info.discharge_timestamp - _this.state.patient.general_info.admission_timestamp) / (width - 0) + _this.state.patient.general_info.admission_timestamp;
+            var timestamp = (x - 80 - 0) * (_this.state.viewport_end_timestamp - _this.state.viewport_start_timestamp) / (width - 0) + _this.state.viewport_start_timestamp;
             var data = _this.state.patient;
             var _iteratorNormalCompletion3 = true;
             var _didIteratorError3 = false;
@@ -222,9 +221,10 @@ var App = function (_React$Component) {
                 drawTemp = _state.drawTemp,
                 drawAb = _state.drawAb,
                 patient = _state.patient,
-                viewport_start = _state.viewport_start,
-                viewport_end = _state.viewport_end,
+                viewport_start_timestamp = _state.viewport_start_timestamp,
+                viewport_end_timestamp = _state.viewport_end_timestamp,
                 draw_annotations = _state.draw_annotations;
+
 
             if (!isLoaded) {
                 return React.createElement(
@@ -257,7 +257,7 @@ var App = function (_React$Component) {
                         React.createElement(
                             'div',
                             { className: 'app__graph' },
-                            React.createElement(Graph, { graphData: { patient: patient, drawTemp: drawTemp, drawAb: drawAb, viewport_start: viewport_start, viewport_end: viewport_end, draw_annotations: draw_annotations } })
+                            React.createElement(Graph, { graphData: { patient: patient, drawTemp: drawTemp, drawAb: drawAb, viewport_start_timestamp: viewport_start_timestamp, viewport_end_timestamp: viewport_end_timestamp, draw_annotations: draw_annotations } })
                         ),
                         React.createElement(
                             'div',

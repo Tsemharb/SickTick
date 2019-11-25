@@ -1,10 +1,9 @@
-const d3_react_link = () => {
-    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+const d3_react_link = (domain_min, domain_max) => {
     const viewport = document.getElementsByClassName("selection")[0];
 
     const x1 = document.getElementById('viewport_x1');
     const lastValue1 = x1.value;
-    x1.value = parseInt(viewport.getBBox().x);
+    x1.value = domain_min;
     let event1 = new Event('input', { bubbles: true });
     let tracker1 = x1._valueTracker;
     if (tracker1) {
@@ -15,7 +14,7 @@ const d3_react_link = () => {
 
     const x2 = document.getElementById('viewport_x2');
     const lastValue2 = x2.value;
-    x2.value = parseInt(viewport.getBBox().x + viewport.getBBox().width)
+    x2.value = domain_max;
     let event2 = new Event('input', { bubbles: true });
     let tracker2 = x2._valueTracker;
     if (tracker2) {

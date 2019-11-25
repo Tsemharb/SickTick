@@ -79,8 +79,8 @@ class App extends React.Component {
 
     handleViewportPosition = (e) => {
         e.target.id === 'viewport_x1' ?
-            this.setState({ viewport_start: e.target.value, update: false }) :
-            this.setState({ viewport_end: e.target.value, update: false })
+            this.setState({ viewport_start_timestamp: parseInt(e.target.value), update: false }) :
+            this.setState({ viewport_end_timestamp: parseInt(e.target.value), update: false })
     }
 
     // set new coordinates for annotation so that on rerender it will take up relevant position
@@ -92,9 +92,8 @@ class App extends React.Component {
         const dx = parseInt(document.querySelector('#annotation-dx').value);
         const dy = parseInt(document.querySelector('#annotation-dy').value);
         const width = parseFloat(document.querySelector('#www').value);
-        console.log(width)
-        const timestamp = ((x - 80 - 0) * (this.state.patient.general_info.discharge_timestamp - this.state.patient.general_info.admission_timestamp) /
-            (width - 0) + this.state.patient.general_info.admission_timestamp);
+        const timestamp = ((x - 80 - 0) * (this.state.viewport_end_timestamp - this.state.viewport_start_timestamp) /
+            (width - 0) + this.state.viewport_start_timestamp);
         let data = this.state.patient;
         for (let [key, value] of Object.entries(data.additional_tests)) {
             for (let i = 0; i < value.length; i++) {
@@ -110,7 +109,8 @@ class App extends React.Component {
     }
 
     render() {
-        const { isLoaded, drawGraph, drawTemp, drawAb, patient, viewport_start, viewport_end, draw_annotations } = this.state;
+        const { isLoaded, drawGraph, drawTemp, drawAb, patient, viewport_start_timestamp, viewport_end_timestamp, draw_annotations } = this.state;
+
         if (!isLoaded) {
             return <div> loading... </div>;
         } else if (patient.is_error) {
@@ -131,7 +131,7 @@ class App extends React.Component {
                   <General_info info={patient}/>
                   <div className='app'>
                     <div className='app__graph'>
-                      <Graph graphData={{patient, drawTemp, drawAb, viewport_start, viewport_end, draw_annotations}} />
+                      <Graph graphData={{patient, drawTemp, drawAb, viewport_start_timestamp, viewport_end_timestamp, draw_annotations}} />
                     </div>
                     <div className="app__control-panel">
                       {isLoaded ? <div>

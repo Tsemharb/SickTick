@@ -1,10 +1,9 @@
-var d3_react_link = function d3_react_link() {
-    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+var d3_react_link = function d3_react_link(domain_min, domain_max) {
     var viewport = document.getElementsByClassName("selection")[0];
 
     var x1 = document.getElementById('viewport_x1');
     var lastValue1 = x1.value;
-    x1.value = parseInt(viewport.getBBox().x);
+    x1.value = domain_min;
     var event1 = new Event('input', { bubbles: true });
     var tracker1 = x1._valueTracker;
     if (tracker1) {
@@ -14,7 +13,7 @@ var d3_react_link = function d3_react_link() {
 
     var x2 = document.getElementById('viewport_x2');
     var lastValue2 = x2.value;
-    x2.value = parseInt(viewport.getBBox().x + viewport.getBBox().width);
+    x2.value = domain_max;
     var event2 = new Event('input', { bubbles: true });
     var tracker2 = x2._valueTracker;
     if (tracker2) {

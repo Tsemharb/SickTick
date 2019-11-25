@@ -1,4 +1,3 @@
-// set min brush width to avoid non-selecting temperature elements
 // svg resize
 // remove last tick in xAxis
 
@@ -26,24 +25,18 @@ var getValidDate = function getValidDate(date_string) {
 };
 
 var draw_everything = function draw_everything(props) {
-
-    console.log(props);
-
-    var add_tests_keys = Object.keys(props.graphData.patient.additional_tests);
-    // console.log(props.graphData.patient.additional_tests[add_tests_keys[0]][0])
-
+    // console.log(props)
     var _props$graphData = props.graphData,
         patient = _props$graphData.patient,
         drawTemp = _props$graphData.drawTemp,
         drawAb = _props$graphData.drawAb,
-        viewport_start = _props$graphData.viewport_start,
-        viewport_end = _props$graphData.viewport_end,
+        viewport_start_timestamp = _props$graphData.viewport_start_timestamp,
+        viewport_end_timestamp = _props$graphData.viewport_end_timestamp,
         additional_tests = _props$graphData.additional_tests,
         draw_annotations = _props$graphData.draw_annotations;
-    // console.log(draw_annotations);
-    // const admission_timestamp = getValidDate(patient.general_info.admission_date);
-    // const discharge_timestamp = getValidDate(patient.general_info.discharge_date);
 
+
+    var add_tests_keys = Object.keys(props.graphData.patient.additional_tests);
     var admission_timestamp = props.graphData.patient.general_info.admission_timestamp;
     var discharge_timestamp = props.graphData.patient.general_info.discharge_timestamp;
 
@@ -94,8 +87,6 @@ var draw_everything = function draw_everything(props) {
         }
     }
 
-    // let temp = Array.from({ length: treatmentDuration + 1 }, (v, k) => Math.random() * (42.0 - 35.0) + 35.0);
-    // const antibiotics = patient.antibiotics;
     var antibiotics = [];
     for (var _i = 0; _i < patient.antibiotics.length; _i++) {
         if (patient.antibiotics[_i].draw) {
@@ -120,6 +111,53 @@ var draw_everything = function draw_everything(props) {
         if (temp === 35.0 || temp === 42.0) {
             return '';
         } else return temp;
+    };
+
+    // set correct y position of temperature label
+    var tempLabelY = function tempLabelY(ab) {
+        var t = parseFloat(ab.temp);
+        // first element
+        if (ab.id === 0) {
+            if (t <= parseFloat(temp[1].temp)) return yTempScale(t) + 12;else return yTempScale(t) - 5;
+        }
+        // last element
+        if (ab.id === temp.length - 1) {
+            if (t <= parseFloat(temp[temp.length - 2].temp)) return yTempScale(t) + 12;else return yTempScale(t) - 5;
+        }
+        // another elements
+        var prevT = parseFloat(temp[ab.id - 1].temp);
+        var nextT = parseFloat(temp[ab.id + 1].temp);
+        //if both less
+        if (t <= prevT && t <= nextT) {
+            return yTempScale(t) + 12;
+        }
+        //if both greater
+        if (t >= prevT && t >= nextT) {
+            return yTempScale(t) - 5;
+        }
+        // one greater than other
+        return yTempScale(t) - 5;
+    };
+
+    // set correct x position of temperature label
+    var tempLabelX = function tempLabelX(ab) {
+        var t = parseFloat(ab.temp);
+        // first element
+        if (ab.id === 0 || ab.id === temp.length - 1) {
+            return xScale(ab.timestamp);
+        }
+        // left greater than right
+        var prevT = parseFloat(temp[ab.id - 1].temp);
+        var nextT = parseFloat(temp[ab.id + 1].temp);
+        if (t <= prevT && t >= nextT) {
+            return xScale(ab.timestamp) + 10;
+        }
+        // right greater than left
+        if (t >= prevT && t <= nextT) {
+            return xScale(ab.timestamp) - 10;
+        }
+        //default case
+        return xScale(ab.timestamp);
     };
 
     // temperature y scale
@@ -196,9 +234,9 @@ var draw_everything = function draw_everything(props) {
         chart.selectAll(".temptext").data(temp).enter().append("text").attr('class', 'temptext').text(function (d) {
             return parseFloat(d.temp).toFixed(1);
         }).attr("text-anchor", "middle").attr("x", function (d) {
-            return xScale(d.timestamp) + 15;
+            return tempLabelX(d);
         }).attr("y", function (d) {
-            return yTempScale(d.temp) - 5;
+            return tempLabelY(d);
         }).attr("font-family", "sans-serif").attr("font-size", "11px").attr("fill", "black");
     }
 
@@ -208,11 +246,10 @@ var draw_everything = function draw_everything(props) {
         // get treatment days brushed by user
         var domain_min = mapNumber(extent[0], 0, innerWidth, admission_timestamp, discharge_timestamp);
         var domain_max = mapNumber(extent[1], 0, innerWidth, admission_timestamp, discharge_timestamp);
+
         // reset and rescale xAxis
         xScale.domain([domain_min, domain_max]);
-        svg.select('.xAxis')
-        //.transition() //.duration(1000)
-        .call(d3.axisBottom(xScale).tickFormat(dateFormat));
+        svg.select('.xAxis').call(d3.axisBottom(xScale).tickFormat(dateFormat));
 
         //get antibiotics brushed by user
         var selected_ab = [];
@@ -224,21 +261,17 @@ var draw_everything = function draw_everything(props) {
         var selected_ab_set = Array.from(new Set(selected_ab.map(function (ab) {
             return ab.name;
         })));
-        // let selected_ab_set = Array.from(new Set(selected_ab.map(ab => ab.name)));
         if (drawAb) {
             yAbScale.domain(selected_ab.map(yAbLabel));
             //redraw yAbAxis
-            svg.select('.yAbAxis')
-            // .transition() //.duration(1000)
-            .call(yAbAxis.tickFormat(abFormat)).selectAll('text').attr('x', '0').attr('transform', 'rotate(-90)').attr('dy', '-2em').attr('font-weight', '700').style('text-anchor', 'middle');
+            svg.select('.yAbAxis').call(yAbAxis.tickFormat(abFormat)).selectAll('text').attr('x', '0').attr('transform', 'rotate(-90)').attr('dy', '-2em').attr('font-weight', '700').style('text-anchor', 'middle');
             d3.selectAll('.yAbAxis .tick line').remove();
 
             //redraw abColorAxis
             var abColorLabels = svg.selectAll('.color-label').data(selected_ab_set);
             abColorLabels.exit().remove();
             abColorLabels.enter().append('rect').attr('class', 'color-label').attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')').attr('x', -30).attr('width', 30);
-            abColorLabels //.transition()
-            .attr('y', function (ab) {
+            abColorLabels.attr('y', function (ab) {
                 return yAbScale(ab);
             }).attr('height', yAbScale.bandwidth()).style('fill', function (ab) {
                 return abColorInit(ab);
@@ -275,29 +308,21 @@ var draw_everything = function draw_everything(props) {
             min_t = min_t - 1 < 35 ? 35.0 : min_t - 0.5;
             // reset and rescale temperature axis
             yTempScale.domain([max_t, min_t]);
-            svg.select('.yTempAxis')
-            //.transition() //.duration(1000)
-            .call(d3.axisLeft(yTempScale).tickFormat(tempFormat)).selectAll('text').attr('transform', 'rotate(-90)').attr('dy', '-.8em').attr('dx', '1em').style('text-anchor', 'middle');
+            svg.select('.yTempAxis').call(d3.axisLeft(yTempScale).tickFormat(tempFormat)).selectAll('text').attr('transform', 'rotate(-90)').attr('dy', '-.8em').attr('dx', '1em').style('text-anchor', 'middle');
 
             // redraw temperature curve, dots and text
-            chart.selectAll(".dot")
-            //.transition() //.duration(300)
-            .attr("cx", function (d) {
+            chart.selectAll(".dot").attr("cx", function (d) {
                 return xScale(d.timestamp);
             }).attr("cy", function (d) {
                 return yTempScale(d.temp);
             });
-            chart.selectAll(".temptext")
-            //.transition() //.duration(250)
-            .attr("x", function (d) {
-                return xScale(d.timestamp) + 15;
+            chart.selectAll(".temptext").attr("x", function (d) {
+                return tempLabelX(d);
             }).attr("y", function (d) {
-                return yTempScale(d.temp) - 5;
+                return tempLabelY(d);
             });
             tempChunks.forEach(function (chunk) {
-                chart.selectAll('.temp_curve_' + chunk[0].timestamp)
-                //.transition() //.duration(350)
-                .attr('d', tempPathGen(chunk));
+                chart.selectAll('.temp_curve_' + chunk[0].timestamp).attr('d', tempPathGen(chunk));
             });
         }
 
@@ -307,14 +332,9 @@ var draw_everything = function draw_everything(props) {
         add_tests_keys.map(function (key) {
             patient.additional_tests[key].forEach(function (test) {
                 if (test.draw) {
-                    // console.log(mapNumber(parseInt(test.timestamp), admission_timestamp, discharge_timestamp, 0, innerWidth))
-                    // console.log(parseInt(mapNumber(503, 0, innerWidth, admission_timestamp, discharge_timestamp )))
-
-                    // console.log(innerWidth)
-                    // console.log(admission_timestamp)
-                    // console.log(discharge_timestamp)
-                    // console.log(test.timestamp)
-
+                    if (!test.y) {
+                        test.y = innerHeight + margin.top;
+                    }
                     var annotation = {};
                     annotation.id = test.id;
                     annotation.note = {};
@@ -337,7 +357,7 @@ var draw_everything = function draw_everything(props) {
         svg.append("g").style('font-size', 10).call(makeAnnotations);
         // .attr('transform', 'translate(100, 100)')
 
-        d3_react_link();
+        d3_react_link(domain_min, domain_max);
     }
 
     //display general controls
@@ -377,8 +397,8 @@ var draw_everything = function draw_everything(props) {
 
     var viewport = d3.brushX().extent([[0, 0], [innerWidth, navSize.height]]).on("brush", updateChart);
 
-    var x1 = viewport_start ? viewport_start : xScale(admission_timestamp);
-    var x2 = viewport_end ? viewport_end : xScale(discharge_timestamp);
+    var x1 = viewport_start_timestamp ? xScale(viewport_start_timestamp) : xScale(admission_timestamp);
+    var x2 = viewport_end_timestamp ? xScale(viewport_end_timestamp) : xScale(discharge_timestamp);
 
     var brushSelection = navGroup.selectAll('.brush').data([viewport]);
     brushSelection.enter().insert('g', '.brush').attr('class', 'brush').each(function (brushObj) {
@@ -386,32 +406,6 @@ var draw_everything = function draw_everything(props) {
         brushObj(d3.select(this));
         brushObj.move(d3.select(this), [x1, x2]);
     });
-
-    //drag events
-    var annotationDragHandler = d3.drag().on('end', function () {
-        console.log('drag');
-    });
-
-    // annotationDragHandler(svg.selectAll('.handle'));
-    var aa = svg.selectAll('.handle');
-    // let aa = svg.getElemetsByClassName('handle')
-    // console.log(aa)
-    // aa.addEventListener('mouseup', e => console.log('mouseUP'))
-
-    // const a = document.getElementsByClassName('handle');
-    // const a = document.getElementById('graph')
-    // a.addEventListener('mouseup', e => console.log('mouseUP'))
-
-
-    // console.log(document.querySelectorAll('.annotation'))
-
-    // document.querySelectorAll('.annotation').forEach(item => {
-    //     item.addEventListener('mouseover', event => {
-    //         // if (event.target.classList.contains('dragging')) {
-    //             console.log(event.target.classList)
-    //         // }
-    //     })
-    // })
 };
 
 export default draw_everything;

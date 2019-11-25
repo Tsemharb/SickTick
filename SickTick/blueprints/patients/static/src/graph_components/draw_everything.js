@@ -1,4 +1,3 @@
-// set min brush width to avoid non-selecting temperature elements
 // svg resize
 // remove last tick in xAxis
 
@@ -29,16 +28,10 @@ const getValidDate = date_string => {
 
 
 const draw_everything = (props) => {
-
-    console.log(props)
+    // console.log(props)
+    const { patient, drawTemp, drawAb, viewport_start_timestamp, viewport_end_timestamp, additional_tests, draw_annotations } = props.graphData;
 
     const add_tests_keys = Object.keys(props.graphData.patient.additional_tests)
-    // console.log(props.graphData.patient.additional_tests[add_tests_keys[0]][0])
-
-    let { patient, drawTemp, drawAb, viewport_start, viewport_end, additional_tests, draw_annotations } = props.graphData;
-    // console.log(draw_annotations);
-    // const admission_timestamp = getValidDate(patient.general_info.admission_date);
-    // const discharge_timestamp = getValidDate(patient.general_info.discharge_date);
     const admission_timestamp = props.graphData.patient.general_info.admission_timestamp;
     const discharge_timestamp = props.graphData.patient.general_info.discharge_timestamp;
 
@@ -105,8 +98,6 @@ const draw_everything = (props) => {
         }
     }
 
-    // let temp = Array.from({ length: treatmentDuration + 1 }, (v, k) => Math.random() * (42.0 - 35.0) + 35.0);
-    // const antibiotics = patient.antibiotics;
     let antibiotics = []
     for (let i = 0; i < patient.antibiotics.length; i++) {
         if (patient.antibiotics[i].draw) {
@@ -123,6 +114,57 @@ const draw_everything = (props) => {
 
     const tempFormat = temp => {
         if (temp === 35.0 || temp === 42.0) { return '' } else return temp
+    }
+
+    // set correct y position of temperature label
+    const tempLabelY = ab => {
+        const t = parseFloat(ab.temp);
+        // first element
+        if (ab.id === 0) {
+            if (t <= parseFloat(temp[1].temp))
+                return yTempScale(t) + 12;
+            else return yTempScale(t) - 5;
+        }
+        // last element
+        if (ab.id === temp.length - 1) {
+            if (t <= parseFloat(temp[temp.length - 2].temp))
+                return yTempScale(t) + 12;
+            else return yTempScale(t) - 5;
+        }
+        // another elements
+        const prevT = parseFloat(temp[ab.id - 1].temp);
+        const nextT = parseFloat(temp[ab.id + 1].temp);
+        //if both less
+        if (t <= prevT && t <= nextT) {
+            return yTempScale(t) + 12;
+        }
+        //if both greater
+        if (t >= prevT && t >= nextT) {
+            return yTempScale(t) - 5;
+        }
+        // one greater than other
+        return yTempScale(t) - 5
+    }
+
+    // set correct x position of temperature label
+    const tempLabelX = ab => {
+        const t = parseFloat(ab.temp);
+        // first element
+        if (ab.id === 0 || ab.id === temp.length - 1) {
+            return xScale(ab.timestamp);
+        }
+        // left greater than right
+        const prevT = parseFloat(temp[ab.id - 1].temp);
+        const nextT = parseFloat(temp[ab.id + 1].temp);
+        if (t <= prevT && t >= nextT) {
+            return xScale(ab.timestamp) + 10
+        }
+        // right greater than left
+        if (t >= prevT && t <= nextT) {
+            return xScale(ab.timestamp) - 10
+        }
+        //default case
+        return xScale(ab.timestamp)
     }
 
     // temperature y scale
@@ -228,8 +270,8 @@ const draw_everything = (props) => {
             .attr('class', 'temptext')
             .text(d => parseFloat(d.temp).toFixed(1))
             .attr("text-anchor", "middle")
-            .attr("x", d => xScale(d.timestamp) + 15)
-            .attr("y", d => yTempScale(d.temp) - 5)
+            .attr("x", d => tempLabelX(d))
+            .attr("y", d => tempLabelY(d))
             .attr("font-family", "sans-serif")
             .attr("font-size", "11px")
             .attr("fill", "black");
@@ -237,14 +279,14 @@ const draw_everything = (props) => {
 
     function updateChart() {
         // return
-        let extent = d3.event.selection;
+        const extent = d3.event.selection;
         // get treatment days brushed by user
-        let domain_min = mapNumber(extent[0], 0, innerWidth, admission_timestamp, discharge_timestamp);
-        let domain_max = mapNumber(extent[1], 0, innerWidth, admission_timestamp, discharge_timestamp);
+        const domain_min = mapNumber(extent[0], 0, innerWidth, admission_timestamp, discharge_timestamp);
+        const domain_max = mapNumber(extent[1], 0, innerWidth, admission_timestamp, discharge_timestamp);
+
         // reset and rescale xAxis
         xScale.domain([domain_min, domain_max]);
         svg.select('.xAxis')
-            //.transition() //.duration(1000)
             .call(d3.axisBottom(xScale).tickFormat(dateFormat));
 
         //get antibiotics brushed by user
@@ -255,12 +297,10 @@ const draw_everything = (props) => {
             }
         }
         const selected_ab_set = Array.from(new Set(selected_ab.map(ab => ab.name)));
-        // let selected_ab_set = Array.from(new Set(selected_ab.map(ab => ab.name)));
         if (drawAb) {
             yAbScale.domain(selected_ab.map(yAbLabel));
             //redraw yAbAxis
             svg.select('.yAbAxis')
-                // .transition() //.duration(1000)
                 .call(yAbAxis.tickFormat(abFormat))
                 .selectAll('text')
                 .attr('x', '0')
@@ -279,7 +319,7 @@ const draw_everything = (props) => {
                 .attr('transform', `translate(${margin.left}, ${margin.top})`)
                 .attr('x', -30)
                 .attr('width', 30);
-            abColorLabels //.transition()
+            abColorLabels
                 .attr('y', ab => yAbScale(ab))
                 .attr('height', yAbScale.bandwidth())
                 .style('fill', ab => abColorInit(ab))
@@ -316,7 +356,6 @@ const draw_everything = (props) => {
             // reset and rescale temperature axis
             yTempScale.domain([max_t, min_t]);
             svg.select('.yTempAxis')
-                //.transition() //.duration(1000)
                 .call(d3.axisLeft(yTempScale).tickFormat(tempFormat))
                 .selectAll('text')
                 .attr('transform', 'rotate(-90)')
@@ -326,16 +365,13 @@ const draw_everything = (props) => {
 
             // redraw temperature curve, dots and text
             chart.selectAll(".dot")
-                //.transition() //.duration(300)
                 .attr("cx", d => xScale(d.timestamp))
                 .attr("cy", d => yTempScale(d.temp))
             chart.selectAll(".temptext")
-                //.transition() //.duration(250)
-                .attr("x", d => xScale(d.timestamp) + 15)
-                .attr("y", d => yTempScale(d.temp) - 5)
+                .attr("x", d => tempLabelX(d))
+                .attr("y", d => tempLabelY(d))
             tempChunks.forEach((chunk) => {
                 chart.selectAll(`.temp_curve_${chunk[0].timestamp}`)
-                    //.transition() //.duration(350)
                     .attr('d', tempPathGen(chunk))
             })
         }
@@ -346,14 +382,9 @@ const draw_everything = (props) => {
         add_tests_keys.map(key => {
             patient.additional_tests[key].forEach(test => {
                 if (test.draw) {
-                    // console.log(mapNumber(parseInt(test.timestamp), admission_timestamp, discharge_timestamp, 0, innerWidth))
-                    // console.log(parseInt(mapNumber(503, 0, innerWidth, admission_timestamp, discharge_timestamp )))
-
-                    // console.log(innerWidth)
-                    // console.log(admission_timestamp)
-                    // console.log(discharge_timestamp)
-                    // console.log(test.timestamp)
-
+                    if (!test.y) {
+                        test.y = innerHeight + margin.top
+                    }
                     let annotation = {};
                     annotation.id = test.id;
                     annotation.note = {};
@@ -381,7 +412,7 @@ const draw_everything = (props) => {
             .call(makeAnnotations)
         // .attr('transform', 'translate(100, 100)')
 
-        d3_react_link();
+        d3_react_link(domain_min, domain_max);
     }
 
     //display general controls
@@ -440,8 +471,8 @@ const draw_everything = (props) => {
         ])
         .on("brush", updateChart)
 
-    const x1 = viewport_start ? viewport_start : xScale(admission_timestamp)
-    const x2 = viewport_end ? viewport_end : xScale(discharge_timestamp)
+    const x1 = viewport_start_timestamp ? xScale(viewport_start_timestamp) : xScale(admission_timestamp)
+    const x2 = viewport_end_timestamp ? xScale(viewport_end_timestamp) : xScale(discharge_timestamp)
 
     let brushSelection = navGroup.selectAll('.brush').data([viewport]);
     brushSelection
@@ -456,31 +487,6 @@ const draw_everything = (props) => {
                 x2
             ]);
         });
-
-    //drag events
-    const annotationDragHandler = d3.drag()
-        .on('end', function() { console.log('drag') })
-
-    // annotationDragHandler(svg.selectAll('.handle'));
-    let aa = svg.selectAll('.handle');
-    // let aa = svg.getElemetsByClassName('handle')
-    // console.log(aa)
-    // aa.addEventListener('mouseup', e => console.log('mouseUP'))
-
-    // const a = document.getElementsByClassName('handle');
-    // const a = document.getElementById('graph')
-    // a.addEventListener('mouseup', e => console.log('mouseUP'))
-
-
-    // console.log(document.querySelectorAll('.annotation'))
-
-    // document.querySelectorAll('.annotation').forEach(item => {
-    //     item.addEventListener('mouseover', event => {
-    //         // if (event.target.classList.contains('dragging')) {
-    //             console.log(event.target.classList)
-    //         // }
-    //     })
-    // })
 
 }
 

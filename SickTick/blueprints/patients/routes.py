@@ -31,7 +31,8 @@ def get_patient_data(patient_id):
                     'general_info': patient_data.general_info,
                     'temperature': patient_data.temperature,
                     'antibiotics': patient_data.antibiotics,
-                    'additional_tests': patient_data.additional_tests
+                    'additional_tests': patient_data.additional_tests,
+                    #'cbc': patient_data.cbc
                    })
 
     # patients_list = Patient.query.all()

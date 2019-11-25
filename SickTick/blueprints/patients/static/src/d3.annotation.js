@@ -1606,7 +1606,6 @@
         }, {
             key: "dragended",
             value: function dragended() {
-                console.log(this.annotation._x)
             ///////////update annotation coordinates info in react/////////////
                 document.getElementById('annotation-id').value = this.annotation.id;
                 document.getElementById('annotation-y').value = this.annotation._y;

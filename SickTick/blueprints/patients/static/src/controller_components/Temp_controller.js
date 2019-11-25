@@ -14,7 +14,7 @@ class Temp_controller extends React.Component {
                 <div className="panel-header">
                     <h6>Temperature</h6> 
                     <button className="toggle-button panel-header-btn" onClick = {this.onPanelToggle}>
-                        {this.state.open? 'hide' : 'show'}
+                        {this.state.open ? 'hide' : 'show'}
                     </button>
                 </div> 
                 <div className={"panel-content" + (!this.state.open? " hidden" : "")} >

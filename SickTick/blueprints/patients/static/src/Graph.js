@@ -12,7 +12,7 @@ class Graph extends React.Component {
 
     render() {
         return (
-            <div className='graph' />
+            <div className='graph'/>
         )
     }
 }
