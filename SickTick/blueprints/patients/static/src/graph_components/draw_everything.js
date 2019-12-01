@@ -28,7 +28,7 @@ const getValidDate = date_string => {
 
 
 const draw_everything = (props) => {
-    // console.log(props)
+    console.log(props)
     const { patient, drawTemp, drawAb, viewport_start_timestamp, viewport_end_timestamp, additional_tests, draw_annotations } = props.graphData;
 
     const add_tests_keys = Object.keys(props.graphData.patient.additional_tests)
@@ -236,7 +236,7 @@ const draw_everything = (props) => {
     }
 
     //////// display temperature block
-    if (drawTemp) {
+    if (drawTemp.curve) {
         yTempAxis
             .attr('transform', `translate(${margin.left}, ${margin.top})`)
             .call(d3.axisLeft(yTempScale).tickFormat(tempFormat))
@@ -254,27 +254,29 @@ const draw_everything = (props) => {
                 .style('stroke', 'black')
                 .style('stroke-width', '1');
         })
-
-        chart.selectAll(".dot")
-            .data(temp)
-            .enter().append("circle")
-            .attr("class", "dot")
-            .attr('id', (d, i) => (i))
-            .attr("cx", d => xScale(d.timestamp))
-            .attr("cy", d => yTempScale(d.temp))
-            .attr("r", 3);
-
-        chart.selectAll(".temptext")
-            .data(temp)
-            .enter().append("text")
-            .attr('class', 'temptext')
-            .text(d => parseFloat(d.temp).toFixed(1))
-            .attr("text-anchor", "middle")
-            .attr("x", d => tempLabelX(d))
-            .attr("y", d => tempLabelY(d))
-            .attr("font-family", "sans-serif")
-            .attr("font-size", "11px")
-            .attr("fill", "black");
+        if (drawTemp.dots) {
+            chart.selectAll(".dot")
+                .data(temp)
+                .enter().append("circle")
+                .attr("class", "dot")
+                .attr('id', (d, i) => (i))
+                .attr("cx", d => xScale(d.timestamp))
+                .attr("cy", d => yTempScale(d.temp))
+                .attr("r", 3);
+        }
+        if (drawTemp.labels) {
+            chart.selectAll(".temptext")
+                .data(temp)
+                .enter().append("text")
+                .attr('class', 'temptext')
+                .text(d => parseFloat(d.temp).toFixed(1))
+                .attr("text-anchor", "middle")
+                .attr("x", d => tempLabelX(d))
+                .attr("y", d => tempLabelY(d))
+                .attr("font-family", "sans-serif")
+                .attr("font-size", "11px")
+                .attr("fill", "black");
+        }
     }
 
     function updateChart() {
@@ -339,7 +341,7 @@ const draw_everything = (props) => {
                 .style('fill', ab => abColor(ab));
         }
 
-        if (drawTemp) {
+        if (drawTemp.curve) {
             //get temperature data brushed by user
             const selected_temp = []
             for (let i = 0; i < temp.length; i++) {
@@ -364,12 +366,16 @@ const draw_everything = (props) => {
                 .style('text-anchor', 'middle');
 
             // redraw temperature curve, dots and text
-            chart.selectAll(".dot")
-                .attr("cx", d => xScale(d.timestamp))
-                .attr("cy", d => yTempScale(d.temp))
-            chart.selectAll(".temptext")
-                .attr("x", d => tempLabelX(d))
-                .attr("y", d => tempLabelY(d))
+            if (drawTemp.dots) {
+                chart.selectAll(".dot")
+                    .attr("cx", d => xScale(d.timestamp))
+                    .attr("cy", d => yTempScale(d.temp))
+            }
+            if (drawTemp.labels) {
+                chart.selectAll(".temptext")
+                    .attr("x", d => tempLabelX(d))
+                    .attr("y", d => tempLabelY(d))
+            }
             tempChunks.forEach((chunk) => {
                 chart.selectAll(`.temp_curve_${chunk[0].timestamp}`)
                     .attr('d', tempPathGen(chunk))

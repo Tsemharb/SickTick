@@ -140,8 +140,10 @@ small {
     border: none;
 }
 
-.abList {
+.panel-parameters{
     margin-left: 25px;
+}
+.two-cols {
     column-count: 2;
 }
 

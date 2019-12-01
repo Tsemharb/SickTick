@@ -21,7 +21,7 @@ class Ab_controller extends React.Component {
                 <div className={"panel-content" + (!this.state.open? " hidden" : "")} > 
                     <input type="checkbox" checked={this.props.drawAb ? "checked" : null} 
                                      onChange={this.props.toggleAb}/> show antibiotics
-                    {this.props.drawAb ? <div className="abList">
+                    {this.props.drawAb ? <div className="panel-parameters two-cols">
                                        {antibiotics.map(ab =>{
                                          if(!renderedAb.includes(ab.name)){
                                             renderedAb.push(ab.name);

@@ -3,6 +3,7 @@ import Graph from './Graph.js'
 import General_info from './General_info.js'
 import Temp_controller from './controller_components/Temp_controller.js'
 import Ab_controller from './controller_components/Ab_controller.js'
+import CBC_controller from './controller_components/CBC_controller.js'
 import Add_tests_controller from './controller_components/Add_tests_controller.js'
 import path from './path.js'
 
@@ -27,8 +28,9 @@ class App extends React.Component {
                         isLoaded: true,
                         drawGraph: false,
                         update: true,
-                        drawTemp: true,
+                        drawTemp: { curve: true, dots: true, labels: true },
                         drawAb: true,
+                        drawCBC: true,
                         draw_annotations: true,
                         patient: data
                     });
@@ -40,7 +42,20 @@ class App extends React.Component {
         return nextState.update;
     }
 
-    toggleTemp = () => this.setState({ drawTemp: !this.state.drawTemp, update: true })
+    toggleTemp = e => {
+        let drawTemp = this.state.drawTemp;
+        switch (e.target.id) {
+            case "showTemp":
+                drawTemp.curve = !drawTemp.curve;
+                break;
+            case "showDots":
+                drawTemp.dots = !drawTemp.dots;
+                break;
+            case "showLabels":
+                drawTemp.labels = !drawTemp.labels;
+        }
+        this.setState({ drawTemp: drawTemp, update: true })
+    }
     toggleAb = () => this.setState({ drawAb: !this.state.drawAb, update: true })
     toggleSingleAb = e => {
         let data = this.state.patient;
@@ -51,6 +66,8 @@ class App extends React.Component {
         }
         this.setState({ patient: data, update: true })
     }
+    toggleCBC = () => this.setState({ drawCBC: !this.state.drawCBC, update: true })
+    toggleCBCComponent = () => console.log('toggle')
 
     // edit additional test result
     updateAdditionalTestResult = (id, updatedResult) => {
@@ -138,6 +155,10 @@ class App extends React.Component {
                                     <Temp_controller temp = {patient.temperature}
                                                      drawTemp = {this.state.drawTemp}
                                                      toggleTemp = {this.toggleTemp} />
+                                    {/*<CBC_controller cbc_results = {patient.cbc}
+                                                    drawCBC = {this.state.drawCBC}
+                                                    toggleCBC = {this.toggleCBC}
+                                                    toggleCBCComponent = {this.toggleCBCComponent} />*/}
                                     <Ab_controller antibiotics = {patient.antibiotics}
                                                    drawAb = {this.state.drawAb}
                                                    toggleAb = {this.toggleAb}

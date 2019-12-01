@@ -25,7 +25,7 @@ var getValidDate = function getValidDate(date_string) {
 };
 
 var draw_everything = function draw_everything(props) {
-    // console.log(props)
+    console.log(props);
     var _props$graphData = props.graphData,
         patient = _props$graphData.patient,
         drawTemp = _props$graphData.drawTemp,
@@ -216,28 +216,30 @@ var draw_everything = function draw_everything(props) {
     }
 
     //////// display temperature block
-    if (drawTemp) {
+    if (drawTemp.curve) {
         yTempAxis.attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')').call(d3.axisLeft(yTempScale).tickFormat(tempFormat)).selectAll('text').attr('transform', 'rotate(-90)').attr('dy', '-.8em').attr('dx', '1em').style('text-anchor', 'middle');
 
         tempChunks.forEach(function (chunk) {
             chart.append('path').attr('class', 'temp_curve_' + chunk[0].timestamp).attr('d', tempPathGen(chunk)).style('fill', 'none').style('stroke', 'black').style('stroke-width', '1');
         });
-
-        chart.selectAll(".dot").data(temp).enter().append("circle").attr("class", "dot").attr('id', function (d, i) {
-            return i;
-        }).attr("cx", function (d) {
-            return xScale(d.timestamp);
-        }).attr("cy", function (d) {
-            return yTempScale(d.temp);
-        }).attr("r", 3);
-
-        chart.selectAll(".temptext").data(temp).enter().append("text").attr('class', 'temptext').text(function (d) {
-            return parseFloat(d.temp).toFixed(1);
-        }).attr("text-anchor", "middle").attr("x", function (d) {
-            return tempLabelX(d);
-        }).attr("y", function (d) {
-            return tempLabelY(d);
-        }).attr("font-family", "sans-serif").attr("font-size", "11px").attr("fill", "black");
+        if (drawTemp.dots) {
+            chart.selectAll(".dot").data(temp).enter().append("circle").attr("class", "dot").attr('id', function (d, i) {
+                return i;
+            }).attr("cx", function (d) {
+                return xScale(d.timestamp);
+            }).attr("cy", function (d) {
+                return yTempScale(d.temp);
+            }).attr("r", 3);
+        }
+        if (drawTemp.labels) {
+            chart.selectAll(".temptext").data(temp).enter().append("text").attr('class', 'temptext').text(function (d) {
+                return parseFloat(d.temp).toFixed(1);
+            }).attr("text-anchor", "middle").attr("x", function (d) {
+                return tempLabelX(d);
+            }).attr("y", function (d) {
+                return tempLabelY(d);
+            }).attr("font-family", "sans-serif").attr("font-size", "11px").attr("fill", "black");
+        }
     }
 
     function updateChart() {
@@ -292,7 +294,7 @@ var draw_everything = function draw_everything(props) {
             });
         }
 
-        if (drawTemp) {
+        if (drawTemp.curve) {
             //get temperature data brushed by user
             var selected_temp = [];
             for (var _i4 = 0; _i4 < temp.length; _i4++) {
@@ -311,16 +313,20 @@ var draw_everything = function draw_everything(props) {
             svg.select('.yTempAxis').call(d3.axisLeft(yTempScale).tickFormat(tempFormat)).selectAll('text').attr('transform', 'rotate(-90)').attr('dy', '-.8em').attr('dx', '1em').style('text-anchor', 'middle');
 
             // redraw temperature curve, dots and text
-            chart.selectAll(".dot").attr("cx", function (d) {
-                return xScale(d.timestamp);
-            }).attr("cy", function (d) {
-                return yTempScale(d.temp);
-            });
-            chart.selectAll(".temptext").attr("x", function (d) {
-                return tempLabelX(d);
-            }).attr("y", function (d) {
-                return tempLabelY(d);
-            });
+            if (drawTemp.dots) {
+                chart.selectAll(".dot").attr("cx", function (d) {
+                    return xScale(d.timestamp);
+                }).attr("cy", function (d) {
+                    return yTempScale(d.temp);
+                });
+            }
+            if (drawTemp.labels) {
+                chart.selectAll(".temptext").attr("x", function (d) {
+                    return tempLabelX(d);
+                }).attr("y", function (d) {
+                    return tempLabelY(d);
+                });
+            }
             tempChunks.forEach(function (chunk) {
                 chart.selectAll('.temp_curve_' + chunk[0].timestamp).attr('d', tempPathGen(chunk));
             });

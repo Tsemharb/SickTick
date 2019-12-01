@@ -6,13 +6,13 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Ab_controller = function (_React$Component) {
-    _inherits(Ab_controller, _React$Component);
+var CBC_controller = function (_React$Component) {
+    _inherits(CBC_controller, _React$Component);
 
-    function Ab_controller() {
-        _classCallCheck(this, Ab_controller);
+    function CBC_controller() {
+        _classCallCheck(this, CBC_controller);
 
-        var _this = _possibleConstructorReturn(this, (Ab_controller.__proto__ || Object.getPrototypeOf(Ab_controller)).call(this));
+        var _this = _possibleConstructorReturn(this, (CBC_controller.__proto__ || Object.getPrototypeOf(CBC_controller)).call(this));
 
         _this.onPanelToggle = function () {
             return _this.setState({ open: !_this.state.open });
@@ -22,13 +22,14 @@ var Ab_controller = function (_React$Component) {
         return _this;
     }
 
-    _createClass(Ab_controller, [{
+    _createClass(CBC_controller, [{
         key: "render",
         value: function render() {
             var _this2 = this;
 
-            var antibiotics = this.props.antibiotics;
-            var renderedAb = [];
+            // console.log(this.props)
+            var cbcResults = this.props.cbc_results.data;
+            var cbcComponentsKeys = Object.keys(cbcResults);
             return React.createElement(
                 "div",
                 { className: "panel" },
@@ -38,7 +39,7 @@ var Ab_controller = function (_React$Component) {
                     React.createElement(
                         "h6",
                         null,
-                        "Antibiotics"
+                        "Complete Blood Count"
                     ),
                     React.createElement(
                         "button",
@@ -49,27 +50,24 @@ var Ab_controller = function (_React$Component) {
                 React.createElement(
                     "div",
                     { className: "panel-content" + (!this.state.open ? " hidden" : "") },
-                    React.createElement("input", { type: "checkbox", checked: this.props.drawAb ? "checked" : null,
-                        onChange: this.props.toggleAb }),
-                    " show antibiotics",
-                    this.props.drawAb ? React.createElement(
+                    React.createElement("input", { type: "checkbox", checked: this.props.drawCBC ? "checked" : null,
+                        onChange: this.props.toggleCBC }),
+                    " show CBC",
+                    this.props.drawCBC ? React.createElement(
                         "div",
                         { className: "panel-parameters two-cols" },
-                        antibiotics.map(function (ab) {
-                            if (!renderedAb.includes(ab.name)) {
-                                renderedAb.push(ab.name);
-                                return React.createElement(
-                                    "div",
+                        cbcComponentsKeys.map(function (key) {
+                            return React.createElement(
+                                "div",
+                                null,
+                                React.createElement("input", { id: key, type: "checkbox", checked: "checked",
+                                    onChange: _this2.props.toggleCBCComponent }),
+                                React.createElement(
+                                    "span",
                                     null,
-                                    React.createElement("input", { id: ab.name, type: "checkbox", checked: ab.draw ? "checked" : null,
-                                        onChange: _this2.props.toggleSingleAb }),
-                                    React.createElement(
-                                        "span",
-                                        null,
-                                        ab.name
-                                    )
-                                );
-                            }
+                                    key
+                                )
+                            );
                         })
                     ) : null
                 )
@@ -77,7 +75,7 @@ var Ab_controller = function (_React$Component) {
         }
     }]);
 
-    return Ab_controller;
+    return CBC_controller;
 }(React.Component);
 
-export default Ab_controller;
+export default CBC_controller;

@@ -46,9 +46,27 @@ var Temp_controller = function (_React$Component) {
                 React.createElement(
                     "div",
                     { className: "panel-content" + (!this.state.open ? " hidden" : "") },
-                    React.createElement("input", { id: "showTemp", type: "checkbox", checked: this.props.drawTemp ? "checked" : null,
+                    React.createElement("input", { id: "showTemp", type: "checkbox", checked: this.props.drawTemp.curve ? "checked" : null,
                         onChange: this.props.toggleTemp }),
-                    " show temperature"
+                    " show temperature",
+                    this.props.drawTemp.curve ? React.createElement(
+                        "div",
+                        { className: "panel-parameters" },
+                        React.createElement(
+                            "div",
+                            null,
+                            React.createElement("input", { id: "showDots", type: "checkbox", checked: this.props.drawTemp.dots ? "checked" : null,
+                                onChange: this.props.toggleTemp }),
+                            " temperature dots"
+                        ),
+                        React.createElement(
+                            "div",
+                            null,
+                            React.createElement("input", { id: "showLabels", type: "checkbox", checked: this.props.drawTemp.labels ? "checked" : null,
+                                onChange: this.props.toggleTemp }),
+                            " temperature labels"
+                        )
+                    ) : null
                 )
             );
         }

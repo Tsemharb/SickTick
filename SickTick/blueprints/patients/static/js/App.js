@@ -13,6 +13,7 @@ import Graph from './Graph.js';
 import General_info from './General_info.js';
 import Temp_controller from './controller_components/Temp_controller.js';
 import Ab_controller from './controller_components/Ab_controller.js';
+import CBC_controller from './controller_components/CBC_controller.js';
 import Add_tests_controller from './controller_components/Add_tests_controller.js';
 import path from './path.js';
 
@@ -24,8 +25,19 @@ var App = function (_React$Component) {
 
         var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
-        _this.toggleTemp = function () {
-            return _this.setState({ drawTemp: !_this.state.drawTemp, update: true });
+        _this.toggleTemp = function (e) {
+            var drawTemp = _this.state.drawTemp;
+            switch (e.target.id) {
+                case "showTemp":
+                    drawTemp.curve = !drawTemp.curve;
+                    break;
+                case "showDots":
+                    drawTemp.dots = !drawTemp.dots;
+                    break;
+                case "showLabels":
+                    drawTemp.labels = !drawTemp.labels;
+            }
+            _this.setState({ drawTemp: drawTemp, update: true });
         };
 
         _this.toggleAb = function () {
@@ -40,6 +52,14 @@ var App = function (_React$Component) {
                 }
             }
             _this.setState({ patient: data, update: true });
+        };
+
+        _this.toggleCBC = function () {
+            return _this.setState({ drawCBC: !_this.state.drawCBC, update: true });
+        };
+
+        _this.toggleCBCComponent = function () {
+            return console.log('toggle');
         };
 
         _this.updateAdditionalTestResult = function (id, updatedResult) {
@@ -193,8 +213,9 @@ var App = function (_React$Component) {
                         isLoaded: true,
                         drawGraph: false,
                         update: true,
-                        drawTemp: true,
+                        drawTemp: { curve: true, dots: true, labels: true },
                         drawAb: true,
+                        drawCBC: true,
                         draw_annotations: true,
                         patient: data
                     });

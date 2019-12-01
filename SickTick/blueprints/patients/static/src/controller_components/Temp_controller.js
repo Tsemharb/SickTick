@@ -18,8 +18,18 @@ class Temp_controller extends React.Component {
                     </button>
                 </div> 
                 <div className={"panel-content" + (!this.state.open? " hidden" : "")} >
-                  <input id="showTemp" type="checkbox" checked={this.props.drawTemp ? "checked" : null} 
+                  <input id="showTemp" type="checkbox" checked={this.props.drawTemp.curve ? "checked" : null} 
                                        onChange={this.props.toggleTemp}/> show temperature
+                  {this.props.drawTemp.curve ? <div className="panel-parameters">
+                                                 <div>
+                                                    <input id="showDots" type="checkbox" checked={this.props.drawTemp.dots ? "checked" : null}
+                                                           onChange={this.props.toggleTemp}/> temperature dots
+                                                 </div>
+                                                 <div>
+                                                    <input id="showLabels" type="checkbox" checked={this.props.drawTemp.labels ? "checked" : null}
+                                                           onChange={this.props.toggleTemp}/> temperature labels</div>
+                                               </div> 
+                                            : null}
                 </div>
             </div>
         )

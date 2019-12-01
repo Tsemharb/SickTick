@@ -37,7 +37,11 @@ class Patient_parser:
         self.temperature = self.get_temperature(self.general_info['admission_date'][-4:], self.general_info['discharge_date'][-4:])
         self.antibiotics = self.get_antibiotics(self.tables['antibiotics'])
         self.additional_tests = self.get_additional_tests(self.tables['additional_tests'])
-        # self.cbc = self.get_tests(self.tables['cbc'], self.general_info['admission_date'][-4:], self.general_info['discharge_date'][-4:])
+        try:
+            self.cbc = self.get_tests(self.tables['cbc'], self.general_info['admission_date'][-4:], self.general_info['discharge_date'][-4:])
+        except:
+            self.is_error = True
+            self.errors.append('Something is wrong with complete blood count')
 
     @staticmethod
     def get_timestamp(date_str):
@@ -70,12 +74,12 @@ class Patient_parser:
     def get_general_info(self):
         try:
             gen_info_mapping = {'ФИО': 'name',
-                            'Дата рождения': 'birthdate',
-                            'Адрес домашний': 'address',
-                            'Отделение': 'department',
-                            'Дата госпитализации': 'admission_date',
-                            'Дата выписки': 'discharge_date',
-                            'Клинический диагноз': 'diagnosis'}
+                                'Дата рождения': 'birthdate',
+                                'Адрес домашний': 'address',
+                                'Отделение': 'department',
+                                'Дата госпитализации': 'admission_date',
+                                'Дата выписки': 'discharge_date',
+                                'Клинический диагноз': 'diagnosis'}
             general_info = {}
             the_table = self.tables['general_info']
             for row in the_table.rows:
@@ -100,21 +104,24 @@ class Patient_parser:
             rows_num = len(the_table.rows)
             cells_num = len(the_table.rows[1].cells)
             temp_id = 0
+
             for row in range(1, rows_num, 3):
-                for cell in range(0, cells_num):
-                    date = the_table.rows[row].cells[cell].text
-                    if date != '':
-                        if not same_year and month > int(date[-2:]):
+                dates = [cell.text for cell in the_table.rows[row].cells]
+                results = [cell.text for cell in the_table.rows[row+1].cells]
+                for i in range (len(dates)):
+                    if dates[i] != '':
+                        if not same_year and month > int(dates[i][-2:]):
                             year = discharge_year
-                            month = int(date[-2:])
+                            month = int(dates[i][-2:])
                         else:
-                            month = int(date[-2:])
-                        temperature[temp_id] = {'date':date + '.' + year,
+                            month = int(dates[i][-2:])
+                        temperature[temp_id] = {'date': dates[i] + '.' + year,
                                                 'id': temp_id,
-                                                'temp': the_table.rows[row+1].cells[cell].text.replace(',', '.')}
-                        temp_id += 1
+                                                'temp': results[i].replace(',', '.')}
+                        temp_id+=1
                     else:
                         break
+
             # add count for each unique date
             counts = {}
             dates = [temperature[i]['date'] for i in range(len(temperature))]
@@ -128,7 +135,7 @@ class Patient_parser:
                 temperature[i]['timestamp'] = timestamp;
         except:
             self.is_error = True
-            self.errors.append('Something is wrong with temperature')
+            self.errors.append('Something is wrong with the temperature data')
             return
         return temperature
 
@@ -197,65 +204,125 @@ class Patient_parser:
         return additional_tests
 
 
+    # def get_tests(self, table, admission_year, discharge_year):
+    #     same_year = admission_year == discharge_year
+    #     month = int(self.general_info['admission_date'][3:5])
+    #     year = admission_year
+    #     units = {}
+    #     data = {}
+    #     referent_col_name =''
+    #     rows_num = len(table.rows)
+    #     cells_num = len(table.rows[1].cells)
+    #     blank_rows_ind = []
+    #     is_referent_col = False  #referent column flag ("ед.измер", "Норма")
+
+    #     #get referent name ("ед.измер", "Норма")
+    #     if table.rows[1].cells[1].text == 'ед.изм' or table.rows[1].cells[1].text == 'Норма':
+    #         referent_col_name = table.rows[1].cells[1].text
+    #         is_referent_col = True
+
+    #     #get blank rows
+    #     for i in range(rows_num):
+    #         row = table.rows[i]
+    #         if (row.cells[0].text == '' and row.cells[1].text == ''):
+    #             blank_rows_ind.append(i)
+    #     blank_rows_ind.append(len(table.rows))
+
+    #     #get sample units
+    #     if is_referent_col:
+    #         for row in range(1, rows_num):
+    #             unit_name = table.rows[row].cells[0].text
+    #             if unit_name != '':
+    #                 units[table.rows[row].cells[0].text] = table.rows[row].cells[1].text
+    #             else:
+    #                 continue
+
+    #     #get samples results
+    #     start_row = 2
+    #     id = 0
+    #     start_col = 2 if is_referent_col else 1
+    #     for blank in blank_rows_ind:
+    #         dates = []
+    #         for cell in range (start_col, cells_num):
+    #             date = table.rows[start_row - 1].cells[cell].text.strip()
+    #         # add year to yearless date
+    #             if date != '':
+    #                 if not same_year and month > int(date[-2:]):
+    #                     year = discharge_year
+    #                     month = int(date[-2:])
+    #                 else:
+    #                     month = int(date[-2:])
+    #             else:
+    #                 continue
+    #             date = date + '.' + year
+    #             dates.append(date)
+
+    #         for row in range (start_row, blank):
+    #             observation_name = table.rows[row].cells[0].text.strip()
+    #             observation_series = []
+    #             if observation_name not in data:
+    #                 data[observation_name] = []
+                
+    #             for cell in range(start_col, cells_num):
+    #                 observation_result = table.rows[row].cells[cell].text.strip()
+    #                 if observation_result != '':
+    #                     date = (dates[cell - start_col])
+    #                     data[observation_name].append({'date': date, 'result': observation_result, 'timestamp': self.get_timestamp(date)})
+    #                 else: 
+    #                     continue
+    #         start_row = blank + 2
+    #     return{'referent_col_name': referent_col_name, 'units': units, 'data': data}
+
+
     def get_tests(self, table, admission_year, discharge_year):
         same_year = admission_year == discharge_year
         month = int(self.general_info['admission_date'][3:5])
         year = admission_year
         units = {}
         data = {}
-        referent_col_name =''
+        blank_rows_ind = []
+        referent_col_name = ''
         rows_num = len(table.rows)
         cells_num = len(table.rows[1].cells)
-        blank_rows_ind = []
         is_referent_col = False  #referent column flag ("ед.измер", "Норма")
 
-        #get referent name ("ед.измер", "Норма")
+        # get referent name ("ед.измер", "Норма")
         if table.rows[1].cells[1].text == 'ед.изм' or table.rows[1].cells[1].text == 'Норма':
             referent_col_name = table.rows[1].cells[1].text
             is_referent_col = True
 
-        #get blank rows
-        for i in range(rows_num):
-            row = table.rows[i]
-            if (row.cells[0].text == '' and row.cells[1].text == ''):
+        # get sample units and blank rows
+        for i in range(1, rows_num):        
+            s = [cell.text for cell in table.rows[i].cells]
+            # get sample units
+            if s[0] != '':
+                units[s[0]] = s[1] if is_referent_col else ''
+                data[s[0]] = []
+            # get blank rows
+            elif s[1] == '':
                 blank_rows_ind.append(i)
-        blank_rows_ind.append(len(table.rows))
+        blank_rows_ind.append(rows_num)
 
-        #get sample units
-        if is_referent_col:
-            for row in range(1, rows_num):
-                unit_name = table.rows[row].cells[0].text
-                if unit_name != '':
-                    units[table.rows[row].cells[0].text] = table.rows[row].cells[1].text
-                else:
-                    continue
-
-        # get samples results
-        start_row = 0
-        start_col = 2 if is_referent_col else 1
+        #get samples results
+        start_row = 2
+        start_col = 1 if is_referent_col else 0
         for blank in blank_rows_ind:
-            for cell in range(start_col, cells_num):
-                date = table.rows[start_row+1].cells[cell].text.strip()
-        # add year to yearless date
-                if date != '':
-                    if not same_year and month > int(date[-2:]):
-                        year = discharge_year
-                        month = int(date[-2:])
-                    else:
-                        month = int(date[-2:])
-                else:
-                    continue
-                date = date + '.' + year
-                test = {}
-                for row in range (start_row+2, blank):
-                    observation = table.rows[row].cells[cell].text.strip()
-                    if observation != '':
-                        observation_name = table.rows[row].cells[0].text.strip()
-                        test[observation_name] = observation
-                        test['date'] = date
-                        test['timestamp'] = self.get_timestamp(date)
-                    else:
-                        continue
-                data[cell] = test
-            start_row = blank
+        # get tests dates
+            dates = [cell.text.strip() for cell in table.rows[start_row - 1].cells if cell.text.strip() != ''][start_col:]
+        # get samples results
+            for row_num in range(start_row, blank):
+                row = [cell.text.strip() for cell in table.rows[row_num].cells]
+                tests = []
+                for i in range(len(dates)):
+                    if row[i + start_col + 1] != '':
+                        if not same_year and month > int(dates[i][-2:]):
+                            year = discharge_year
+                            month = int(dates[i][-2:])
+                        else:
+                            month = int(dates[i][-2:])
+                        tests.append({'result': row[i + start_col + 1]})#{'date': dates[i] + '.' + year, 'result': row[i + start_col + 1], 'timestamp': self.get_timestamp(dates[i] + '.' + year)})
+                data[row[0]] = data[row[0]] + tests
+            start_row = blank + 2
         return{'referent_col_name': referent_col_name, 'units': units, 'data': data}
+
+
