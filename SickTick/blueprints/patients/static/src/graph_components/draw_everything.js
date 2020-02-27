@@ -28,8 +28,9 @@ const getValidDate = date_string => {
 
 
 const draw_everything = (props) => {
-    console.log(props)
-    const { patient, drawTemp, drawAb, viewport_start_timestamp, viewport_end_timestamp, additional_tests, draw_annotations } = props.graphData;
+    // console.log(props)
+    const { patient, drawTemp, drawAb, adjustAbScope, viewport_start_timestamp, viewport_end_timestamp, 
+            additional_tests, draw_annotations, unique_antibiotics_order } = props.graphData;
 
     const add_tests_keys = Object.keys(props.graphData.patient.additional_tests)
     const admission_timestamp = props.graphData.patient.general_info.admission_timestamp;
@@ -98,10 +99,13 @@ const draw_everything = (props) => {
         }
     }
 
+    //get antibiotics selected to be drawn while preserving theirs order
     let antibiotics = []
-    for (let i = 0; i < patient.antibiotics.length; i++) {
-        if (patient.antibiotics[i].draw) {
-            antibiotics.push(patient.antibiotics[i])
+    for (let j = 0; j < unique_antibiotics_order.length; j++){
+        for (let i = 0; i < patient.antibiotics.length; i++) {
+            if (patient.antibiotics[i].draw && unique_antibiotics_order[j] === patient.antibiotics[i].name) {
+                antibiotics.push(patient.antibiotics[i])
+            }
         }
     }
     const ab_set = Array.from(new Set(antibiotics.map(ab => ab.name)));
@@ -191,11 +195,17 @@ const draw_everything = (props) => {
         }
     }
     const abColor = ab => ab.color;
-    const abFormat = ab => ab.toUpperCase().substring(0, 3);
+    const abFormat = ab => {
+        for (let i = 0; i < antibiotics.length; i++) {
+            if (antibiotics[i].name === ab) {
+                return antibiotics[i].abbrev;
+            }
+        }
+    }//ab.toUpperCase().substring(0, 3);
 
     const yAbScale = d3.scaleBand()
         .domain(antibiotics.map(yAbLabel))
-        .range([0, innerHeight])
+        .range([0, innerHeight]);
     const yAbAxis = d3.axisLeft(yAbScale);
     if (drawAb) {
         // append yAbAxis
@@ -252,7 +262,8 @@ const draw_everything = (props) => {
                 .attr('d', tempPathGen(chunk))
                 .style('fill', 'none')
                 .style('stroke', 'black')
-                .style('stroke-width', '1');
+                .style('opacity', 0.5)
+                .style('stroke-width', '2');
         })
         if (drawTemp.dots) {
             chart.selectAll(".dot")
@@ -300,31 +311,35 @@ const draw_everything = (props) => {
         }
         const selected_ab_set = Array.from(new Set(selected_ab.map(ab => ab.name)));
         if (drawAb) {
-            yAbScale.domain(selected_ab.map(yAbLabel));
-            //redraw yAbAxis
-            svg.select('.yAbAxis')
-                .call(yAbAxis.tickFormat(abFormat))
-                .selectAll('text')
-                .attr('x', '0')
-                .attr('transform', 'rotate(-90)')
-                .attr('dy', '-2em')
-                .attr('font-weight', '700')
-                .style('text-anchor', 'middle');
-            d3.selectAll('.yAbAxis .tick line')
-                .remove();
+            if(adjustAbScope){
+                yAbScale.domain(selected_ab.map(yAbLabel));
+                //redraw yAbAxis
+                svg.select('.yAbAxis')
+                    .call(yAbAxis.tickFormat(abFormat))
+                    .selectAll('text')
+                    .attr('x', '0')
+                    .attr('transform', 'rotate(-90)')
+                    .attr('dy', '-2em')
+                    .attr('font-weight', '700')
+                    .style('text-anchor', 'middle');
+                d3.selectAll('.yAbAxis .tick line')
+                    .remove();
+            }
 
             //redraw abColorAxis
-            const abColorLabels = svg.selectAll('.color-label').data(selected_ab_set);
-            abColorLabels.exit().remove();
-            abColorLabels.enter().append('rect')
-                .attr('class', 'color-label')
-                .attr('transform', `translate(${margin.left}, ${margin.top})`)
-                .attr('x', -30)
-                .attr('width', 30);
-            abColorLabels
-                .attr('y', ab => yAbScale(ab))
-                .attr('height', yAbScale.bandwidth())
-                .style('fill', ab => abColorInit(ab))
+            if(adjustAbScope){
+                const abColorLabels = svg.selectAll('.color-label').data(selected_ab_set);
+                abColorLabels.exit().remove();
+                abColorLabels.enter().append('rect')
+                    .attr('class', 'color-label')
+                    .attr('transform', `translate(${margin.left}, ${margin.top})`)
+                    .attr('x', -30)
+                    .attr('width', 30);
+                abColorLabels
+                    .attr('y', ab => yAbScale(ab))
+                    .attr('height', yAbScale.bandwidth())
+                    .style('fill', ab => abColorInit(ab))
+            }
 
             // redraw antibiotics
             const abRender = chart.selectAll('.antibiotic').data(selected_ab);

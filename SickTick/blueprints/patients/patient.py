@@ -3,6 +3,7 @@ from datetime import datetime
 import time
 import docx
 import re
+import json
 # import random
 
 # TODO: check dates by regexp (sometimes additional info presents)
@@ -20,6 +21,10 @@ class Patient_parser:
                           'Микробиологические посевы': 'microbiology',
                           'Этиотропная терапия': 'antibiotics',
                           'Температурный лист': 'temperature'}
+
+# read antibiotics codes from json
+        with open('AB_codes.json', 'rb') as json_file:
+            self.json_codes = json.load(json_file)
 
         self.patient_file_name = self.get_patient_file_name(id)
         self.doc = docx.Document('data/' + self.patient_file_name)
@@ -168,7 +173,10 @@ class Patient_parser:
                     antibiotic['dates'] = {'begin': d[1][:10], 'end': d[3][:10]}
                     antibiotic['timestamps'] = {'begin': self.get_timestamp(d[1][:10]), 'end': self.get_timestamp(d[3][:10])}
                     antibiotic['draw'] = True
-                    # antibiotic['draw'] = random.choice([True, False])
+                    try:
+                        antibiotic['abbrev'] = self.json_codes[ab_name.lower().strip()]['abbrev']
+                    except:
+                        antibiotic['abbrev'] = ab_name[:3].upper()
                     antibiotics.append(antibiotic)
         except:
             self.is_error = True
@@ -320,7 +328,7 @@ class Patient_parser:
                             month = int(dates[i][-2:])
                         else:
                             month = int(dates[i][-2:])
-                        tests.append({'result': row[i + start_col + 1]})#{'date': dates[i] + '.' + year, 'result': row[i + start_col + 1], 'timestamp': self.get_timestamp(dates[i] + '.' + year)})
+                        tests.append({'date': dates[i] + '.' + year, 'result': row[i + start_col + 1], 'timestamp': self.get_timestamp(dates[i] + '.' + year)})
                 data[row[0]] = data[row[0]] + tests
             start_row = blank + 2
         return{'referent_col_name': referent_col_name, 'units': units, 'data': data}

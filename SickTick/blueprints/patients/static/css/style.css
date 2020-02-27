@@ -97,6 +97,42 @@ small {
     margin: 0 15px;
 }
 
+.panel-content h6{
+    text-align: center;
+}
+
+.panel-settings{
+    display: flex;
+    flex-flow: column;
+    margin-bottom: 10px;
+}
+
+.ab-list-wrapper{
+    border: 1px solid black;
+    border-radius: 2px;
+    padding: 15px 0;
+}
+
+.ab-item{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid black;
+    margin: 3px 25px 3px 0;
+    padding: 0 10px;
+    background: ghostwhite;
+}
+
+.ab-item div{
+    display: flex;
+    align-items: center;
+}
+
+.ab-item > input{
+    width: 60px;
+    height: 20px;
+}
+
 .test-group-header {
     display: flex;
     justify-content: space-between;

@@ -17,6 +17,8 @@ import CBC_controller from './controller_components/CBC_controller.js';
 import Add_tests_controller from './controller_components/Add_tests_controller.js';
 import path from './path.js';
 
+var DragDropContext = window.ReactBeautifulDnd.DragDropContext;
+
 var App = function (_React$Component) {
     _inherits(App, _React$Component);
 
@@ -45,6 +47,7 @@ var App = function (_React$Component) {
         };
 
         _this.toggleSingleAb = function (e) {
+            // console.log(this.state.patient.antibiotics);
             var data = _this.state.patient;
             for (var i = 0; i < data.antibiotics.length; i++) {
                 if (data.antibiotics[i].name == e.target.id) {
@@ -52,6 +55,40 @@ var App = function (_React$Component) {
                 }
             }
             _this.setState({ patient: data, update: true });
+        };
+
+        _this.toggleAbScope = function () {
+            return _this.setState({ adjustAbScope: !_this.state.adjustAbScope, update: true });
+        };
+
+        _this.setAbAbbrev = function (e) {
+            var data = _this.state.patient;
+            for (var i = 0; i < data.antibiotics.length; i++) {
+                if (data.antibiotics[i].name == e.target.id) {
+                    data.antibiotics[i].abbrev = e.target.value;
+                }
+            }
+            _this.setState({ patient: data, update: true });
+        };
+
+        _this.onDragEnd = function (result) {
+            var source = result.source,
+                destination = result.destination,
+                draggableId = result.draggableId;
+
+
+            if (!destination) {
+                return;
+            }
+
+            if (destination.droppableId === source.droppableId && destination.index === source.index) {
+                return;
+            }
+
+            var new_order = _this.state.unique_antibiotics_order;
+            new_order.splice(source.index, 1);
+            new_order.splice(destination.index, 0, draggableId);
+            _this.setState({ unique_antibiotics_order: new_order, update: true });
         };
 
         _this.toggleCBC = function () {
@@ -216,8 +253,12 @@ var App = function (_React$Component) {
                         drawTemp: { curve: true, dots: true, labels: true },
                         drawAb: true,
                         drawCBC: true,
+                        adjustAbScope: true,
                         draw_annotations: true,
-                        patient: data
+                        patient: data,
+                        unique_antibiotics_order: Array.from(new Set(data.antibiotics.map(function (item) {
+                            return item.name;
+                        })))
                     });
                 });
             });
@@ -244,7 +285,9 @@ var App = function (_React$Component) {
                 patient = _state.patient,
                 viewport_start_timestamp = _state.viewport_start_timestamp,
                 viewport_end_timestamp = _state.viewport_end_timestamp,
-                draw_annotations = _state.draw_annotations;
+                draw_annotations = _state.draw_annotations,
+                unique_antibiotics_order = _state.unique_antibiotics_order,
+                adjustAbScope = _state.adjustAbScope;
 
 
             if (!isLoaded) {
@@ -278,7 +321,8 @@ var App = function (_React$Component) {
                         React.createElement(
                             'div',
                             { className: 'app__graph' },
-                            React.createElement(Graph, { graphData: { patient: patient, drawTemp: drawTemp, drawAb: drawAb, viewport_start_timestamp: viewport_start_timestamp, viewport_end_timestamp: viewport_end_timestamp, draw_annotations: draw_annotations } })
+                            React.createElement(Graph, { graphData: { patient: patient, drawTemp: drawTemp, drawAb: drawAb, adjustAbScope: adjustAbScope, viewport_start_timestamp: viewport_start_timestamp, viewport_end_timestamp: viewport_end_timestamp,
+                                    draw_annotations: draw_annotations, unique_antibiotics_order: unique_antibiotics_order } })
                         ),
                         React.createElement(
                             'div',
@@ -289,10 +333,22 @@ var App = function (_React$Component) {
                                 React.createElement(Temp_controller, { temp: patient.temperature,
                                     drawTemp: this.state.drawTemp,
                                     toggleTemp: this.toggleTemp }),
-                                React.createElement(Ab_controller, { antibiotics: patient.antibiotics,
-                                    drawAb: this.state.drawAb,
-                                    toggleAb: this.toggleAb,
-                                    toggleSingleAb: this.toggleSingleAb }),
+                                React.createElement(CBC_controller, { cbc_results: patient.cbc,
+                                    drawCBC: this.state.drawCBC,
+                                    toggleCBC: this.toggleCBC,
+                                    toggleCBCComponent: this.toggleCBCComponent }),
+                                React.createElement(
+                                    DragDropContext,
+                                    { onDragEnd: this.onDragEnd },
+                                    React.createElement(Ab_controller, { antibiotics: patient.antibiotics,
+                                        unique_ab_order: this.state.unique_antibiotics_order,
+                                        drawAb: this.state.drawAb,
+                                        adjustAbScope: this.state.adjustAbScope,
+                                        toggleAbScope: this.toggleAbScope,
+                                        toggleAb: this.toggleAb,
+                                        toggleSingleAb: this.toggleSingleAb,
+                                        setAbAbbrev: this.setAbAbbrev })
+                                ),
                                 React.createElement(Add_tests_controller, { additional_tests: patient.additional_tests,
                                     updateAdditionalTestResult: this.updateAdditionalTestResult,
                                     toggleSingleAddTest: this.toggleSingleAddTest })

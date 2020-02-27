@@ -25,15 +25,17 @@ var getValidDate = function getValidDate(date_string) {
 };
 
 var draw_everything = function draw_everything(props) {
-    console.log(props);
+    // console.log(props)
     var _props$graphData = props.graphData,
         patient = _props$graphData.patient,
         drawTemp = _props$graphData.drawTemp,
         drawAb = _props$graphData.drawAb,
+        adjustAbScope = _props$graphData.adjustAbScope,
         viewport_start_timestamp = _props$graphData.viewport_start_timestamp,
         viewport_end_timestamp = _props$graphData.viewport_end_timestamp,
         additional_tests = _props$graphData.additional_tests,
-        draw_annotations = _props$graphData.draw_annotations;
+        draw_annotations = _props$graphData.draw_annotations,
+        unique_antibiotics_order = _props$graphData.unique_antibiotics_order;
 
 
     var add_tests_keys = Object.keys(props.graphData.patient.additional_tests);
@@ -87,10 +89,13 @@ var draw_everything = function draw_everything(props) {
         }
     }
 
+    //get antibiotics selected to be drawn while preserving theirs order
     var antibiotics = [];
-    for (var _i = 0; _i < patient.antibiotics.length; _i++) {
-        if (patient.antibiotics[_i].draw) {
-            antibiotics.push(patient.antibiotics[_i]);
+    for (var j = 0; j < unique_antibiotics_order.length; j++) {
+        for (var _i = 0; _i < patient.antibiotics.length; _i++) {
+            if (patient.antibiotics[_i].draw && unique_antibiotics_order[j] === patient.antibiotics[_i].name) {
+                antibiotics.push(patient.antibiotics[_i]);
+            }
         }
     }
     var ab_set = Array.from(new Set(antibiotics.map(function (ab) {
@@ -186,8 +191,12 @@ var draw_everything = function draw_everything(props) {
         return ab.color;
     };
     var abFormat = function abFormat(ab) {
-        return ab.toUpperCase().substring(0, 3);
-    };
+        for (var _i3 = 0; _i3 < antibiotics.length; _i3++) {
+            if (antibiotics[_i3].name === ab) {
+                return antibiotics[_i3].abbrev;
+            }
+        }
+    }; //ab.toUpperCase().substring(0, 3);
 
     var yAbScale = d3.scaleBand().domain(antibiotics.map(yAbLabel)).range([0, innerHeight]);
     var yAbAxis = d3.axisLeft(yAbScale);
@@ -220,7 +229,7 @@ var draw_everything = function draw_everything(props) {
         yTempAxis.attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')').call(d3.axisLeft(yTempScale).tickFormat(tempFormat)).selectAll('text').attr('transform', 'rotate(-90)').attr('dy', '-.8em').attr('dx', '1em').style('text-anchor', 'middle');
 
         tempChunks.forEach(function (chunk) {
-            chart.append('path').attr('class', 'temp_curve_' + chunk[0].timestamp).attr('d', tempPathGen(chunk)).style('fill', 'none').style('stroke', 'black').style('stroke-width', '1');
+            chart.append('path').attr('class', 'temp_curve_' + chunk[0].timestamp).attr('d', tempPathGen(chunk)).style('fill', 'none').style('stroke', 'black').style('opacity', 0.5).style('stroke-width', '2');
         });
         if (drawTemp.dots) {
             chart.selectAll(".dot").data(temp).enter().append("circle").attr("class", "dot").attr('id', function (d, i) {
@@ -255,29 +264,33 @@ var draw_everything = function draw_everything(props) {
 
         //get antibiotics brushed by user
         var selected_ab = [];
-        for (var _i3 = 0; _i3 < antibiotics.length; _i3++) {
-            if (antibiotics[_i3].timestamps.end >= domain_min && antibiotics[_i3].timestamps.begin <= domain_max) {
-                selected_ab.push(antibiotics[_i3]);
+        for (var _i4 = 0; _i4 < antibiotics.length; _i4++) {
+            if (antibiotics[_i4].timestamps.end >= domain_min && antibiotics[_i4].timestamps.begin <= domain_max) {
+                selected_ab.push(antibiotics[_i4]);
             }
         }
         var selected_ab_set = Array.from(new Set(selected_ab.map(function (ab) {
             return ab.name;
         })));
         if (drawAb) {
-            yAbScale.domain(selected_ab.map(yAbLabel));
-            //redraw yAbAxis
-            svg.select('.yAbAxis').call(yAbAxis.tickFormat(abFormat)).selectAll('text').attr('x', '0').attr('transform', 'rotate(-90)').attr('dy', '-2em').attr('font-weight', '700').style('text-anchor', 'middle');
-            d3.selectAll('.yAbAxis .tick line').remove();
+            if (adjustAbScope) {
+                yAbScale.domain(selected_ab.map(yAbLabel));
+                //redraw yAbAxis
+                svg.select('.yAbAxis').call(yAbAxis.tickFormat(abFormat)).selectAll('text').attr('x', '0').attr('transform', 'rotate(-90)').attr('dy', '-2em').attr('font-weight', '700').style('text-anchor', 'middle');
+                d3.selectAll('.yAbAxis .tick line').remove();
+            }
 
             //redraw abColorAxis
-            var abColorLabels = svg.selectAll('.color-label').data(selected_ab_set);
-            abColorLabels.exit().remove();
-            abColorLabels.enter().append('rect').attr('class', 'color-label').attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')').attr('x', -30).attr('width', 30);
-            abColorLabels.attr('y', function (ab) {
-                return yAbScale(ab);
-            }).attr('height', yAbScale.bandwidth()).style('fill', function (ab) {
-                return abColorInit(ab);
-            });
+            if (adjustAbScope) {
+                var abColorLabels = svg.selectAll('.color-label').data(selected_ab_set);
+                abColorLabels.exit().remove();
+                abColorLabels.enter().append('rect').attr('class', 'color-label').attr('transform', 'translate(' + margin.left + ', ' + margin.top + ')').attr('x', -30).attr('width', 30);
+                abColorLabels.attr('y', function (ab) {
+                    return yAbScale(ab);
+                }).attr('height', yAbScale.bandwidth()).style('fill', function (ab) {
+                    return abColorInit(ab);
+                });
+            }
 
             // redraw antibiotics
             var abRender = chart.selectAll('.antibiotic').data(selected_ab);
@@ -297,9 +310,9 @@ var draw_everything = function draw_everything(props) {
         if (drawTemp.curve) {
             //get temperature data brushed by user
             var selected_temp = [];
-            for (var _i4 = 0; _i4 < temp.length; _i4++) {
-                if (temp[_i4].timestamp >= domain_min && temp[_i4].timestamp <= domain_max) {
-                    selected_temp.push(temp[_i4]['temp']);
+            for (var _i5 = 0; _i5 < temp.length; _i5++) {
+                if (temp[_i5].timestamp >= domain_min && temp[_i5].timestamp <= domain_max) {
+                    selected_temp.push(temp[_i5]['temp']);
                 }
             }
 

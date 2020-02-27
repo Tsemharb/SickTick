@@ -7,6 +7,8 @@ import CBC_controller from './controller_components/CBC_controller.js'
 import Add_tests_controller from './controller_components/Add_tests_controller.js'
 import path from './path.js'
 
+const { DragDropContext } = window.ReactBeautifulDnd;
+
 class App extends React.Component {
     constructor(props) {
         super(props);
@@ -17,6 +19,7 @@ class App extends React.Component {
             patient: {}
         };
     }
+
 
     componentDidMount() {
         let location = window.location.href;
@@ -31,8 +34,10 @@ class App extends React.Component {
                         drawTemp: { curve: true, dots: true, labels: true },
                         drawAb: true,
                         drawCBC: true,
+                        adjustAbScope: true,
                         draw_annotations: true,
-                        patient: data
+                        patient: data,
+                        unique_antibiotics_order: Array.from(new Set(data.antibiotics.map(item => item.name)))
                     });
                 })
             );
@@ -41,6 +46,8 @@ class App extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         return nextState.update;
     }
+
+
 
     toggleTemp = e => {
         let drawTemp = this.state.drawTemp;
@@ -56,8 +63,12 @@ class App extends React.Component {
         }
         this.setState({ drawTemp: drawTemp, update: true })
     }
+
+
     toggleAb = () => this.setState({ drawAb: !this.state.drawAb, update: true })
+
     toggleSingleAb = e => {
+        // console.log(this.state.patient.antibiotics);
         let data = this.state.patient;
         for (let i = 0; i < data.antibiotics.length; i++) {
             if (data.antibiotics[i].name == e.target.id) {
@@ -66,6 +77,40 @@ class App extends React.Component {
         }
         this.setState({ patient: data, update: true })
     }
+
+    toggleAbScope = () => this.setState({ adjustAbScope: !this.state.adjustAbScope, update: true })
+
+    setAbAbbrev = e => {
+        let data = this.state.patient;
+        for (let i = 0; i < data.antibiotics.length; i++) {
+            if (data.antibiotics[i].name == e.target.id) {
+                data.antibiotics[i].abbrev = e.target.value
+            }
+        }
+        this.setState({ patient: data, update: true })
+    }
+
+    onDragEnd = result => {
+        const {source, destination, draggableId} = result;
+
+        if(!destination){
+            return;
+        }
+
+        if(
+            destination.droppableId === source.droppableId && 
+            destination.index === source.index
+          ){
+            return;
+        }
+
+        let new_order = this.state.unique_antibiotics_order;
+        new_order.splice(source.index, 1);
+        new_order.splice(destination.index, 0, draggableId);
+        this.setState({unique_antibiotics_order: new_order, update: true })
+    }
+
+
     toggleCBC = () => this.setState({ drawCBC: !this.state.drawCBC, update: true })
     toggleCBCComponent = () => console.log('toggle')
 
@@ -125,8 +170,10 @@ class App extends React.Component {
         }
     }
 
+
     render() {
-        const { isLoaded, drawGraph, drawTemp, drawAb, patient, viewport_start_timestamp, viewport_end_timestamp, draw_annotations } = this.state;
+        const {isLoaded, drawGraph, drawTemp, drawAb, patient, viewport_start_timestamp, 
+               viewport_end_timestamp, draw_annotations, unique_antibiotics_order, adjustAbScope } = this.state;
 
         if (!isLoaded) {
             return <div> loading... </div>;
@@ -148,21 +195,35 @@ class App extends React.Component {
                   <General_info info={patient}/>
                   <div className='app'>
                     <div className='app__graph'>
-                      <Graph graphData={{patient, drawTemp, drawAb, viewport_start_timestamp, viewport_end_timestamp, draw_annotations}} />
+                      <Graph graphData={{patient, drawTemp, drawAb, adjustAbScope, viewport_start_timestamp, viewport_end_timestamp,
+                                         draw_annotations, unique_antibiotics_order}} />
                     </div>
                     <div className="app__control-panel">
                       {isLoaded ? <div>
                                     <Temp_controller temp = {patient.temperature}
                                                      drawTemp = {this.state.drawTemp}
                                                      toggleTemp = {this.toggleTemp} />
-                                    {/*<CBC_controller cbc_results = {patient.cbc}
+                                    <CBC_controller cbc_results = {patient.cbc}
                                                     drawCBC = {this.state.drawCBC}
                                                     toggleCBC = {this.toggleCBC}
-                                                    toggleCBCComponent = {this.toggleCBCComponent} />*/}
-                                    <Ab_controller antibiotics = {patient.antibiotics}
-                                                   drawAb = {this.state.drawAb}
-                                                   toggleAb = {this.toggleAb}
-                                                   toggleSingleAb = {this.toggleSingleAb} />
+                                                    toggleCBCComponent = {this.toggleCBCComponent} />
+                                    {/*<DragDropContext onDragEnd={this.onDragEnd}>
+                                        {this.state.init_data.columnOrder.map(columnId => {
+                                            const column = this.state.init_data.columns[columnId];
+                                            const tasks = column.taskIds.map(taskId => this.state.init_data.tasks[taskId]);
+                                        return <Column key={column.id} column={column} tasks={tasks} />;
+                                        })}
+                                    </DragDropContext>*/}
+                                    <DragDropContext onDragEnd={this.onDragEnd}>
+                                        <Ab_controller antibiotics = {patient.antibiotics}
+                                                       unique_ab_order = {this.state.unique_antibiotics_order}
+                                                       drawAb = {this.state.drawAb}
+                                                       adjustAbScope = {this.state.adjustAbScope}
+                                                       toggleAbScope = {this.toggleAbScope}
+                                                       toggleAb = {this.toggleAb}
+                                                       toggleSingleAb = {this.toggleSingleAb}
+                                                       setAbAbbrev = {this.setAbAbbrev} />
+                                    </DragDropContext>
                                     <Add_tests_controller additional_tests = {patient.additional_tests}
                                                           updateAdditionalTestResult = {this.updateAdditionalTestResult}
                                                           toggleSingleAddTest = {this.toggleSingleAddTest} />
