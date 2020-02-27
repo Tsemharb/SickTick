@@ -197,6 +197,7 @@ class Patient_parser:
                 test['dy'] = - 60
                 test['draw'] = False
                 test['timestamp'] = self.get_timestamp(test['date'])
+                test['timestamp_init'] = self.get_timestamp(test['date'])
                 test_raw_name = table.rows[r_num].cells[1].text.split(':')[0]
                 test['result'] = table.rows[r_num].cells[1].text.replace(test_raw_name + ':', '').strip()
                 name = test_raw_name.replace(' Заключение', '').replace(' Результат', '')

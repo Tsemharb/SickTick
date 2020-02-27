@@ -61,10 +61,13 @@ class Add_tests_controller extends React.Component {
                         <div className = "test-group">
                           {tests[key].map(test => 
                             <div className="test-info" style={!this.state.test_info_tab_open[key] ? {display: "none"}: null}>
-                                <div> 
-                                    <input id={test.id + "-checkbox"}type="checkbox" checked={test.draw ? "checked" : null} 
-                                           onChange={this.props.toggleSingleAddTest}/>
-                                    <span>{test.date}</span>
+                                <div className="test-info-header">
+                                    <div> 
+                                        <input id={test.id + "-checkbox"}type="checkbox" checked={test.draw ? "checked" : null} 
+                                               onChange={this.props.toggleSingleAddTest}/>
+                                        <span>{test.date}</span>
+                                    </div>
+                                    <button id={test.id + "-reset"} onClick = {this.props.resetInitialTestPosition}> reset </button>
                                 </div>
                                 <textarea id={test.id} class="test-result" onChange={this.handleTextareaChange}>{test.result}</textarea>
                             </div>

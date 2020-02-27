@@ -127,6 +127,21 @@ class App extends React.Component {
         }
     }
 
+    resetInitialTestPosition = e =>{
+        let data = this.state.patient;
+        for (let [key, value] of Object.entries(data.additional_tests)) {
+            for (let i = 0; i < value.length; i++) {
+                if (value[i].id + "-reset" === e.target.id) {
+                    data.additional_tests[key][i].timestamp = data.additional_tests[key][i].timestamp_init;
+                    data.additional_tests[key][i].y = null;
+                    data.additional_tests[key][i].dx = 60;
+                    data.additional_tests[key][i].dy = -60;
+                    this.setState({ patient: data, update: true })
+                }
+            }
+        }
+    }
+
     toggleSingleAddTest = e => {
         let data = this.state.patient;
         for (let [key, value] of Object.entries(data.additional_tests)) {
@@ -207,13 +222,6 @@ class App extends React.Component {
                                                     drawCBC = {this.state.drawCBC}
                                                     toggleCBC = {this.toggleCBC}
                                                     toggleCBCComponent = {this.toggleCBCComponent} />
-                                    {/*<DragDropContext onDragEnd={this.onDragEnd}>
-                                        {this.state.init_data.columnOrder.map(columnId => {
-                                            const column = this.state.init_data.columns[columnId];
-                                            const tasks = column.taskIds.map(taskId => this.state.init_data.tasks[taskId]);
-                                        return <Column key={column.id} column={column} tasks={tasks} />;
-                                        })}
-                                    </DragDropContext>*/}
                                     <DragDropContext onDragEnd={this.onDragEnd}>
                                         <Ab_controller antibiotics = {patient.antibiotics}
                                                        unique_ab_order = {this.state.unique_antibiotics_order}
@@ -226,6 +234,7 @@ class App extends React.Component {
                                     </DragDropContext>
                                     <Add_tests_controller additional_tests = {patient.additional_tests}
                                                           updateAdditionalTestResult = {this.updateAdditionalTestResult}
+                                                          resetInitialTestPosition = {this.resetInitialTestPosition}
                                                           toggleSingleAddTest = {this.toggleSingleAddTest} />
                                   </div>
                                 : null}

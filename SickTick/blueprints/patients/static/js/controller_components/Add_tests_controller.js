@@ -144,13 +144,22 @@ var Add_tests_controller = function (_React$Component) {
                                         { className: "test-info", style: !_this2.state.test_info_tab_open[key] ? { display: "none" } : null },
                                         React.createElement(
                                             "div",
-                                            null,
-                                            React.createElement("input", { id: test.id + "-checkbox", type: "checkbox", checked: test.draw ? "checked" : null,
-                                                onChange: _this2.props.toggleSingleAddTest }),
+                                            { className: "test-info-header" },
                                             React.createElement(
-                                                "span",
+                                                "div",
                                                 null,
-                                                test.date
+                                                React.createElement("input", { id: test.id + "-checkbox", type: "checkbox", checked: test.draw ? "checked" : null,
+                                                    onChange: _this2.props.toggleSingleAddTest }),
+                                                React.createElement(
+                                                    "span",
+                                                    null,
+                                                    test.date
+                                                )
+                                            ),
+                                            React.createElement(
+                                                "button",
+                                                { id: test.id + "-reset", onClick: _this2.props.resetInitialTestPosition },
+                                                " reset "
                                             )
                                         ),
                                         React.createElement(

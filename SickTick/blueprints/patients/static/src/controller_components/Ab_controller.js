@@ -34,49 +34,49 @@ class Ab_controller extends React.Component {
                                        onChange={this.props.toggleAbScope}/> hide AB outside selected scope
                       </span>
                   </div>
-                  <div className="ab-list-wrapper">
-                    <h6> Antibiotics list</h6>
-                      {this.props.drawAb ? 
-                        <Droppable droppableId={'antibiotics'}>
-                          {provided => (
-                            <div className="panel-parameters"
-                                 ref={provided.innerRef} 
-                                 {...provided.droppableProps}
-                                 >
-                                { ab_order.map((next_ab, ind) => {
-                                  // console.log(ab_order);
-                                  let ab = null;
-                                  for (let [key, value] of Object.entries(antibiotics)){
-                                    if (value.name === next_ab){
-                                      ab = value;
-                                      ab.index = ind;
-                                      break;
-                                    }
-                                  };
-                                  return (
-                                  <Draggable key={ab.name+ab.index} draggableId={ab.name} index={ab.index}>
-                                    {provided => (
-                                      <div className="ab-item"
-                                           ref={provided.innerRef}
-                                               {...provided.draggableProps}
-                                               {...provided.dragHandleProps}>
-                                        <div>
-                                          <input id={ab.name} type="checkbox" checked={ab.draw ? "checked" : null}
-                                                 onChange={this.props.toggleSingleAb}/>
-                                          <span> {ab.name} </span>
-                                        </div>
-                                        <input type="text" id={ab.name} value={ab.abbrev}
-                                               onChange={(evt) => this.props.setAbAbbrev(evt)}/>
+                  {this.props.drawAb ? 
+                    <div className="ab-list-wrapper">
+                      <h6> Antibiotics list</h6>
+                      <Droppable droppableId={'antibiotics'}>
+                        {provided => (
+                          <div className="panel-parameters"
+                               ref={provided.innerRef} 
+                               {...provided.droppableProps}
+                               >
+                              { ab_order.map((next_ab, ind) => {
+                                // console.log(ab_order);
+                                let ab = null;
+                                for (let [key, value] of Object.entries(antibiotics)){
+                                  if (value.name === next_ab){
+                                    ab = value;
+                                    ab.index = ind;
+                                    break;
+                                  }
+                                };
+                                return (
+                                <Draggable key={ab.name+ab.index} draggableId={ab.name} index={ab.index}>
+                                  {provided => (
+                                    <div className="ab-item"
+                                         ref={provided.innerRef}
+                                             {...provided.draggableProps}
+                                             {...provided.dragHandleProps}>
+                                      <div>
+                                        <input id={ab.name} type="checkbox" checked={ab.draw ? "checked" : null}
+                                               onChange={this.props.toggleSingleAb}/>
+                                        <span> {ab.name} </span>
                                       </div>
-                                    )}
-                                  </Draggable>)}
-                                )}
-                                {provided.placeholder}
-                            </div>
-                          )}
-                        </Droppable>
-                      : null}
+                                      <input type="text" id={ab.name} value={ab.abbrev}
+                                             onChange={(evt) => this.props.setAbAbbrev(evt)}/>
+                                    </div>
+                                  )}
+                                </Draggable>)}
+                              )}
+                              {provided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
                     </div>
+                  : null}
                 </div>
             </div>
         )

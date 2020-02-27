@@ -78,7 +78,7 @@ var Ab_controller = function (_React$Component) {
                             " hide AB outside selected scope"
                         )
                     ),
-                    React.createElement(
+                    this.props.drawAb ? React.createElement(
                         "div",
                         { className: "ab-list-wrapper" },
                         React.createElement(
@@ -86,7 +86,7 @@ var Ab_controller = function (_React$Component) {
                             null,
                             " Antibiotics list"
                         ),
-                        this.props.drawAb ? React.createElement(
+                        React.createElement(
                             Droppable,
                             { droppableId: 'antibiotics' },
                             function (provided) {
@@ -166,8 +166,8 @@ var Ab_controller = function (_React$Component) {
                                     provided.placeholder
                                 );
                             }
-                        ) : null
-                    )
+                        )
+                    ) : null
                 )
             );
         }

@@ -137,7 +137,7 @@ var App = function (_React$Component) {
             }
         };
 
-        _this.toggleSingleAddTest = function (e) {
+        _this.resetInitialTestPosition = function (e) {
             var data = _this.state.patient;
             var _iteratorNormalCompletion2 = true;
             var _didIteratorError2 = false;
@@ -153,8 +153,11 @@ var App = function (_React$Component) {
                     var value = _ref4[1];
 
                     for (var i = 0; i < value.length; i++) {
-                        if (value[i].id + "-checkbox" === e.target.id) {
-                            data.additional_tests[key][i].draw = e.target.checked;
+                        if (value[i].id + "-reset" === e.target.id) {
+                            data.additional_tests[key][i].timestamp = data.additional_tests[key][i].timestamp_init;
+                            data.additional_tests[key][i].y = null;
+                            data.additional_tests[key][i].dx = 60;
+                            data.additional_tests[key][i].dy = -60;
                             _this.setState({ patient: data, update: true });
                         }
                     }
@@ -175,19 +178,7 @@ var App = function (_React$Component) {
             }
         };
 
-        _this.handleViewportPosition = function (e) {
-            e.target.id === 'viewport_x1' ? _this.setState({ viewport_start_timestamp: parseInt(e.target.value), update: false }) : _this.setState({ viewport_end_timestamp: parseInt(e.target.value), update: false });
-        };
-
-        _this.updateAnnotationCoords = function () {
-            var add_tests_keys = Object.keys(_this.state.patient.additional_tests);
-            var id = document.querySelector('#annotation-id').value;
-            var x = parseInt(document.querySelector('#annotation-x').value);
-            var y = parseInt(document.querySelector('#annotation-y').value);
-            var dx = parseInt(document.querySelector('#annotation-dx').value);
-            var dy = parseInt(document.querySelector('#annotation-dy').value);
-            var width = parseFloat(document.querySelector('#www').value);
-            var timestamp = (x - 80 - 0) * (_this.state.viewport_end_timestamp - _this.state.viewport_start_timestamp) / (width - 0) + _this.state.viewport_start_timestamp;
+        _this.toggleSingleAddTest = function (e) {
             var data = _this.state.patient;
             var _iteratorNormalCompletion3 = true;
             var _didIteratorError3 = false;
@@ -203,12 +194,9 @@ var App = function (_React$Component) {
                     var value = _ref6[1];
 
                     for (var i = 0; i < value.length; i++) {
-                        if (value[i].id === id) {
-                            data.additional_tests[key][i].timestamp = timestamp;
-                            data.additional_tests[key][i].y = y;
-                            data.additional_tests[key][i].dx = dx;
-                            data.additional_tests[key][i].dy = dy;
-                            _this.setState({ patient: data, update: false });
+                        if (value[i].id + "-checkbox" === e.target.id) {
+                            data.additional_tests[key][i].draw = e.target.checked;
+                            _this.setState({ patient: data, update: true });
                         }
                     }
                 }
@@ -223,6 +211,59 @@ var App = function (_React$Component) {
                 } finally {
                     if (_didIteratorError3) {
                         throw _iteratorError3;
+                    }
+                }
+            }
+        };
+
+        _this.handleViewportPosition = function (e) {
+            e.target.id === 'viewport_x1' ? _this.setState({ viewport_start_timestamp: parseInt(e.target.value), update: false }) : _this.setState({ viewport_end_timestamp: parseInt(e.target.value), update: false });
+        };
+
+        _this.updateAnnotationCoords = function () {
+            var add_tests_keys = Object.keys(_this.state.patient.additional_tests);
+            var id = document.querySelector('#annotation-id').value;
+            var x = parseInt(document.querySelector('#annotation-x').value);
+            var y = parseInt(document.querySelector('#annotation-y').value);
+            var dx = parseInt(document.querySelector('#annotation-dx').value);
+            var dy = parseInt(document.querySelector('#annotation-dy').value);
+            var width = parseFloat(document.querySelector('#www').value);
+            var timestamp = (x - 80 - 0) * (_this.state.viewport_end_timestamp - _this.state.viewport_start_timestamp) / (width - 0) + _this.state.viewport_start_timestamp;
+            var data = _this.state.patient;
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
+
+            try {
+                for (var _iterator4 = Object.entries(data.additional_tests)[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                    var _ref7 = _step4.value;
+
+                    var _ref8 = _slicedToArray(_ref7, 2);
+
+                    var key = _ref8[0];
+                    var value = _ref8[1];
+
+                    for (var i = 0; i < value.length; i++) {
+                        if (value[i].id === id) {
+                            data.additional_tests[key][i].timestamp = timestamp;
+                            data.additional_tests[key][i].y = y;
+                            data.additional_tests[key][i].dx = dx;
+                            data.additional_tests[key][i].dy = dy;
+                            _this.setState({ patient: data, update: false });
+                        }
+                    }
+                }
+            } catch (err) {
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                        _iterator4.return();
+                    }
+                } finally {
+                    if (_didIteratorError4) {
+                        throw _iteratorError4;
                     }
                 }
             }
@@ -351,6 +392,7 @@ var App = function (_React$Component) {
                                 ),
                                 React.createElement(Add_tests_controller, { additional_tests: patient.additional_tests,
                                     updateAdditionalTestResult: this.updateAdditionalTestResult,
+                                    resetInitialTestPosition: this.resetInitialTestPosition,
                                     toggleSingleAddTest: this.toggleSingleAddTest })
                             ) : null
                         ),
