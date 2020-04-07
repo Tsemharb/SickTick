@@ -142,6 +142,59 @@ class App extends React.Component {
         }
     }
 
+    increaseResultFontSize = e =>{
+        let data = this.state.patient;
+        for (let [key, value] of Object.entries(data.additional_tests)) {
+            for (let i = 0; i < value.length; i++) {
+                if (value[i].id + "-increase-result-font" === e.target.id) {
+                    data.additional_tests[key][i].result_font_size = ++data.additional_tests[key][i].result_font_size
+                    this.setState({ patient: data, update: true })
+                }
+            }
+        }
+    }
+
+    decreaseResultFontSize = e =>{
+        let data = this.state.patient;
+        for (let [key, value] of Object.entries(data.additional_tests)) {
+            for (let i = 0; i < value.length; i++) {
+                if (value[i].id + "-decrease-result-font" === e.target.id) {
+                    if(data.additional_tests[key][i].result_font_size > 7)
+                    {
+                        data.additional_tests[key][i].result_font_size = --data.additional_tests[key][i].result_font_size
+                        this.setState({ patient: data, update: true })
+                    }
+                }
+            }
+        }
+    }
+
+    increaseTitleFontSize = e =>{
+        let data = this.state.patient;
+        for (let [key, value] of Object.entries(data.additional_tests)) {
+            for (let i = 0; i < value.length; i++) {
+                if (value[i].id + "-increase-title-font" === e.target.id) {
+                    data.additional_tests[key][i].title_font_size = ++data.additional_tests[key][i].title_font_size
+                    this.setState({ patient: data, update: true })
+                }
+            }
+        }
+    }
+
+    decreaseTitleFontSize = e =>{
+        let data = this.state.patient;
+        for (let [key, value] of Object.entries(data.additional_tests)) {
+            for (let i = 0; i < value.length; i++) {
+                if (value[i].id + "-decrease-title-font" === e.target.id) {
+                    if(data.additional_tests[key][i].title_font_size > 8) {
+                        data.additional_tests[key][i].title_font_size = --data.additional_tests[key][i].title_font_size
+                        this.setState({ patient: data, update: true })
+                    }
+                }
+            }
+        }
+    }
+
     toggleSingleAddTest = e => {
         let data = this.state.patient;
         for (let [key, value] of Object.entries(data.additional_tests)) {
@@ -235,7 +288,11 @@ class App extends React.Component {
                                     <Add_tests_controller additional_tests = {patient.additional_tests}
                                                           updateAdditionalTestResult = {this.updateAdditionalTestResult}
                                                           resetInitialTestPosition = {this.resetInitialTestPosition}
-                                                          toggleSingleAddTest = {this.toggleSingleAddTest} />
+                                                          toggleSingleAddTest = {this.toggleSingleAddTest}
+                                                          decreaseResultFontSize = {this.decreaseResultFontSize}
+                                                          increaseResultFontSize = {this.increaseResultFontSize} 
+                                                          increaseTitleFontSize = {this.increaseTitleFontSize}
+                                                          decreaseTitleFontSize = {this.decreaseTitleFontSize} />
                                   </div>
                                 : null}
                     </div>

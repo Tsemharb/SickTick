@@ -13,167 +13,163 @@ var _window$ReactBeautifu = window.ReactBeautifulDnd,
     Droppable = _window$ReactBeautifu.Droppable;
 
 var Ab_controller = function (_React$Component) {
-    _inherits(Ab_controller, _React$Component);
+  _inherits(Ab_controller, _React$Component);
 
-    function Ab_controller() {
-        _classCallCheck(this, Ab_controller);
+  function Ab_controller() {
+    _classCallCheck(this, Ab_controller);
 
-        var _this = _possibleConstructorReturn(this, (Ab_controller.__proto__ || Object.getPrototypeOf(Ab_controller)).call(this));
+    var _this = _possibleConstructorReturn(this, (Ab_controller.__proto__ || Object.getPrototypeOf(Ab_controller)).call(this));
 
-        _this.onPanelToggle = function () {
-            return _this.setState({ open: !_this.state.open });
-        };
+    _this.onPanelToggle = function () {
+      return _this.setState({ open: !_this.state.open });
+    };
 
-        _this.setAbAbbrev = function () {
-            console.log('sdfsdf');
-        };
+    _this.state = { open: false };
+    return _this;
+  }
 
-        _this.state = { open: false };
-        return _this;
+  _createClass(Ab_controller, [{
+    key: "render",
+    value: function render() {
+      var _this2 = this;
+
+      var antibiotics = this.props.antibiotics;
+      var ab_order = this.props.unique_ab_order;
+      // console.log(antibiotics);
+      return React.createElement(
+        "div",
+        { className: "panel" },
+        React.createElement(
+          "div",
+          { className: "panel-header" },
+          React.createElement(
+            "h6",
+            null,
+            "Antibiotics"
+          ),
+          React.createElement(
+            "button",
+            { className: "toggle-button panel-header-btn", onClick: this.onPanelToggle },
+            this.state.open ? 'hide' : 'show'
+          )
+        ),
+        React.createElement(
+          "div",
+          { className: "panel-content" + (!this.state.open ? " hidden" : "") },
+          React.createElement(
+            "div",
+            { className: "panel-settings" },
+            React.createElement(
+              "span",
+              null,
+              React.createElement("input", { type: "checkbox", checked: this.props.drawAb ? "checked" : null,
+                onChange: this.props.toggleAb }),
+              " show antibiotics"
+            ),
+            React.createElement(
+              "span",
+              null,
+              React.createElement("input", { type: "checkbox", checked: this.props.adjustAbScope ? "checked" : null,
+                onChange: this.props.toggleAbScope }),
+              " hide AB outside selected scope"
+            )
+          ),
+          this.props.drawAb ? React.createElement(
+            "div",
+            { className: "ab-list-wrapper" },
+            React.createElement(
+              "h6",
+              null,
+              " Antibiotics list"
+            ),
+            React.createElement(
+              Droppable,
+              { droppableId: 'antibiotics' },
+              function (provided) {
+                return React.createElement(
+                  "div",
+                  Object.assign({ className: "panel-parameters",
+                    ref: provided.innerRef
+                  }, provided.droppableProps),
+                  ab_order.map(function (next_ab, ind) {
+                    // console.log(ab_order);
+                    var ab = null;
+                    var _iteratorNormalCompletion = true;
+                    var _didIteratorError = false;
+                    var _iteratorError = undefined;
+
+                    try {
+                      for (var _iterator = Object.entries(antibiotics)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var _ref = _step.value;
+
+                        var _ref2 = _slicedToArray(_ref, 2);
+
+                        var key = _ref2[0];
+                        var value = _ref2[1];
+
+                        if (value.name === next_ab) {
+                          ab = value;
+                          ab.index = ind;
+                          break;
+                        }
+                      }
+                    } catch (err) {
+                      _didIteratorError = true;
+                      _iteratorError = err;
+                    } finally {
+                      try {
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                          _iterator.return();
+                        }
+                      } finally {
+                        if (_didIteratorError) {
+                          throw _iteratorError;
+                        }
+                      }
+                    }
+
+                    ;
+                    return React.createElement(
+                      Draggable,
+                      { key: ab.name + ab.index, draggableId: ab.name, index: ab.index },
+                      function (provided) {
+                        return React.createElement(
+                          "div",
+                          Object.assign({ className: "ab-item",
+                            ref: provided.innerRef
+                          }, provided.draggableProps, provided.dragHandleProps),
+                          React.createElement(
+                            "div",
+                            null,
+                            React.createElement("input", { id: ab.name, type: "checkbox", checked: ab.draw ? "checked" : null,
+                              onChange: _this2.props.toggleSingleAb }),
+                            React.createElement(
+                              "span",
+                              null,
+                              " ",
+                              ab.name,
+                              " "
+                            )
+                          ),
+                          React.createElement("input", { type: "text", id: ab.name, value: ab.abbrev,
+                            onChange: function onChange(evt) {
+                              return _this2.props.setAbAbbrev(evt);
+                            } })
+                        );
+                      }
+                    );
+                  }),
+                  provided.placeholder
+                );
+              }
+            )
+          ) : null
+        )
+      );
     }
+  }]);
 
-    _createClass(Ab_controller, [{
-        key: "render",
-        value: function render() {
-            var _this2 = this;
-
-            var antibiotics = this.props.antibiotics;
-            var ab_order = this.props.unique_ab_order;
-            // console.log(antibiotics);
-            return React.createElement(
-                "div",
-                { className: "panel" },
-                React.createElement(
-                    "div",
-                    { className: "panel-header" },
-                    React.createElement(
-                        "h6",
-                        null,
-                        "Antibiotics"
-                    ),
-                    React.createElement(
-                        "button",
-                        { className: "toggle-button panel-header-btn", onClick: this.onPanelToggle },
-                        this.state.open ? 'hide' : 'show'
-                    )
-                ),
-                React.createElement(
-                    "div",
-                    { className: "panel-content" + (!this.state.open ? " hidden" : "") },
-                    React.createElement(
-                        "div",
-                        { className: "panel-settings" },
-                        React.createElement(
-                            "span",
-                            null,
-                            React.createElement("input", { type: "checkbox", checked: this.props.drawAb ? "checked" : null,
-                                onChange: this.props.toggleAb }),
-                            " show antibiotics"
-                        ),
-                        React.createElement(
-                            "span",
-                            null,
-                            React.createElement("input", { type: "checkbox", checked: this.props.adjustAbScope ? "checked" : null,
-                                onChange: this.props.toggleAbScope }),
-                            " hide AB outside selected scope"
-                        )
-                    ),
-                    this.props.drawAb ? React.createElement(
-                        "div",
-                        { className: "ab-list-wrapper" },
-                        React.createElement(
-                            "h6",
-                            null,
-                            " Antibiotics list"
-                        ),
-                        React.createElement(
-                            Droppable,
-                            { droppableId: 'antibiotics' },
-                            function (provided) {
-                                return React.createElement(
-                                    "div",
-                                    Object.assign({ className: "panel-parameters",
-                                        ref: provided.innerRef
-                                    }, provided.droppableProps),
-                                    ab_order.map(function (next_ab, ind) {
-                                        // console.log(ab_order);
-                                        var ab = null;
-                                        var _iteratorNormalCompletion = true;
-                                        var _didIteratorError = false;
-                                        var _iteratorError = undefined;
-
-                                        try {
-                                            for (var _iterator = Object.entries(antibiotics)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                                                var _ref = _step.value;
-
-                                                var _ref2 = _slicedToArray(_ref, 2);
-
-                                                var key = _ref2[0];
-                                                var value = _ref2[1];
-
-                                                if (value.name === next_ab) {
-                                                    ab = value;
-                                                    ab.index = ind;
-                                                    break;
-                                                }
-                                            }
-                                        } catch (err) {
-                                            _didIteratorError = true;
-                                            _iteratorError = err;
-                                        } finally {
-                                            try {
-                                                if (!_iteratorNormalCompletion && _iterator.return) {
-                                                    _iterator.return();
-                                                }
-                                            } finally {
-                                                if (_didIteratorError) {
-                                                    throw _iteratorError;
-                                                }
-                                            }
-                                        }
-
-                                        ;
-                                        return React.createElement(
-                                            Draggable,
-                                            { key: ab.name + ab.index, draggableId: ab.name, index: ab.index },
-                                            function (provided) {
-                                                return React.createElement(
-                                                    "div",
-                                                    Object.assign({ className: "ab-item",
-                                                        ref: provided.innerRef
-                                                    }, provided.draggableProps, provided.dragHandleProps),
-                                                    React.createElement(
-                                                        "div",
-                                                        null,
-                                                        React.createElement("input", { id: ab.name, type: "checkbox", checked: ab.draw ? "checked" : null,
-                                                            onChange: _this2.props.toggleSingleAb }),
-                                                        React.createElement(
-                                                            "span",
-                                                            null,
-                                                            " ",
-                                                            ab.name,
-                                                            " "
-                                                        )
-                                                    ),
-                                                    React.createElement("input", { type: "text", id: ab.name, value: ab.abbrev,
-                                                        onChange: function onChange(evt) {
-                                                            return _this2.props.setAbAbbrev(evt);
-                                                        } })
-                                                );
-                                            }
-                                        );
-                                    }),
-                                    provided.placeholder
-                                );
-                            }
-                        )
-                    ) : null
-                )
-            );
-        }
-    }]);
-
-    return Ab_controller;
+  return Ab_controller;
 }(React.Component);
 
 export default Ab_controller;

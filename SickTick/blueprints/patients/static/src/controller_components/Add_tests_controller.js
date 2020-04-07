@@ -5,17 +5,20 @@ class Add_tests_controller extends React.Component {
         this.state = { open: false };
     }
 
-    // hide all additional test tab
+    // hide all additional test tab and display settings
     componentWillMount() {
         const keys = Object.keys(this.props.additional_tests);
+        const tests = this.props.additional_tests;
         let test_info_tab_open = {};
+        let test_display_settings_open = {};
         keys.map(key => test_info_tab_open[key] = false);
-        this.setState({ test_info_tab_open: test_info_tab_open })
+        keys.map(key => {tests[key].map(test => test_display_settings_open[test.id] = false)});
+        this.setState({ test_info_tab_open: test_info_tab_open, test_display_settings_open: test_display_settings_open });
     }
 
     // set roughly estimated textarea size for each test result
     componentDidMount() {
-        const averageNumOfSymbolsInTextareaString = 54;
+        const averageNumOfSymbolsInTextareaString = 44;
         const textareas = document.getElementsByClassName('test-result');
         for (let textarea of textareas) {
             textarea.rows = Math.ceil(textarea.value.length / averageNumOfSymbolsInTextareaString);
@@ -30,6 +33,12 @@ class Add_tests_controller extends React.Component {
         this.setState({ test_info_tab_open: toggle_state });
     }
 
+    toggleSettingsDisplay = e =>{
+        let toggle_state = this.state.test_display_settings_open;
+        toggle_state[e.target.id] = !toggle_state[e.target.id];
+        this.setState({ test_display_settings_open: toggle_state });
+    }
+
     // set matching textarea height
     handleTextareaChange = e => {
         const textareaLineHeight = 12;
@@ -42,9 +51,10 @@ class Add_tests_controller extends React.Component {
 
     render() {
         const tests = this.props.additional_tests;
+        console.log(tests);
         const keys = Object.keys(this.props.additional_tests);
         return (
-            <div className="panel">
+            <div className="panel additional-tests-panel">
                 <div className="panel-header">
                     <h6>Additional Tests</h6>
                     <button className="toggle-button panel-header-btn" onClick = {this.onPanelToggle}>
@@ -67,9 +77,38 @@ class Add_tests_controller extends React.Component {
                                                onChange={this.props.toggleSingleAddTest}/>
                                         <span>{test.date}</span>
                                     </div>
-                                    <button id={test.id + "-reset"} onClick = {this.props.resetInitialTestPosition}> reset </button>
                                 </div>
                                 <textarea id={test.id} class="test-result" onChange={this.handleTextareaChange}>{test.result}</textarea>
+                                <div>
+                                    <div className="test-settings-buttons">
+                                        <button id={test.id} onClick = {this.toggleSettingsDisplay} style={!test.draw ? {visibility: "hidden"}: null}> 
+                                            {!this.state.test_display_settings_open[test.id] ? 'display settings': 'hide settings'}
+                                        </button>
+                                        <button id={test.id + "-reset"} onClick = {this.props.resetInitialTestPosition}> reset initial position </button>
+                                    </div>
+                                    <div className="test-settings" style={!this.state.test_display_settings_open[test.id] || !test.draw ? {display: "none"}: null}>
+                                        <div className="settings-row"> 
+                                            <span>title font-size</span>
+                                            <button id={test.id + "-decrease-title-font"} onClick = {this.props.decreaseTitleFontSize}>-</button>
+                                            <span>{test.title_font_size}</span>
+                                            <button id={test.id + "-increase-title-font"} onClick = {this.props.increaseTitleFontSize}>+</button>
+                                        </div>
+                                        <div className="settings-row">
+                                            <div>title font color</div>
+                                            <div className='current-color' style={{background: test.title_color}}></div>
+                                        </div>
+                                        <div className="settings-row"> 
+                                            <span>result font-size</span>
+                                            <button id={test.id + "-decrease-result-font"} onClick = {this.props.decreaseResultFontSize}>-</button>
+                                            <span>{test.result_font_size}</span>
+                                            <button id={test.id + "-increase-result-font"} onClick = {this.props.increaseResultFontSize}>+</button>
+                                        </div>
+                                        <div className="settings-row">
+                                            <div>result font color</div>
+                                            <div className='current-color' style={{background: test.result_color}}></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             )
                           }

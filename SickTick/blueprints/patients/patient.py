@@ -60,6 +60,15 @@ class Patient_parser:
             if file.split(' ')[0] == id:
                 return file + '.docx'
 
+    @staticmethod
+    def get_font_size_from_text_length(length):
+        in_min = 16  # minimum input length
+        in_max = 219  # maximum input length
+        out_min = 10  # minimum font size
+        out_max = 19  #maximum font size
+        return int(out_max - (length - in_min) * (out_max - out_min) / (in_max - in_min))
+
+
 # method sets different timestamps for date duplicates (same dates won't have same x-coords)
     # @staticmethod
     def get_correct_timestamp(self, date, count):
@@ -189,6 +198,19 @@ class Patient_parser:
             additional_tests = {}
             rows_num = len(table.rows)
             for r_num in range(1, rows_num):
+                # get the result of additional test
+                test_raw_name = table.rows[r_num].cells[1].text.split(':')[0]
+                result = table.rows[r_num].cells[1].text.replace(test_raw_name + ':', '').strip()
+
+                #get font size for result message
+                if len(result) <= 15:
+                    result_font_size = 20
+                elif len(result) >= 220:
+                    result_font_size = 9
+                else:
+                    result_font_size = self.get_font_size_from_text_length(len(result))
+
+                # set test attributes
                 test = {}
                 test['id'] = 'additional-' + str(r_num)
                 test['date'] = table.rows[r_num].cells[0].text
@@ -196,10 +218,15 @@ class Patient_parser:
                 test['dx'] = 60
                 test['dy'] = - 60
                 test['draw'] = False
+                test['result_font_size'] = result_font_size
+                test['result_bold'] = False
+                test['result_color'] = 'grey' #'coral'
+                test['title_font_size'] = 15
+                test['title_bold'] = True
+                test['title_color'] = 'grey' #'pink'
                 test['timestamp'] = self.get_timestamp(test['date'])
                 test['timestamp_init'] = self.get_timestamp(test['date'])
-                test_raw_name = table.rows[r_num].cells[1].text.split(':')[0]
-                test['result'] = table.rows[r_num].cells[1].text.replace(test_raw_name + ':', '').strip()
+                test['result'] = result
                 name = test_raw_name.replace(' Заключение', '').replace(' Результат', '')
                 try:
                     additional_tests[name]

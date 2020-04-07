@@ -347,6 +347,7 @@ var draw_everything = function draw_everything(props) {
 
         //redraw annotations
         svg.selectAll('.annotation').remove();
+        // console.log(patient.additional_tests);
         var annotations = [];
         add_tests_keys.map(function (key) {
             patient.additional_tests[key].forEach(function (test) {
@@ -357,6 +358,13 @@ var draw_everything = function draw_everything(props) {
                     var annotation = {};
                     annotation.id = test.id;
                     annotation.note = {};
+                    annotation.color = "grey";
+                    annotation.note.label_color = test.result_color;
+                    annotation.note.label_font_size = test.result_font_size;
+                    annotation.note.label_bold = test.result_bold;
+                    annotation.note.title_color = test.title_color;
+                    annotation.note.title_font_size = test.title_font_size;
+                    annotation.note.title_bold = test.title_bold;
                     annotation.note.label = test.result;
                     annotation.note.title = key;
                     annotation.note.wrap = 250;
@@ -373,7 +381,9 @@ var draw_everything = function draw_everything(props) {
 
         // Add annotation to the chart
         var makeAnnotations = d3.annotation().editMode(true).annotations(annotations);
-        svg.append("g").style('font-size', 10).call(makeAnnotations);
+        svg.append("g")
+        // .style('font-size', 10)
+        .call(makeAnnotations);
         // .attr('transform', 'translate(100, 100)')
 
         d3_react_link(domain_min, domain_max);

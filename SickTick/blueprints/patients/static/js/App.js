@@ -178,7 +178,7 @@ var App = function (_React$Component) {
             }
         };
 
-        _this.toggleSingleAddTest = function (e) {
+        _this.increaseResultFontSize = function (e) {
             var data = _this.state.patient;
             var _iteratorNormalCompletion3 = true;
             var _didIteratorError3 = false;
@@ -194,8 +194,8 @@ var App = function (_React$Component) {
                     var value = _ref6[1];
 
                     for (var i = 0; i < value.length; i++) {
-                        if (value[i].id + "-checkbox" === e.target.id) {
-                            data.additional_tests[key][i].draw = e.target.checked;
+                        if (value[i].id + "-increase-result-font" === e.target.id) {
+                            data.additional_tests[key][i].result_font_size = ++data.additional_tests[key][i].result_font_size;
                             _this.setState({ patient: data, update: true });
                         }
                     }
@@ -216,19 +216,7 @@ var App = function (_React$Component) {
             }
         };
 
-        _this.handleViewportPosition = function (e) {
-            e.target.id === 'viewport_x1' ? _this.setState({ viewport_start_timestamp: parseInt(e.target.value), update: false }) : _this.setState({ viewport_end_timestamp: parseInt(e.target.value), update: false });
-        };
-
-        _this.updateAnnotationCoords = function () {
-            var add_tests_keys = Object.keys(_this.state.patient.additional_tests);
-            var id = document.querySelector('#annotation-id').value;
-            var x = parseInt(document.querySelector('#annotation-x').value);
-            var y = parseInt(document.querySelector('#annotation-y').value);
-            var dx = parseInt(document.querySelector('#annotation-dx').value);
-            var dy = parseInt(document.querySelector('#annotation-dy').value);
-            var width = parseFloat(document.querySelector('#www').value);
-            var timestamp = (x - 80 - 0) * (_this.state.viewport_end_timestamp - _this.state.viewport_start_timestamp) / (width - 0) + _this.state.viewport_start_timestamp;
+        _this.decreaseResultFontSize = function (e) {
             var data = _this.state.patient;
             var _iteratorNormalCompletion4 = true;
             var _didIteratorError4 = false;
@@ -244,12 +232,11 @@ var App = function (_React$Component) {
                     var value = _ref8[1];
 
                     for (var i = 0; i < value.length; i++) {
-                        if (value[i].id === id) {
-                            data.additional_tests[key][i].timestamp = timestamp;
-                            data.additional_tests[key][i].y = y;
-                            data.additional_tests[key][i].dx = dx;
-                            data.additional_tests[key][i].dy = dy;
-                            _this.setState({ patient: data, update: false });
+                        if (value[i].id + "-decrease-result-font" === e.target.id) {
+                            if (data.additional_tests[key][i].result_font_size > 7) {
+                                data.additional_tests[key][i].result_font_size = --data.additional_tests[key][i].result_font_size;
+                                _this.setState({ patient: data, update: true });
+                            }
                         }
                     }
                 }
@@ -264,6 +251,175 @@ var App = function (_React$Component) {
                 } finally {
                     if (_didIteratorError4) {
                         throw _iteratorError4;
+                    }
+                }
+            }
+        };
+
+        _this.increaseTitleFontSize = function (e) {
+            var data = _this.state.patient;
+            var _iteratorNormalCompletion5 = true;
+            var _didIteratorError5 = false;
+            var _iteratorError5 = undefined;
+
+            try {
+                for (var _iterator5 = Object.entries(data.additional_tests)[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                    var _ref9 = _step5.value;
+
+                    var _ref10 = _slicedToArray(_ref9, 2);
+
+                    var key = _ref10[0];
+                    var value = _ref10[1];
+
+                    for (var i = 0; i < value.length; i++) {
+                        if (value[i].id + "-increase-title-font" === e.target.id) {
+                            data.additional_tests[key][i].title_font_size = ++data.additional_tests[key][i].title_font_size;
+                            _this.setState({ patient: data, update: true });
+                        }
+                    }
+                }
+            } catch (err) {
+                _didIteratorError5 = true;
+                _iteratorError5 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                        _iterator5.return();
+                    }
+                } finally {
+                    if (_didIteratorError5) {
+                        throw _iteratorError5;
+                    }
+                }
+            }
+        };
+
+        _this.decreaseTitleFontSize = function (e) {
+            var data = _this.state.patient;
+            var _iteratorNormalCompletion6 = true;
+            var _didIteratorError6 = false;
+            var _iteratorError6 = undefined;
+
+            try {
+                for (var _iterator6 = Object.entries(data.additional_tests)[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+                    var _ref11 = _step6.value;
+
+                    var _ref12 = _slicedToArray(_ref11, 2);
+
+                    var key = _ref12[0];
+                    var value = _ref12[1];
+
+                    for (var i = 0; i < value.length; i++) {
+                        if (value[i].id + "-decrease-title-font" === e.target.id) {
+                            if (data.additional_tests[key][i].title_font_size > 8) {
+                                data.additional_tests[key][i].title_font_size = --data.additional_tests[key][i].title_font_size;
+                                _this.setState({ patient: data, update: true });
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                _didIteratorError6 = true;
+                _iteratorError6 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion6 && _iterator6.return) {
+                        _iterator6.return();
+                    }
+                } finally {
+                    if (_didIteratorError6) {
+                        throw _iteratorError6;
+                    }
+                }
+            }
+        };
+
+        _this.toggleSingleAddTest = function (e) {
+            var data = _this.state.patient;
+            var _iteratorNormalCompletion7 = true;
+            var _didIteratorError7 = false;
+            var _iteratorError7 = undefined;
+
+            try {
+                for (var _iterator7 = Object.entries(data.additional_tests)[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+                    var _ref13 = _step7.value;
+
+                    var _ref14 = _slicedToArray(_ref13, 2);
+
+                    var key = _ref14[0];
+                    var value = _ref14[1];
+
+                    for (var i = 0; i < value.length; i++) {
+                        if (value[i].id + "-checkbox" === e.target.id) {
+                            data.additional_tests[key][i].draw = e.target.checked;
+                            _this.setState({ patient: data, update: true });
+                        }
+                    }
+                }
+            } catch (err) {
+                _didIteratorError7 = true;
+                _iteratorError7 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion7 && _iterator7.return) {
+                        _iterator7.return();
+                    }
+                } finally {
+                    if (_didIteratorError7) {
+                        throw _iteratorError7;
+                    }
+                }
+            }
+        };
+
+        _this.handleViewportPosition = function (e) {
+            e.target.id === 'viewport_x1' ? _this.setState({ viewport_start_timestamp: parseInt(e.target.value), update: false }) : _this.setState({ viewport_end_timestamp: parseInt(e.target.value), update: false });
+        };
+
+        _this.updateAnnotationCoords = function () {
+            var add_tests_keys = Object.keys(_this.state.patient.additional_tests);
+            var id = document.querySelector('#annotation-id').value;
+            var x = parseInt(document.querySelector('#annotation-x').value);
+            var y = parseInt(document.querySelector('#annotation-y').value);
+            var dx = parseInt(document.querySelector('#annotation-dx').value);
+            var dy = parseInt(document.querySelector('#annotation-dy').value);
+            var width = parseFloat(document.querySelector('#www').value);
+            var timestamp = (x - 80 - 0) * (_this.state.viewport_end_timestamp - _this.state.viewport_start_timestamp) / (width - 0) + _this.state.viewport_start_timestamp;
+            var data = _this.state.patient;
+            var _iteratorNormalCompletion8 = true;
+            var _didIteratorError8 = false;
+            var _iteratorError8 = undefined;
+
+            try {
+                for (var _iterator8 = Object.entries(data.additional_tests)[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+                    var _ref15 = _step8.value;
+
+                    var _ref16 = _slicedToArray(_ref15, 2);
+
+                    var key = _ref16[0];
+                    var value = _ref16[1];
+
+                    for (var i = 0; i < value.length; i++) {
+                        if (value[i].id === id) {
+                            data.additional_tests[key][i].timestamp = timestamp;
+                            data.additional_tests[key][i].y = y;
+                            data.additional_tests[key][i].dx = dx;
+                            data.additional_tests[key][i].dy = dy;
+                            _this.setState({ patient: data, update: false });
+                        }
+                    }
+                }
+            } catch (err) {
+                _didIteratorError8 = true;
+                _iteratorError8 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion8 && _iterator8.return) {
+                        _iterator8.return();
+                    }
+                } finally {
+                    if (_didIteratorError8) {
+                        throw _iteratorError8;
                     }
                 }
             }
@@ -393,7 +549,11 @@ var App = function (_React$Component) {
                                 React.createElement(Add_tests_controller, { additional_tests: patient.additional_tests,
                                     updateAdditionalTestResult: this.updateAdditionalTestResult,
                                     resetInitialTestPosition: this.resetInitialTestPosition,
-                                    toggleSingleAddTest: this.toggleSingleAddTest })
+                                    toggleSingleAddTest: this.toggleSingleAddTest,
+                                    decreaseResultFontSize: this.decreaseResultFontSize,
+                                    increaseResultFontSize: this.increaseResultFontSize,
+                                    increaseTitleFontSize: this.increaseTitleFontSize,
+                                    decreaseTitleFontSize: this.decreaseTitleFontSize })
                             ) : null
                         ),
                         React.createElement(

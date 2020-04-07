@@ -1784,7 +1784,15 @@
                     label.call(wrap, wrapLength, wrapSplitter);
 
                     label.attr("y", titleBBox.height * 1.1 || 0);
-                    label.attr("fill", this.annotation.color);
+                    var label_color = this.annotation.note.label_color === undefined ? "grey" : this.annotation.note.label_color
+                    var label_font_size = this.annotation.note.label_font_size;
+                    label.attr("font-size", label_font_size);
+                    label.attr("fill", label_color);
+
+                    var title_color = this.annotation.note.title_color === undefined ? "grey" : this.annotation.note.title_color
+                    var title_font_size = this.annotation.note.title_font_size;
+                    title.attr("font-size", title_font_size);
+                    title.attr("fill", title_color);
 
                     var bbox = this.getNoteBBox();
 
@@ -2012,6 +2020,7 @@
                 });
                 d.type.draw();
                 d.type.drawText && d.type.drawText();
+                d.type.redrawNote();
             });
         };
 

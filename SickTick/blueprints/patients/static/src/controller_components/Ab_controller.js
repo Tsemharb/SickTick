@@ -9,8 +9,6 @@ class Ab_controller extends React.Component {
 
     onPanelToggle = () => this.setState({ open: !this.state.open });
 
-    setAbAbbrev = () => {console.log('sdfsdf')}
-
     render() {
         const antibiotics = this.props.antibiotics;
         const ab_order = this.props.unique_ab_order;

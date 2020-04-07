@@ -399,6 +399,7 @@ const draw_everything = (props) => {
 
         //redraw annotations
         svg.selectAll('.annotation').remove();
+        // console.log(patient.additional_tests);
         let annotations = []
         add_tests_keys.map(key => {
             patient.additional_tests[key].forEach(test => {
@@ -409,6 +410,13 @@ const draw_everything = (props) => {
                     let annotation = {};
                     annotation.id = test.id;
                     annotation.note = {};
+                    annotation.color = "grey";
+                    annotation.note.label_color = test.result_color;
+                    annotation.note.label_font_size = test.result_font_size;
+                    annotation.note.label_bold = test.result_bold;
+                    annotation.note.title_color = test.title_color;
+                    annotation.note.title_font_size = test.title_font_size;
+                    annotation.note.title_bold = test.title_bold;
                     annotation.note.label = test.result;
                     annotation.note.title = key;
                     annotation.note.wrap = 250;
@@ -429,7 +437,7 @@ const draw_everything = (props) => {
             .annotations(annotations)
         svg
             .append("g")
-            .style('font-size', 10)
+            // .style('font-size', 10)
             .call(makeAnnotations)
         // .attr('transform', 'translate(100, 100)')
 

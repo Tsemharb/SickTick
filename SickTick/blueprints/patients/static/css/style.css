@@ -43,12 +43,14 @@ small {
 .graph {
     border: 1px solid dimgray;
     border-radius: 2px;
-    margin: 0 5px
+    margin: 0 5px 5px 5px;
+    position: sticky;
+    top: 0;
 }
 
 .app__control-panel {
     margin: 0 5px;
-    max-height: 30vh;
+    /*max-height: 30vh;*/
     width: 400px;
 }
 
@@ -174,13 +176,15 @@ small {
     margin-bottom: 3px;
 }
 
-.test-info-header button{
-    background-color: wheat;
-    border: none;
+
+.test-settings-buttons{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.test-info-header button:focus{
-    outline: none;
+.test-settings{
+    margin-top: 4px;
 }
 
 .test-info textarea {
@@ -204,4 +208,26 @@ small {
 .general_controls {
     display: none;
     margin-bottom: 50px;
+}
+
+.additional-tests-panel .test-info{
+    border: 1px solid black;
+    padding: 4px 0;
+    margin-bottom: 4px;
+    padding: 5px 8px;
+}
+
+.settings-row{
+    margin: 2px 0;
+    display: flex;
+    align-items: center;
+}
+
+.current-color{
+    margin-left: 10px;
+    width: 40px;
+    height: 15px;
+    border-radius: 4px;
+    opacity: 0.6;
+    cursor: pointer;
 }

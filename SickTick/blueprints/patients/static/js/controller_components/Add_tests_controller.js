@@ -24,6 +24,12 @@ var Add_tests_controller = function (_React$Component) {
             _this.setState({ test_info_tab_open: toggle_state });
         };
 
+        _this.toggleSettingsDisplay = function (e) {
+            var toggle_state = _this.state.test_display_settings_open;
+            toggle_state[e.target.id] = !toggle_state[e.target.id];
+            _this.setState({ test_display_settings_open: toggle_state });
+        };
+
         _this.handleTextareaChange = function (e) {
             var textareaLineHeight = 12;
             var previousRows = e.target.rows;
@@ -37,18 +43,25 @@ var Add_tests_controller = function (_React$Component) {
         return _this;
     }
 
-    // hide all additional test tab
+    // hide all additional test tab and display settings
 
 
     _createClass(Add_tests_controller, [{
         key: "componentWillMount",
         value: function componentWillMount() {
             var keys = Object.keys(this.props.additional_tests);
+            var tests = this.props.additional_tests;
             var test_info_tab_open = {};
+            var test_display_settings_open = {};
             keys.map(function (key) {
                 return test_info_tab_open[key] = false;
             });
-            this.setState({ test_info_tab_open: test_info_tab_open });
+            keys.map(function (key) {
+                tests[key].map(function (test) {
+                    return test_display_settings_open[test.id] = false;
+                });
+            });
+            this.setState({ test_info_tab_open: test_info_tab_open, test_display_settings_open: test_display_settings_open });
         }
 
         // set roughly estimated textarea size for each test result
@@ -56,7 +69,7 @@ var Add_tests_controller = function (_React$Component) {
     }, {
         key: "componentDidMount",
         value: function componentDidMount() {
-            var averageNumOfSymbolsInTextareaString = 54;
+            var averageNumOfSymbolsInTextareaString = 44;
             var textareas = document.getElementsByClassName('test-result');
             var _iteratorNormalCompletion = true;
             var _didIteratorError = false;
@@ -92,10 +105,11 @@ var Add_tests_controller = function (_React$Component) {
             var _this2 = this;
 
             var tests = this.props.additional_tests;
+            console.log(tests);
             var keys = Object.keys(this.props.additional_tests);
             return React.createElement(
                 "div",
-                { className: "panel" },
+                { className: "panel additional-tests-panel" },
                 React.createElement(
                     "div",
                     { className: "panel-header" },
@@ -155,17 +169,102 @@ var Add_tests_controller = function (_React$Component) {
                                                     null,
                                                     test.date
                                                 )
-                                            ),
-                                            React.createElement(
-                                                "button",
-                                                { id: test.id + "-reset", onClick: _this2.props.resetInitialTestPosition },
-                                                " reset "
                                             )
                                         ),
                                         React.createElement(
                                             "textarea",
                                             { id: test.id, "class": "test-result", onChange: _this2.handleTextareaChange },
                                             test.result
+                                        ),
+                                        React.createElement(
+                                            "div",
+                                            null,
+                                            React.createElement(
+                                                "div",
+                                                { className: "test-settings-buttons" },
+                                                React.createElement(
+                                                    "button",
+                                                    { id: test.id, onClick: _this2.toggleSettingsDisplay, style: !test.draw ? { visibility: "hidden" } : null },
+                                                    !_this2.state.test_display_settings_open[test.id] ? 'display settings' : 'hide settings'
+                                                ),
+                                                React.createElement(
+                                                    "button",
+                                                    { id: test.id + "-reset", onClick: _this2.props.resetInitialTestPosition },
+                                                    " reset initial position "
+                                                )
+                                            ),
+                                            React.createElement(
+                                                "div",
+                                                { className: "test-settings", style: !_this2.state.test_display_settings_open[test.id] || !test.draw ? { display: "none" } : null },
+                                                React.createElement(
+                                                    "div",
+                                                    { className: "settings-row" },
+                                                    React.createElement(
+                                                        "span",
+                                                        null,
+                                                        "title font-size"
+                                                    ),
+                                                    React.createElement(
+                                                        "button",
+                                                        { id: test.id + "-decrease-title-font", onClick: _this2.props.decreaseTitleFontSize },
+                                                        "-"
+                                                    ),
+                                                    React.createElement(
+                                                        "span",
+                                                        null,
+                                                        test.title_font_size
+                                                    ),
+                                                    React.createElement(
+                                                        "button",
+                                                        { id: test.id + "-increase-title-font", onClick: _this2.props.increaseTitleFontSize },
+                                                        "+"
+                                                    )
+                                                ),
+                                                React.createElement(
+                                                    "div",
+                                                    { className: "settings-row" },
+                                                    React.createElement(
+                                                        "div",
+                                                        null,
+                                                        "title font color"
+                                                    ),
+                                                    React.createElement("div", { className: "current-color", style: { background: test.title_color } })
+                                                ),
+                                                React.createElement(
+                                                    "div",
+                                                    { className: "settings-row" },
+                                                    React.createElement(
+                                                        "span",
+                                                        null,
+                                                        "result font-size"
+                                                    ),
+                                                    React.createElement(
+                                                        "button",
+                                                        { id: test.id + "-decrease-result-font", onClick: _this2.props.decreaseResultFontSize },
+                                                        "-"
+                                                    ),
+                                                    React.createElement(
+                                                        "span",
+                                                        null,
+                                                        test.result_font_size
+                                                    ),
+                                                    React.createElement(
+                                                        "button",
+                                                        { id: test.id + "-increase-result-font", onClick: _this2.props.increaseResultFontSize },
+                                                        "+"
+                                                    )
+                                                ),
+                                                React.createElement(
+                                                    "div",
+                                                    { className: "settings-row" },
+                                                    React.createElement(
+                                                        "div",
+                                                        null,
+                                                        "result font color"
+                                                    ),
+                                                    React.createElement("div", { className: "current-color", style: { background: test.result_color } })
+                                                )
+                                            )
                                         )
                                     );
                                 })
