@@ -334,7 +334,7 @@ var App = function (_React$Component) {
             }
         };
 
-        _this.toggleSingleAddTest = function (e) {
+        _this.setTitleColor = function (e) {
             var data = _this.state.patient;
             var _iteratorNormalCompletion7 = true;
             var _didIteratorError7 = false;
@@ -350,8 +350,8 @@ var App = function (_React$Component) {
                     var value = _ref14[1];
 
                     for (var i = 0; i < value.length; i++) {
-                        if (value[i].id + "-checkbox" === e.target.id) {
-                            data.additional_tests[key][i].draw = e.target.checked;
+                        if (value[i].id + "-title-color" === e.target.id) {
+                            data.additional_tests[key][i].title_color = e.target.style.cssText.split(' ')[1].slice(0, -1);
                             _this.setState({ patient: data, update: true });
                         }
                     }
@@ -372,19 +372,7 @@ var App = function (_React$Component) {
             }
         };
 
-        _this.handleViewportPosition = function (e) {
-            e.target.id === 'viewport_x1' ? _this.setState({ viewport_start_timestamp: parseInt(e.target.value), update: false }) : _this.setState({ viewport_end_timestamp: parseInt(e.target.value), update: false });
-        };
-
-        _this.updateAnnotationCoords = function () {
-            var add_tests_keys = Object.keys(_this.state.patient.additional_tests);
-            var id = document.querySelector('#annotation-id').value;
-            var x = parseInt(document.querySelector('#annotation-x').value);
-            var y = parseInt(document.querySelector('#annotation-y').value);
-            var dx = parseInt(document.querySelector('#annotation-dx').value);
-            var dy = parseInt(document.querySelector('#annotation-dy').value);
-            var width = parseFloat(document.querySelector('#www').value);
-            var timestamp = (x - 80 - 0) * (_this.state.viewport_end_timestamp - _this.state.viewport_start_timestamp) / (width - 0) + _this.state.viewport_start_timestamp;
+        _this.setResultTextColor = function (e) {
             var data = _this.state.patient;
             var _iteratorNormalCompletion8 = true;
             var _didIteratorError8 = false;
@@ -400,12 +388,9 @@ var App = function (_React$Component) {
                     var value = _ref16[1];
 
                     for (var i = 0; i < value.length; i++) {
-                        if (value[i].id === id) {
-                            data.additional_tests[key][i].timestamp = timestamp;
-                            data.additional_tests[key][i].y = y;
-                            data.additional_tests[key][i].dx = dx;
-                            data.additional_tests[key][i].dy = dy;
-                            _this.setState({ patient: data, update: false });
+                        if (value[i].id + "-result-text-color" === e.target.id) {
+                            data.additional_tests[key][i].result_color = e.target.style.cssText.split(' ')[1].slice(0, -1);
+                            _this.setState({ patient: data, update: true });
                         }
                     }
                 }
@@ -420,6 +405,97 @@ var App = function (_React$Component) {
                 } finally {
                     if (_didIteratorError8) {
                         throw _iteratorError8;
+                    }
+                }
+            }
+        };
+
+        _this.toggleSingleAddTest = function (e) {
+            var data = _this.state.patient;
+            var _iteratorNormalCompletion9 = true;
+            var _didIteratorError9 = false;
+            var _iteratorError9 = undefined;
+
+            try {
+                for (var _iterator9 = Object.entries(data.additional_tests)[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+                    var _ref17 = _step9.value;
+
+                    var _ref18 = _slicedToArray(_ref17, 2);
+
+                    var key = _ref18[0];
+                    var value = _ref18[1];
+
+                    for (var i = 0; i < value.length; i++) {
+                        if (value[i].id + "-checkbox" === e.target.id) {
+                            data.additional_tests[key][i].draw = e.target.checked;
+                            _this.setState({ patient: data, update: true });
+                        }
+                    }
+                }
+            } catch (err) {
+                _didIteratorError9 = true;
+                _iteratorError9 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion9 && _iterator9.return) {
+                        _iterator9.return();
+                    }
+                } finally {
+                    if (_didIteratorError9) {
+                        throw _iteratorError9;
+                    }
+                }
+            }
+        };
+
+        _this.handleViewportPosition = function (e) {
+            e.target.id === 'viewport_x1' ? _this.setState({ viewport_start_timestamp: parseInt(e.target.value), update: false }) : _this.setState({ viewport_end_timestamp: parseInt(e.target.value), update: false });
+        };
+
+        _this.updateAnnotationCoords = function () {
+            var add_tests_keys = Object.keys(_this.state.patient.additional_tests);
+            var id = document.querySelector('#annotation-id').value;
+            var x = parseInt(document.querySelector('#annotation-x').value);
+            var y = parseInt(document.querySelector('#annotation-y').value);
+            var dx = parseInt(document.querySelector('#annotation-dx').value);
+            var dy = parseInt(document.querySelector('#annotation-dy').value);
+            var width = parseFloat(document.querySelector('#www').value);
+            var timestamp = (x - 80 - 0) * (_this.state.viewport_end_timestamp - _this.state.viewport_start_timestamp) / (width - 0) + _this.state.viewport_start_timestamp;
+            var data = _this.state.patient;
+            var _iteratorNormalCompletion10 = true;
+            var _didIteratorError10 = false;
+            var _iteratorError10 = undefined;
+
+            try {
+                for (var _iterator10 = Object.entries(data.additional_tests)[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+                    var _ref19 = _step10.value;
+
+                    var _ref20 = _slicedToArray(_ref19, 2);
+
+                    var key = _ref20[0];
+                    var value = _ref20[1];
+
+                    for (var i = 0; i < value.length; i++) {
+                        if (value[i].id === id) {
+                            data.additional_tests[key][i].timestamp = timestamp;
+                            data.additional_tests[key][i].y = y;
+                            data.additional_tests[key][i].dx = dx;
+                            data.additional_tests[key][i].dy = dy;
+                            _this.setState({ patient: data, update: false });
+                        }
+                    }
+                }
+            } catch (err) {
+                _didIteratorError10 = true;
+                _iteratorError10 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion10 && _iterator10.return) {
+                        _iterator10.return();
+                    }
+                } finally {
+                    if (_didIteratorError10) {
+                        throw _iteratorError10;
                     }
                 }
             }
@@ -553,7 +629,9 @@ var App = function (_React$Component) {
                                     decreaseResultFontSize: this.decreaseResultFontSize,
                                     increaseResultFontSize: this.increaseResultFontSize,
                                     increaseTitleFontSize: this.increaseTitleFontSize,
-                                    decreaseTitleFontSize: this.decreaseTitleFontSize })
+                                    decreaseTitleFontSize: this.decreaseTitleFontSize,
+                                    setTitleColor: this.setTitleColor,
+                                    setResultTextColor: this.setResultTextColor })
                             ) : null
                         ),
                         React.createElement(

@@ -25,6 +25,7 @@ var Add_tests_controller = function (_React$Component) {
         };
 
         _this.toggleSettingsDisplay = function (e) {
+            console.log('panel-header');
             var toggle_state = _this.state.test_display_settings_open;
             toggle_state[e.target.id] = !toggle_state[e.target.id];
             _this.setState({ test_display_settings_open: toggle_state });
@@ -39,6 +40,13 @@ var Add_tests_controller = function (_React$Component) {
             _this.props.updateAdditionalTestResult(e.target.id, e.target.value);
         };
 
+        _this.togglePalette = function (e) {
+            console.log(_this.state.showPalette);
+            if (_this.state.showPalette === e.target.id) {
+                _this.setState({ showPalette: null });
+            } else _this.setState({ showPalette: e.target.id });
+        };
+
         _this.state = { open: false };
         return _this;
     }
@@ -47,7 +55,7 @@ var Add_tests_controller = function (_React$Component) {
 
 
     _createClass(Add_tests_controller, [{
-        key: "componentWillMount",
+        key: 'componentWillMount',
         value: function componentWillMount() {
             var keys = Object.keys(this.props.additional_tests);
             var tests = this.props.additional_tests;
@@ -67,7 +75,7 @@ var Add_tests_controller = function (_React$Component) {
         // set roughly estimated textarea size for each test result
 
     }, {
-        key: "componentDidMount",
+        key: 'componentDidMount',
         value: function componentDidMount() {
             var averageNumOfSymbolsInTextareaString = 44;
             var textareas = document.getElementsByClassName('test-result');
@@ -100,169 +108,195 @@ var Add_tests_controller = function (_React$Component) {
         // set matching textarea height
 
     }, {
-        key: "render",
+        key: 'render',
         value: function render() {
             var _this2 = this;
 
             var tests = this.props.additional_tests;
-            console.log(tests);
             var keys = Object.keys(this.props.additional_tests);
+            console.log(tests);
             return React.createElement(
-                "div",
-                { className: "panel additional-tests-panel" },
+                'div',
+                { className: 'panel additional-tests-panel' },
                 React.createElement(
-                    "div",
-                    { className: "panel-header" },
+                    'div',
+                    { className: 'panel-header' },
                     React.createElement(
-                        "h6",
+                        'h6',
                         null,
-                        "Additional Tests"
+                        'Additional Tests'
                     ),
                     React.createElement(
-                        "button",
-                        { className: "toggle-button panel-header-btn", onClick: this.onPanelToggle },
+                        'button',
+                        { className: 'toggle-button panel-header-btn', onClick: this.onPanelToggle },
                         this.state.open ? 'hide' : 'show'
                     )
                 ),
                 React.createElement(
-                    "div",
+                    'div',
                     { className: "panel-content" + (!this.state.open ? " hidden" : "") },
                     keys.map(function (key) {
                         return React.createElement(
-                            "div",
-                            { className: "test-group-wrapper" },
+                            'div',
+                            { className: 'test-group-wrapper' },
                             React.createElement(
-                                "div",
-                                { id: key, className: "test-group-header", onClick: _this2.toggleTest },
+                                'div',
+                                { id: key, className: 'test-group-header', onClick: _this2.toggleTest },
                                 React.createElement(
-                                    "p",
-                                    { className: "test-group-title" },
-                                    " ",
+                                    'p',
+                                    { className: 'test-group-title' },
+                                    ' ',
                                     key,
-                                    " "
+                                    ' '
                                 ),
                                 React.createElement(
-                                    "p",
+                                    'p',
                                     null,
-                                    " ",
+                                    ' ',
                                     !_this2.state.test_info_tab_open[key] ? "+" : "-",
-                                    " "
+                                    ' '
                                 )
                             ),
                             React.createElement(
-                                "div",
-                                { className: "test-group" },
+                                'div',
+                                { className: 'test-group' },
                                 tests[key].map(function (test) {
                                     return React.createElement(
-                                        "div",
-                                        { className: "test-info", style: !_this2.state.test_info_tab_open[key] ? { display: "none" } : null },
+                                        'div',
+                                        { className: 'test-info', style: !_this2.state.test_info_tab_open[key] ? { display: "none" } : null },
                                         React.createElement(
-                                            "div",
-                                            { className: "test-info-header" },
+                                            'div',
+                                            { className: 'test-info-header' },
                                             React.createElement(
-                                                "div",
+                                                'div',
                                                 null,
-                                                React.createElement("input", { id: test.id + "-checkbox", type: "checkbox", checked: test.draw ? "checked" : null,
+                                                React.createElement('input', { id: test.id + "-checkbox", type: 'checkbox', checked: test.draw ? "checked" : null,
                                                     onChange: _this2.props.toggleSingleAddTest }),
                                                 React.createElement(
-                                                    "span",
+                                                    'span',
                                                     null,
                                                     test.date
                                                 )
                                             )
                                         ),
                                         React.createElement(
-                                            "textarea",
-                                            { id: test.id, "class": "test-result", onChange: _this2.handleTextareaChange },
+                                            'textarea',
+                                            { id: test.id, 'class': 'test-result', onChange: _this2.handleTextareaChange },
                                             test.result
                                         ),
                                         React.createElement(
-                                            "div",
+                                            'div',
                                             null,
                                             React.createElement(
-                                                "div",
-                                                { className: "test-settings-buttons" },
+                                                'div',
+                                                { className: 'test-settings-buttons' },
                                                 React.createElement(
-                                                    "button",
+                                                    'button',
                                                     { id: test.id, onClick: _this2.toggleSettingsDisplay, style: !test.draw ? { visibility: "hidden" } : null },
                                                     !_this2.state.test_display_settings_open[test.id] ? 'display settings' : 'hide settings'
                                                 ),
                                                 React.createElement(
-                                                    "button",
+                                                    'button',
                                                     { id: test.id + "-reset", onClick: _this2.props.resetInitialTestPosition },
-                                                    " reset initial position "
+                                                    ' reset initial position '
                                                 )
                                             ),
                                             React.createElement(
-                                                "div",
-                                                { className: "test-settings", style: !_this2.state.test_display_settings_open[test.id] || !test.draw ? { display: "none" } : null },
+                                                'div',
+                                                { className: 'test-settings', style: !_this2.state.test_display_settings_open[test.id] || !test.draw ? { display: "none" } : null },
                                                 React.createElement(
-                                                    "div",
-                                                    { className: "settings-row" },
+                                                    'div',
+                                                    { className: 'settings-row' },
                                                     React.createElement(
-                                                        "span",
+                                                        'span',
                                                         null,
-                                                        "title font-size"
+                                                        'title font-size'
                                                     ),
                                                     React.createElement(
-                                                        "button",
+                                                        'button',
                                                         { id: test.id + "-decrease-title-font", onClick: _this2.props.decreaseTitleFontSize },
-                                                        "-"
+                                                        '-'
                                                     ),
                                                     React.createElement(
-                                                        "span",
+                                                        'span',
                                                         null,
                                                         test.title_font_size
                                                     ),
                                                     React.createElement(
-                                                        "button",
+                                                        'button',
                                                         { id: test.id + "-increase-title-font", onClick: _this2.props.increaseTitleFontSize },
-                                                        "+"
+                                                        '+'
                                                     )
                                                 ),
                                                 React.createElement(
-                                                    "div",
-                                                    { className: "settings-row" },
+                                                    'div',
+                                                    { className: 'settings-row' },
                                                     React.createElement(
-                                                        "div",
+                                                        'div',
                                                         null,
-                                                        "title font color"
+                                                        'title font color'
                                                     ),
-                                                    React.createElement("div", { className: "current-color", style: { background: test.title_color } })
+                                                    React.createElement('div', { id: test.id + "-title-color", className: 'current-color', style: { background: test.title_color }, onClick: _this2.togglePalette }),
+                                                    React.createElement(
+                                                        'div',
+                                                        { className: 'color-palette', style: _this2.state.showPalette === test.id + "-title-color" ? { display: "flex" } : null },
+                                                        React.createElement('div', { id: test.id + "-title-color", className: 'color', style: { background: "red" }, onClick: _this2.props.setTitleColor }),
+                                                        React.createElement('div', { id: test.id + "-title-color", className: 'color', style: { background: "blue" }, onClick: _this2.props.setTitleColor }),
+                                                        React.createElement('div', { id: test.id + "-title-color", className: 'color', style: { background: "green" }, onClick: _this2.props.setTitleColor }),
+                                                        React.createElement('div', { id: test.id + "-title-color", className: 'color', style: { background: "pink" }, onClick: _this2.props.setTitleColor }),
+                                                        React.createElement('div', { id: test.id + "-title-color", className: 'color', style: { background: "wheat" }, onClick: _this2.props.setTitleColor }),
+                                                        React.createElement('div', { id: test.id + "-title-color", className: 'color', style: { background: "coral" }, onClick: _this2.props.setTitleColor }),
+                                                        React.createElement('div', { id: test.id + "-title-color", className: 'color', style: { background: "black" }, onClick: _this2.props.setTitleColor }),
+                                                        React.createElement('div', { id: test.id + "-title-color", className: 'color', style: { background: "yellow" }, onClick: _this2.props.setTitleColor }),
+                                                        React.createElement('div', { id: test.id + "-title-color", className: 'color', style: { background: "whitesmoke" }, onClick: _this2.props.setTitleColor })
+                                                    )
                                                 ),
                                                 React.createElement(
-                                                    "div",
-                                                    { className: "settings-row" },
+                                                    'div',
+                                                    { className: 'settings-row' },
                                                     React.createElement(
-                                                        "span",
+                                                        'span',
                                                         null,
-                                                        "result font-size"
+                                                        'result font-size'
                                                     ),
                                                     React.createElement(
-                                                        "button",
+                                                        'button',
                                                         { id: test.id + "-decrease-result-font", onClick: _this2.props.decreaseResultFontSize },
-                                                        "-"
+                                                        '-'
                                                     ),
                                                     React.createElement(
-                                                        "span",
+                                                        'span',
                                                         null,
                                                         test.result_font_size
                                                     ),
                                                     React.createElement(
-                                                        "button",
+                                                        'button',
                                                         { id: test.id + "-increase-result-font", onClick: _this2.props.increaseResultFontSize },
-                                                        "+"
+                                                        '+'
                                                     )
                                                 ),
                                                 React.createElement(
-                                                    "div",
-                                                    { className: "settings-row" },
+                                                    'div',
+                                                    { className: 'settings-row' },
                                                     React.createElement(
-                                                        "div",
+                                                        'div',
                                                         null,
-                                                        "result font color"
+                                                        'result font color'
                                                     ),
-                                                    React.createElement("div", { className: "current-color", style: { background: test.result_color } })
+                                                    React.createElement('div', { id: test.id + "-result-text-color", className: 'current-color', style: { background: test.result_color }, onClick: _this2.togglePalette }),
+                                                    React.createElement(
+                                                        'div',
+                                                        { className: 'color-palette', style: _this2.state.showPalette === test.id + "-result-text-color" ? { display: "flex" } : null },
+                                                        React.createElement('div', { id: test.id + "-result-text-color", className: 'color', style: { background: "red" }, onClick: _this2.props.setResultTextColor }),
+                                                        React.createElement('div', { id: test.id + "-result-text-color", className: 'color', style: { background: "blue" }, onClick: _this2.props.setResultTextColor }),
+                                                        React.createElement('div', { id: test.id + "-result-text-color", className: 'color', style: { background: "green" }, onClick: _this2.props.setResultTextColor }),
+                                                        React.createElement('div', { id: test.id + "-result-text-color", className: 'color', style: { background: "pink" }, onClick: _this2.props.setResultTextColor }),
+                                                        React.createElement('div', { id: test.id + "-result-text-color", className: 'color', style: { background: "wheat" }, onClick: _this2.props.setResultTextColor }),
+                                                        React.createElement('div', { id: test.id + "-result-text-color", className: 'color', style: { background: "coral" }, onClick: _this2.props.setResultTextColor }),
+                                                        React.createElement('div', { id: test.id + "-result-text-color", className: 'color', style: { background: "black" }, onClick: _this2.props.setResultTextColor }),
+                                                        React.createElement('div', { id: test.id + "-result-text-color", className: 'color', style: { background: "yellow" }, onClick: _this2.props.setResultTextColor }),
+                                                        React.createElement('div', { id: test.id + "-result-text-color", className: 'color', style: { background: "whitesmoke" }, onClick: _this2.props.setResultTextColor })
+                                                    )
                                                 )
                                             )
                                         )

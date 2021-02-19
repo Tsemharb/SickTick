@@ -195,6 +195,30 @@ class App extends React.Component {
         }
     }
 
+    setTitleColor = e => {
+        let data = this.state.patient;
+        for (let [key, value] of Object.entries(data.additional_tests)) {
+            for (let i = 0; i < value.length; i++) {
+                if (value[i].id + "-title-color" === e.target.id) {
+                        data.additional_tests[key][i].title_color = e.target.style.cssText.split(' ')[1].slice(0, -1);
+                        this.setState({ patient: data, update: true })
+                }
+            }
+        }
+    }
+
+    setResultTextColor = e => {
+        let data = this.state.patient;
+        for (let [key, value] of Object.entries(data.additional_tests)) {
+            for (let i = 0; i < value.length; i++) {
+                if (value[i].id + "-result-text-color" === e.target.id) {
+                        data.additional_tests[key][i].result_color = e.target.style.cssText.split(' ')[1].slice(0, -1);
+                        this.setState({ patient: data, update: true })
+                }
+            }
+        }
+    }
+
     toggleSingleAddTest = e => {
         let data = this.state.patient;
         for (let [key, value] of Object.entries(data.additional_tests)) {
@@ -292,7 +316,9 @@ class App extends React.Component {
                                                           decreaseResultFontSize = {this.decreaseResultFontSize}
                                                           increaseResultFontSize = {this.increaseResultFontSize} 
                                                           increaseTitleFontSize = {this.increaseTitleFontSize}
-                                                          decreaseTitleFontSize = {this.decreaseTitleFontSize} />
+                                                          decreaseTitleFontSize = {this.decreaseTitleFontSize}
+                                                          setTitleColor = {this.setTitleColor}
+                                                          setResultTextColor = {this.setResultTextColor} />
                                   </div>
                                 : null}
                     </div>

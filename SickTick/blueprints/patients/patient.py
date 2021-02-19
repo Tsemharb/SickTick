@@ -30,8 +30,11 @@ class Patient_parser:
         self.doc = docx.Document('data/' + self.patient_file_name)
 
         self.tables = {}
-        for table in self.doc.tables:  #get tables of doc file ('table_name': table_obj)
-            self.tables[self.tables_mapping[table.rows[0].cells[0].text.strip()]] = table
+        for table in self.doc.tables:  #get tables from .doc file ('table_name': table_obj)
+            try:
+                self.tables[self.tables_mapping[table.rows[0].cells[0].text.strip()]] = table
+            except:
+                continue
 
         self.current_date = None
         self.date_counter = 1
@@ -39,14 +42,31 @@ class Patient_parser:
         self.is_error = False
 
         self.general_info = self.get_general_info()
-        self.temperature = self.get_temperature(self.general_info['admission_date'][-4:], self.general_info['discharge_date'][-4:])
-        self.antibiotics = self.get_antibiotics(self.tables['antibiotics'])
+        print('got general info')
+
+        try:
+            self.temperature = self.get_temperature(self.tables['temperature'], 
+                                                    self.general_info['admission_date'][-4:],
+                                                    self.general_info['discharge_date'][-4:])
+        except:
+            self.temperature = []
+        print('got temperature info')
+
+        try:
+            self.antibiotics = self.get_antibiotics(self.tables['antibiotics'])
+        except:
+            self.antibiotics = []
+        print('got antibiotics info')
+
         self.additional_tests = self.get_additional_tests(self.tables['additional_tests'])
+        print('got additional tests')
+
         try:
             self.cbc = self.get_tests(self.tables['cbc'], self.general_info['admission_date'][-4:], self.general_info['discharge_date'][-4:])
         except:
             self.is_error = True
             self.errors.append('Something is wrong with complete blood count')
+        print('got complete blood count')
 
     @staticmethod
     def get_timestamp(date_str):
@@ -67,6 +87,16 @@ class Patient_parser:
         out_min = 10  # minimum font size
         out_max = 19  #maximum font size
         return int(out_max - (length - in_min) * (out_max - out_min) / (in_max - in_min))
+
+    @staticmethod
+    def check_date_string(date):
+        date = date.strip()
+        m = re.search('(0|1|2|3)\d\.(0|1)\d\.(19|20)\d{2}', date)
+        if m:
+            return m.group(0)
+        elif re.match(r'(0|1|2|3)\d\.(0|1)\d\.\d{2}', date):
+            return date[:6] + '20' + date[-2:]
+        return 'No date found'
 
 
 # method sets different timestamps for date duplicates (same dates won't have same x-coords)
@@ -93,12 +123,17 @@ class Patient_parser:
                                 'Отделение': 'department',
                                 'Дата госпитализации': 'admission_date',
                                 'Дата выписки': 'discharge_date',
-                                'Клинический диагноз': 'diagnosis'}
+                                'Клинический диагноз': 'diagnosis',
+                                'Диагноз заключительный': 'diagnosis'}
             general_info = {}
             the_table = self.tables['general_info']
             for row in the_table.rows:
                 general_info[gen_info_mapping[row.cells[0].text.strip()]] = row.cells[1].text
-            # print(self.get_timestamp(general_info['admission_date']))
+            general_info['admission_date'] = self.check_date_string(general_info['admission_date'])
+            general_info['discharge_date'] = self.check_date_string(general_info['discharge_date'])
+            print(general_info['admission_date'])
+            print()
+            print()
             general_info['admission_timestamp'] = self.get_timestamp(general_info['admission_date'])
             general_info['discharge_timestamp'] = self.get_timestamp(general_info['discharge_date'])
         except:
@@ -108,20 +143,19 @@ class Patient_parser:
         return general_info
 
 
-    def get_temperature(self, admission_year, discharge_year):
+    def get_temperature(self, table, admission_year, discharge_year):
         try:
             same_year = admission_year == discharge_year  # check for change of the year while in hospital
             month = int(self.general_info['admission_date'][3:5])
             year = admission_year
             temperature = {}
-            the_table = self.tables['temperature']
-            rows_num = len(the_table.rows)
-            cells_num = len(the_table.rows[1].cells)
+            rows_num = len(table.rows)
+            cells_num = len(table.rows[1].cells)
             temp_id = 0
 
             for row in range(1, rows_num, 3):
-                dates = [cell.text for cell in the_table.rows[row].cells]
-                results = [cell.text for cell in the_table.rows[row+1].cells]
+                dates = [cell.text[:5] for cell in table.rows[row].cells]  # take first 5 symbols to avoid trailing stuff (eg dots, spaces etc)
+                results = [cell.text for cell in table.rows[row+1].cells]
                 for i in range (len(dates)):
                     if dates[i] != '':
                         if not same_year and month > int(dates[i][-2:]):
@@ -213,7 +247,7 @@ class Patient_parser:
                 # set test attributes
                 test = {}
                 test['id'] = 'additional-' + str(r_num)
-                test['date'] = table.rows[r_num].cells[0].text
+                test['date'] = self.check_date_string(table.rows[r_num].cells[0].text)
                 test['y'] = None
                 test['dx'] = 60
                 test['dy'] = - 60
@@ -224,8 +258,12 @@ class Patient_parser:
                 test['title_font_size'] = 15
                 test['title_bold'] = True
                 test['title_color'] = 'grey' #'pink'
-                test['timestamp'] = self.get_timestamp(test['date'])
-                test['timestamp_init'] = self.get_timestamp(test['date'])
+                if test['date'] != 'No date found':
+                    test['timestamp'] = self.get_timestamp(test['date'])
+                    test['timestamp_init'] = self.get_timestamp(test['date'])
+                else:
+                    test['timestamp'] = self.get_timestamp(self.general_info['admission_date'])
+                    test['timestamp_init'] = self.get_timestamp(self.general_info['admission_date'])
                 test['result'] = result
                 name = test_raw_name.replace(' Заключение', '').replace(' Результат', '')
                 try:
