@@ -23,9 +23,33 @@
 }
 
 .app {
-    display: flex;
     justify-content: center;
     margin-bottom: 40px;
+}
+
+.app__graph-wrapper{
+    display: flex;
+}
+
+.app__graph-tabs{
+    display: flex;
+    margin-bottom: 15px;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.app__graph-tabs .tab{
+    margin: 0 5px 0 5px;
+    padding: 5px;
+}
+
+.app__graph-tabs .tab-active{
+    background-color: #f0f0f0;
+}
+
+.app__graph-tabs .tab:hover{
+    cursor: pointer;
+    background-color: #dadada;
 }
 
 .data-from-graph {
@@ -212,7 +236,6 @@ small {
 
 .additional-tests-panel .test-info{
     border: 1px solid black;
-    padding: 4px 0;
     margin-bottom: 4px;
     padding: 5px 8px;
 }

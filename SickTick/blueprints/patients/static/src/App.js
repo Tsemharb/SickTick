@@ -1,5 +1,6 @@
 import Clock from './Clock.js'
-import Graph from './Graph.js'
+import Graph_1 from './Graph_1.js'
+import Graph_2 from './Graph_2.js'
 import General_info from './General_info.js'
 import Temp_controller from './controller_components/Temp_controller.js'
 import Ab_controller from './controller_components/Ab_controller.js'
@@ -37,7 +38,8 @@ class App extends React.Component {
                         adjustAbScope: true,
                         draw_annotations: true,
                         patient: data,
-                        unique_antibiotics_order: Array.from(new Set(data.antibiotics.map(item => item.name)))
+                        unique_antibiotics_order: Array.from(new Set(data.antibiotics.map(item => item.name))),
+                        activeTab: 'Graph'
                     });
                 })
             );
@@ -47,6 +49,15 @@ class App extends React.Component {
         return nextState.update;
     }
 
+
+    toggleTab = e =>{
+        if (e.target.id === 'GraphTab'){
+            this.setState({activeTab: 'Graph', update:true});
+        }
+        else{
+            this.setState({activeTab: 'Grid', update:true});
+        }
+    }
 
 
     toggleTemp = e => {
@@ -71,7 +82,7 @@ class App extends React.Component {
         // console.log(this.state.patient.antibiotics);
         let data = this.state.patient;
         for (let i = 0; i < data.antibiotics.length; i++) {
-            if (data.antibiotics[i].name == e.target.id) {
+            if (data.antibiotics[i].name === e.target.id) {
                 data.antibiotics[i].draw = e.target.checked
             }
         }
@@ -83,7 +94,7 @@ class App extends React.Component {
     setAbAbbrev = e => {
         let data = this.state.patient;
         for (let i = 0; i < data.antibiotics.length; i++) {
-            if (data.antibiotics[i].name == e.target.id) {
+            if (data.antibiotics[i].name === e.target.id) {
                 data.antibiotics[i].abbrev = e.target.value
             }
         }
@@ -264,7 +275,7 @@ class App extends React.Component {
 
 
     render() {
-        const {isLoaded, drawGraph, drawTemp, drawAb, patient, viewport_start_timestamp, 
+        const {isLoaded, drawGraph, drawTemp, drawAb, patient, viewport_start_timestamp,
                viewport_end_timestamp, draw_annotations, unique_antibiotics_order, adjustAbScope } = this.state;
 
         if (!isLoaded) {
@@ -286,52 +297,113 @@ class App extends React.Component {
                   <hr/>
                   <General_info info={patient}/>
                   <div className='app'>
-                    <div className='app__graph'>
-                      <Graph graphData={{patient, drawTemp, drawAb, adjustAbScope, viewport_start_timestamp, viewport_end_timestamp,
-                                         draw_annotations, unique_antibiotics_order}} />
+                    <div className='app__graph-tabs'>
+                        <div id='GraphTab'
+                             className = {this.state.activeTab === 'Graph' ? "tab tab-active":"tab"}
+                             onClick = {this.toggleTab}>
+                            Graph View
+                        </div>
+                        <div id='GridTab'
+                             className= {this.state.activeTab === 'Grid' ? "tab tab-active":"tab"}
+                             onClick = {this.toggleTab}>Grid View</div>
                     </div>
-                    <div className="app__control-panel">
-                      {isLoaded ? <div>
-                                    <Temp_controller temp = {patient.temperature}
-                                                     drawTemp = {this.state.drawTemp}
-                                                     toggleTemp = {this.toggleTemp} />
-                                    <CBC_controller cbc_results = {patient.cbc}
-                                                    drawCBC = {this.state.drawCBC}
-                                                    toggleCBC = {this.toggleCBC}
-                                                    toggleCBCComponent = {this.toggleCBCComponent} />
-                                    <DragDropContext onDragEnd={this.onDragEnd}>
-                                        <Ab_controller antibiotics = {patient.antibiotics}
-                                                       unique_ab_order = {this.state.unique_antibiotics_order}
-                                                       drawAb = {this.state.drawAb}
-                                                       adjustAbScope = {this.state.adjustAbScope}
-                                                       toggleAbScope = {this.toggleAbScope}
-                                                       toggleAb = {this.toggleAb}
-                                                       toggleSingleAb = {this.toggleSingleAb}
-                                                       setAbAbbrev = {this.setAbAbbrev} />
-                                    </DragDropContext>
-                                    <Add_tests_controller additional_tests = {patient.additional_tests}
-                                                          updateAdditionalTestResult = {this.updateAdditionalTestResult}
-                                                          resetInitialTestPosition = {this.resetInitialTestPosition}
-                                                          toggleSingleAddTest = {this.toggleSingleAddTest}
-                                                          decreaseResultFontSize = {this.decreaseResultFontSize}
-                                                          increaseResultFontSize = {this.increaseResultFontSize} 
-                                                          increaseTitleFontSize = {this.increaseTitleFontSize}
-                                                          decreaseTitleFontSize = {this.decreaseTitleFontSize}
-                                                          setTitleColor = {this.setTitleColor}
-                                                          setResultTextColor = {this.setResultTextColor} />
-                                  </div>
-                                : null}
+                    <div className='app__graph-wrapper wrapper_1' style={this.state.activeTab === 'Graph' ? null:{display: "none"}}>
+                        <div className='app__graph-1'>
+                          <Graph_1 graphData={{patient, drawTemp, drawAb, adjustAbScope, viewport_start_timestamp, viewport_end_timestamp,
+                                             draw_annotations, unique_antibiotics_order}} />
+                        </div>
+                        <div className="app__control-panel">
+                          {isLoaded ? <div>
+                                        <Temp_controller temp = {patient.temperature}
+                                                         drawTemp = {this.state.drawTemp}
+                                                         toggleTemp = {this.toggleTemp} />
+                                        <CBC_controller cbc_results = {patient.cbc}
+                                                        drawCBC = {this.state.drawCBC}
+                                                        toggleCBC = {this.toggleCBC}
+                                                        toggleCBCComponent = {this.toggleCBCComponent} />
+                                        <DragDropContext onDragEnd={this.onDragEnd}>
+                                            <Ab_controller antibiotics = {patient.antibiotics}
+                                                           unique_ab_order = {this.state.unique_antibiotics_order}
+                                                           drawAb = {this.state.drawAb}
+                                                           adjustAbScope = {this.state.adjustAbScope}
+                                                           toggleAbScope = {this.toggleAbScope}
+                                                           toggleAb = {this.toggleAb}
+                                                           toggleSingleAb = {this.toggleSingleAb}
+                                                           setAbAbbrev = {this.setAbAbbrev} />
+                                        </DragDropContext>
+                                        <Add_tests_controller additional_tests = {patient.additional_tests}
+                                                              updateAdditionalTestResult = {this.updateAdditionalTestResult}
+                                                              resetInitialTestPosition = {this.resetInitialTestPosition}
+                                                              toggleSingleAddTest = {this.toggleSingleAddTest}
+                                                              decreaseResultFontSize = {this.decreaseResultFontSize}
+                                                              increaseResultFontSize = {this.increaseResultFontSize}
+                                                              increaseTitleFontSize = {this.increaseTitleFontSize}
+                                                              decreaseTitleFontSize = {this.decreaseTitleFontSize}
+                                                              setTitleColor = {this.setTitleColor}
+                                                              setResultTextColor = {this.setResultTextColor} />
+                                      </div>
+                                    : null}
+                        </div>
+                        <div className="data-from-graph">
+                          <input id="viewport_x1" type="text" pattern="[0-9]*" onChange={this.handleViewportPosition}/>
+                          <input id="viewport_x2" type="text" pattern="[0-9]*" onChange={this.handleViewportPosition}/>
+                          <input id="annotation-id" type="text"/>
+                          <input id="annotation-x" type="text" pattern="[0-9]*"/>
+                          <input id="annotation-y" type="text" pattern="[0-9]*"/>
+                          <input id="annotation-dx" type="text" pattern="[0-9]*"/>
+                          <input id="annotation-dy" type="text" pattern="[0-9]*"/>
+                          <input id="www" type="text" pattern="[0-9]*"/>
+                          <button id="annotation-button" onMouseUp={this.updateAnnotationCoords}/>
+                        </div>
                     </div>
-                    <div className="data-from-graph">
-                      <input id="viewport_x1"type="text" pattern="[0-9]*" onChange={this.handleViewportPosition}/>
-                      <input id="viewport_x2"type="text" pattern="[0-9]*" onChange={this.handleViewportPosition}/>
-                      <input id="annotation-id" type="text"/>
-                      <input id="annotation-x" type="text" pattern="[0-9]*"/>
-                      <input id="annotation-y" type="text" pattern="[0-9]*"/>
-                      <input id="annotation-dx" type="text" pattern="[0-9]*"/>
-                      <input id="annotation-dy" type="text" pattern="[0-9]*"/>
-                      <input id="www" type="text" pattern="[0-9]*"/>
-                      <button id="annotation-button" onMouseUp={this.updateAnnotationCoords}></button>
+                    <div className='app__graph-wrapper wrapper_2' style={this.state.activeTab === 'Grid' ? null:{display: "none"}}>
+                        <div className='app__graph-2'>
+                          <Graph_2 graphData={{patient, drawTemp, drawAb, adjustAbScope, viewport_start_timestamp, viewport_end_timestamp,
+                                             draw_annotations, unique_antibiotics_order}} />
+                        </div>
+                        <div className="app__control-panel">
+                          {isLoaded ? <div>
+                                        <Temp_controller temp = {patient.temperature}
+                                                         drawTemp = {this.state.drawTemp}
+                                                         toggleTemp = {this.toggleTemp} />
+                                        <CBC_controller cbc_results = {patient.cbc}
+                                                        drawCBC = {this.state.drawCBC}
+                                                        toggleCBC = {this.toggleCBC}
+                                                        toggleCBCComponent = {this.toggleCBCComponent} />
+                                        <DragDropContext onDragEnd={this.onDragEnd}>
+                                            <Ab_controller antibiotics = {patient.antibiotics}
+                                                           unique_ab_order = {this.state.unique_antibiotics_order}
+                                                           drawAb = {this.state.drawAb}
+                                                           adjustAbScope = {this.state.adjustAbScope}
+                                                           toggleAbScope = {this.toggleAbScope}
+                                                           toggleAb = {this.toggleAb}
+                                                           toggleSingleAb = {this.toggleSingleAb}
+                                                           setAbAbbrev = {this.setAbAbbrev} />
+                                        </DragDropContext>
+                                        <Add_tests_controller additional_tests = {patient.additional_tests}
+                                                              updateAdditionalTestResult = {this.updateAdditionalTestResult}
+                                                              resetInitialTestPosition = {this.resetInitialTestPosition}
+                                                              toggleSingleAddTest = {this.toggleSingleAddTest}
+                                                              decreaseResultFontSize = {this.decreaseResultFontSize}
+                                                              increaseResultFontSize = {this.increaseResultFontSize}
+                                                              increaseTitleFontSize = {this.increaseTitleFontSize}
+                                                              decreaseTitleFontSize = {this.decreaseTitleFontSize}
+                                                              setTitleColor = {this.setTitleColor}
+                                                              setResultTextColor = {this.setResultTextColor} />
+                                      </div>
+                                    : null}
+                        </div>
+                        <div className="data-from-graph">
+                          <input id="viewport_x1" type="text" pattern="[0-9]*" onChange={this.handleViewportPosition}/>
+                          <input id="viewport_x2" type="text" pattern="[0-9]*" onChange={this.handleViewportPosition}/>
+                          <input id="annotation-id" type="text"/>
+                          <input id="annotation-x" type="text" pattern="[0-9]*"/>
+                          <input id="annotation-y" type="text" pattern="[0-9]*"/>
+                          <input id="annotation-dx" type="text" pattern="[0-9]*"/>
+                          <input id="annotation-dy" type="text" pattern="[0-9]*"/>
+                          <input id="www" type="text" pattern="[0-9]*"/>
+                          <button id="annotation-button" onMouseUp={this.updateAnnotationCoords}/>
+                        </div>
                     </div>
                   </div>
                 </div>

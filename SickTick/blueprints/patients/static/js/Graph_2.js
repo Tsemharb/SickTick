@@ -6,18 +6,18 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-import draw_everything from './graph_components/draw_everything.js';
+import draw_everything from './graph_components/draw_graph_2.js';
 
-var Graph = function (_React$Component) {
-    _inherits(Graph, _React$Component);
+var Graph_2 = function (_React$Component) {
+    _inherits(Graph_2, _React$Component);
 
-    function Graph() {
-        _classCallCheck(this, Graph);
+    function Graph_2() {
+        _classCallCheck(this, Graph_2);
 
-        return _possibleConstructorReturn(this, (Graph.__proto__ || Object.getPrototypeOf(Graph)).apply(this, arguments));
+        return _possibleConstructorReturn(this, (Graph_2.__proto__ || Object.getPrototypeOf(Graph_2)).apply(this, arguments));
     }
 
-    _createClass(Graph, [{
+    _createClass(Graph_2, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
             draw_everything(this.props);
@@ -34,7 +34,7 @@ var Graph = function (_React$Component) {
         }
     }]);
 
-    return Graph;
+    return Graph_2;
 }(React.Component);
 
-export default Graph;
+export default Graph_2;

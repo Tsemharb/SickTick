@@ -24,7 +24,7 @@ var getValidDate = function getValidDate(date_string) {
     return new Date(dateISO).getTime();
 };
 
-var draw_everything = function draw_everything(props) {
+var draw_graph_1 = function draw_graph_1(props) {
     // console.log(props)
     var _props$graphData = props.graphData,
         patient = _props$graphData.patient,
@@ -48,10 +48,10 @@ var draw_everything = function draw_everything(props) {
         return day + '-' + month;
     };
 
-    d3.select('.graph > *').remove();
-    d3.select('.graph').append('svg').attr('height', height).attr('width', width).attr('id', 'graph');
+    d3.select('.app__graph-1 .graph > *').remove();
+    d3.select('.app__graph-1 .graph').append('svg').attr('height', height).attr('width', width).attr('id', 'graph_1');
 
-    var svg = d3.select('#graph');
+    var svg = d3.select('#graph_1');
 
     // Add a clipPath: everything out of this area won't be drawn.
     var clip = svg.append("defs").append("svg:clipPath").attr("id", "clip").append("svg:rect").attr("width", innerWidth).attr("height", innerHeight)
@@ -437,4 +437,4 @@ var draw_everything = function draw_everything(props) {
     });
 };
 
-export default draw_everything;
+export default draw_graph_1;

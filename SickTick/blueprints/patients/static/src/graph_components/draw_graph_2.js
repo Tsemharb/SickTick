@@ -27,7 +27,7 @@ const getValidDate = date_string => {
 }
 
 
-const draw_everything = (props) => {
+const draw_graph_2 = (props) => {
     // console.log(props)
     const { patient, drawTemp, drawAb, adjustAbScope, viewport_start_timestamp, viewport_end_timestamp, 
             additional_tests, draw_annotations, unique_antibiotics_order } = props.graphData;
@@ -42,13 +42,13 @@ const draw_everything = (props) => {
         return day + '-' + month;
     }
 
-    d3.select('.graph > *').remove();
-    d3.select('.graph').append('svg')
+    d3.select('.app__graph-2 .graph > *').remove();
+    d3.select('.app__graph-2 .graph').append('svg')
         .attr('height', height)
         .attr('width', width)
-        .attr('id', 'graph')
+        .attr('id', 'graph_2')
 
-    const svg = d3.select('#graph');
+    const svg = d3.select('#graph_2');
 
     // Add a clipPath: everything out of this area won't be drawn.
     const clip = svg.append("defs").append("svg:clipPath")
@@ -519,4 +519,4 @@ const draw_everything = (props) => {
 
 }
 
-export default draw_everything;
+export default draw_graph_2;

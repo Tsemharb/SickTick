@@ -34,7 +34,7 @@ class Add_tests_controller extends React.Component {
     }
 
     toggleSettingsDisplay = e =>{
-        console.log('panel-header')
+        // console.log('panel-header')
         let toggle_state = this.state.test_display_settings_open;
         toggle_state[e.target.id] = !toggle_state[e.target.id];
         this.setState({ test_display_settings_open: toggle_state });
@@ -43,7 +43,7 @@ class Add_tests_controller extends React.Component {
     // set matching textarea height
     handleTextareaChange = e => {
         const textareaLineHeight = 12;
-        const previousRows = e.target.rows;
+        // const previousRows = e.target.rows;
         e.target.rows = 1;
         const currentRows = Math.floor((e.target.scrollHeight) / textareaLineHeight);
         e.target.rows = currentRows;
@@ -51,7 +51,7 @@ class Add_tests_controller extends React.Component {
     }
 
     togglePalette = (e) =>{
-        console.log(this.state.showPalette);
+        // console.log(this.state.showPalette);
         if (this.state.showPalette === e.target.id){
             this.setState({showPalette: null})
         }
@@ -62,7 +62,7 @@ class Add_tests_controller extends React.Component {
     render() {
         const tests = this.props.additional_tests;
         const keys = Object.keys(this.props.additional_tests);
-        console.log(tests);
+        // console.log(tests);
         return (
             <div className="panel additional-tests-panel">
                 <div className="panel-header">
@@ -83,12 +83,12 @@ class Add_tests_controller extends React.Component {
                             <div className="test-info" style={!this.state.test_info_tab_open[key] ? {display: "none"}: null}>
                                 <div className="test-info-header">
                                     <div> 
-                                        <input id={test.id + "-checkbox"}type="checkbox" checked={test.draw ? "checked" : null} 
+                                        <input id={test.id + "-checkbox"} type="checkbox" checked={test.draw ? "checked" : null}
                                                onChange={this.props.toggleSingleAddTest}/>
                                         <span>{test.date}</span>
                                     </div>
                                 </div>
-                                <textarea id={test.id} class="test-result" onChange={this.handleTextareaChange}>{test.result}</textarea>
+                                <textarea id={test.id} className="test-result" onChange={this.handleTextareaChange}>{test.result}</textarea>
                                 <div>
                                     <div className="test-settings-buttons">
                                         <button id={test.id} onClick = {this.toggleSettingsDisplay} style={!test.draw ? {visibility: "hidden"}: null}> 
@@ -105,17 +105,17 @@ class Add_tests_controller extends React.Component {
                                         </div>
                                         <div className="settings-row">
                                             <div>title font color</div>
-                                            <div id={test.id + "-title-color"} className='current-color' style={{background: test.title_color}} onClick = {this.togglePalette}></div>
+                                            <div id={test.id + "-title-color"} className='current-color' style={{background: test.title_color}} onClick = {this.togglePalette}/>
                                             <div className='color-palette' style={this.state.showPalette === test.id + "-title-color" ? {display: "flex"}: null}>
-                                                <div id={test.id + "-title-color"} className='color' style={{background:"red"}} onClick = {this.props.setTitleColor}></div>
-                                                <div id={test.id + "-title-color"} className='color' style={{background:"blue"}} onClick = {this.props.setTitleColor}></div>
-                                                <div id={test.id + "-title-color"} className='color' style={{background:"green"}} onClick = {this.props.setTitleColor}></div>
-                                                <div id={test.id + "-title-color"} className='color' style={{background:"pink"}} onClick = {this.props.setTitleColor}></div>
-                                                <div id={test.id + "-title-color"} className='color' style={{background:"wheat"}} onClick = {this.props.setTitleColor}></div>
-                                                <div id={test.id + "-title-color"} className='color' style={{background:"coral"}} onClick = {this.props.setTitleColor}></div>
-                                                <div id={test.id + "-title-color"} className='color' style={{background:"black"}} onClick = {this.props.setTitleColor}></div>
-                                                <div id={test.id + "-title-color"} className='color' style={{background:"yellow"}} onClick = {this.props.setTitleColor}></div>
-                                                <div id={test.id + "-title-color"} className='color' style={{background:"whitesmoke"}} onClick = {this.props.setTitleColor}></div>
+                                                <div id={test.id + "-title-color"} className='color' style={{background: "red"}} onClick = {this.props.setTitleColor}/>
+                                                <div id={test.id + "-title-color"} className='color' style={{background: "blue"}} onClick = {this.props.setTitleColor}/>
+                                                <div id={test.id + "-title-color"} className='color' style={{background: "green"}} onClick = {this.props.setTitleColor}/>
+                                                <div id={test.id + "-title-color"} className='color' style={{background: "pink"}} onClick = {this.props.setTitleColor}/>
+                                                <div id={test.id + "-title-color"} className='color' style={{background: "wheat"}} onClick = {this.props.setTitleColor}/>
+                                                <div id={test.id + "-title-color"} className='color' style={{background: "coral"}} onClick = {this.props.setTitleColor}/>
+                                                <div id={test.id + "-title-color"} className='color' style={{background: "black"}} onClick = {this.props.setTitleColor}/>
+                                                <div id={test.id + "-title-color"} className='color' style={{background: "yellow"}} onClick = {this.props.setTitleColor}/>
+                                                <div id={test.id + "-title-color"} className='color' style={{background: "whitesmoke"}} onClick = {this.props.setTitleColor}/>
                                             </div>
                                         </div>
                                         <div className="settings-row"> 
@@ -126,17 +126,17 @@ class Add_tests_controller extends React.Component {
                                         </div>
                                         <div className="settings-row">
                                             <div>result font color</div>
-                                            <div id={test.id + "-result-text-color"} className='current-color' style={{background: test.result_color}} onClick = {this.togglePalette}></div>
+                                            <div id={test.id + "-result-text-color"} className='current-color' style={{background: test.result_color}} onClick = {this.togglePalette}/>
                                             <div className='color-palette' style={this.state.showPalette === test.id + "-result-text-color" ? {display: "flex"}: null}>
-                                                <div id={test.id + "-result-text-color"} className='color' style={{background:"red"}} onClick = {this.props.setResultTextColor}></div>
-                                                <div id={test.id + "-result-text-color"} className='color' style={{background:"blue"}} onClick = {this.props.setResultTextColor}></div>
-                                                <div id={test.id + "-result-text-color"} className='color' style={{background:"green"}} onClick = {this.props.setResultTextColor}></div>
-                                                <div id={test.id + "-result-text-color"} className='color' style={{background:"pink"}} onClick = {this.props.setResultTextColor}></div>
-                                                <div id={test.id + "-result-text-color"} className='color' style={{background:"wheat"}} onClick = {this.props.setResultTextColor}></div>
-                                                <div id={test.id + "-result-text-color"} className='color' style={{background:"coral"}} onClick = {this.props.setResultTextColor}></div>
-                                                <div id={test.id + "-result-text-color"} className='color' style={{background:"black"}} onClick = {this.props.setResultTextColor}></div>
-                                                <div id={test.id + "-result-text-color"} className='color' style={{background:"yellow"}} onClick = {this.props.setResultTextColor}></div>
-                                                <div id={test.id + "-result-text-color"} className='color' style={{background:"whitesmoke"}} onClick = {this.props.setResultTextColor}></div>
+                                                <div id={test.id + "-result-text-color"} className='color' style={{background: "red"}} onClick = {this.props.setResultTextColor}/>
+                                                <div id={test.id + "-result-text-color"} className='color' style={{background: "blue"}} onClick = {this.props.setResultTextColor}/>
+                                                <div id={test.id + "-result-text-color"} className='color' style={{background:"green"}} onClick = {this.props.setResultTextColor}/>
+                                                <div id={test.id + "-result-text-color"} className='color' style={{background:"pink"}} onClick = {this.props.setResultTextColor}/>
+                                                <div id={test.id + "-result-text-color"} className='color' style={{background:"wheat"}} onClick = {this.props.setResultTextColor}/>
+                                                <div id={test.id + "-result-text-color"} className='color' style={{background:"coral"}} onClick = {this.props.setResultTextColor}/>
+                                                <div id={test.id + "-result-text-color"} className='color' style={{background:"black"}} onClick = {this.props.setResultTextColor}/>
+                                                <div id={test.id + "-result-text-color"} className='color' style={{background:"yellow"}} onClick = {this.props.setResultTextColor}/>
+                                                <div id={test.id + "-result-text-color"} className='color' style={{background:"whitesmoke"}} onClick = {this.props.setResultTextColor}/>
                                             </div>
                                         </div>
                                     </div>

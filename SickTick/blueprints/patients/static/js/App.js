@@ -9,7 +9,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 import Clock from './Clock.js';
-import Graph from './Graph.js';
+import Graph_1 from './Graph_1.js';
+import Graph_2 from './Graph_2.js';
 import General_info from './General_info.js';
 import Temp_controller from './controller_components/Temp_controller.js';
 import Ab_controller from './controller_components/Ab_controller.js';
@@ -26,6 +27,14 @@ var App = function (_React$Component) {
         _classCallCheck(this, App);
 
         var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+
+        _this.toggleTab = function (e) {
+            if (e.target.id === 'GraphTab') {
+                _this.setState({ activeTab: 'Graph', update: true });
+            } else {
+                _this.setState({ activeTab: 'Grid', update: true });
+            }
+        };
 
         _this.toggleTemp = function (e) {
             var drawTemp = _this.state.drawTemp;
@@ -50,7 +59,7 @@ var App = function (_React$Component) {
             // console.log(this.state.patient.antibiotics);
             var data = _this.state.patient;
             for (var i = 0; i < data.antibiotics.length; i++) {
-                if (data.antibiotics[i].name == e.target.id) {
+                if (data.antibiotics[i].name === e.target.id) {
                     data.antibiotics[i].draw = e.target.checked;
                 }
             }
@@ -64,7 +73,7 @@ var App = function (_React$Component) {
         _this.setAbAbbrev = function (e) {
             var data = _this.state.patient;
             for (var i = 0; i < data.antibiotics.length; i++) {
-                if (data.antibiotics[i].name == e.target.id) {
+                if (data.antibiotics[i].name === e.target.id) {
                     data.antibiotics[i].abbrev = e.target.value;
                 }
             }
@@ -531,7 +540,8 @@ var App = function (_React$Component) {
                         patient: data,
                         unique_antibiotics_order: Array.from(new Set(data.antibiotics.map(function (item) {
                             return item.name;
-                        })))
+                        }))),
+                        activeTab: 'Graph'
                     });
                 });
             });
@@ -593,59 +603,141 @@ var App = function (_React$Component) {
                         { className: 'app' },
                         React.createElement(
                             'div',
-                            { className: 'app__graph' },
-                            React.createElement(Graph, { graphData: { patient: patient, drawTemp: drawTemp, drawAb: drawAb, adjustAbScope: adjustAbScope, viewport_start_timestamp: viewport_start_timestamp, viewport_end_timestamp: viewport_end_timestamp,
-                                    draw_annotations: draw_annotations, unique_antibiotics_order: unique_antibiotics_order } })
-                        ),
-                        React.createElement(
-                            'div',
-                            { className: 'app__control-panel' },
-                            isLoaded ? React.createElement(
+                            { className: 'app__graph-tabs' },
+                            React.createElement(
                                 'div',
-                                null,
-                                React.createElement(Temp_controller, { temp: patient.temperature,
-                                    drawTemp: this.state.drawTemp,
-                                    toggleTemp: this.toggleTemp }),
-                                React.createElement(CBC_controller, { cbc_results: patient.cbc,
-                                    drawCBC: this.state.drawCBC,
-                                    toggleCBC: this.toggleCBC,
-                                    toggleCBCComponent: this.toggleCBCComponent }),
-                                React.createElement(
-                                    DragDropContext,
-                                    { onDragEnd: this.onDragEnd },
-                                    React.createElement(Ab_controller, { antibiotics: patient.antibiotics,
-                                        unique_ab_order: this.state.unique_antibiotics_order,
-                                        drawAb: this.state.drawAb,
-                                        adjustAbScope: this.state.adjustAbScope,
-                                        toggleAbScope: this.toggleAbScope,
-                                        toggleAb: this.toggleAb,
-                                        toggleSingleAb: this.toggleSingleAb,
-                                        setAbAbbrev: this.setAbAbbrev })
-                                ),
-                                React.createElement(Add_tests_controller, { additional_tests: patient.additional_tests,
-                                    updateAdditionalTestResult: this.updateAdditionalTestResult,
-                                    resetInitialTestPosition: this.resetInitialTestPosition,
-                                    toggleSingleAddTest: this.toggleSingleAddTest,
-                                    decreaseResultFontSize: this.decreaseResultFontSize,
-                                    increaseResultFontSize: this.increaseResultFontSize,
-                                    increaseTitleFontSize: this.increaseTitleFontSize,
-                                    decreaseTitleFontSize: this.decreaseTitleFontSize,
-                                    setTitleColor: this.setTitleColor,
-                                    setResultTextColor: this.setResultTextColor })
-                            ) : null
+                                { id: 'GraphTab',
+                                    className: this.state.activeTab === 'Graph' ? "tab tab-active" : "tab",
+                                    onClick: this.toggleTab },
+                                'Graph View'
+                            ),
+                            React.createElement(
+                                'div',
+                                { id: 'GridTab',
+                                    className: this.state.activeTab === 'Grid' ? "tab tab-active" : "tab",
+                                    onClick: this.toggleTab },
+                                'Grid View'
+                            )
                         ),
                         React.createElement(
                             'div',
-                            { className: 'data-from-graph' },
-                            React.createElement('input', { id: 'viewport_x1', type: 'text', pattern: '[0-9]*', onChange: this.handleViewportPosition }),
-                            React.createElement('input', { id: 'viewport_x2', type: 'text', pattern: '[0-9]*', onChange: this.handleViewportPosition }),
-                            React.createElement('input', { id: 'annotation-id', type: 'text' }),
-                            React.createElement('input', { id: 'annotation-x', type: 'text', pattern: '[0-9]*' }),
-                            React.createElement('input', { id: 'annotation-y', type: 'text', pattern: '[0-9]*' }),
-                            React.createElement('input', { id: 'annotation-dx', type: 'text', pattern: '[0-9]*' }),
-                            React.createElement('input', { id: 'annotation-dy', type: 'text', pattern: '[0-9]*' }),
-                            React.createElement('input', { id: 'www', type: 'text', pattern: '[0-9]*' }),
-                            React.createElement('button', { id: 'annotation-button', onMouseUp: this.updateAnnotationCoords })
+                            { className: 'app__graph-wrapper wrapper_1', style: this.state.activeTab === 'Graph' ? null : { display: "none" } },
+                            React.createElement(
+                                'div',
+                                { className: 'app__graph-1' },
+                                React.createElement(Graph_1, { graphData: { patient: patient, drawTemp: drawTemp, drawAb: drawAb, adjustAbScope: adjustAbScope, viewport_start_timestamp: viewport_start_timestamp, viewport_end_timestamp: viewport_end_timestamp,
+                                        draw_annotations: draw_annotations, unique_antibiotics_order: unique_antibiotics_order } })
+                            ),
+                            React.createElement(
+                                'div',
+                                { className: 'app__control-panel' },
+                                isLoaded ? React.createElement(
+                                    'div',
+                                    null,
+                                    React.createElement(Temp_controller, { temp: patient.temperature,
+                                        drawTemp: this.state.drawTemp,
+                                        toggleTemp: this.toggleTemp }),
+                                    React.createElement(CBC_controller, { cbc_results: patient.cbc,
+                                        drawCBC: this.state.drawCBC,
+                                        toggleCBC: this.toggleCBC,
+                                        toggleCBCComponent: this.toggleCBCComponent }),
+                                    React.createElement(
+                                        DragDropContext,
+                                        { onDragEnd: this.onDragEnd },
+                                        React.createElement(Ab_controller, { antibiotics: patient.antibiotics,
+                                            unique_ab_order: this.state.unique_antibiotics_order,
+                                            drawAb: this.state.drawAb,
+                                            adjustAbScope: this.state.adjustAbScope,
+                                            toggleAbScope: this.toggleAbScope,
+                                            toggleAb: this.toggleAb,
+                                            toggleSingleAb: this.toggleSingleAb,
+                                            setAbAbbrev: this.setAbAbbrev })
+                                    ),
+                                    React.createElement(Add_tests_controller, { additional_tests: patient.additional_tests,
+                                        updateAdditionalTestResult: this.updateAdditionalTestResult,
+                                        resetInitialTestPosition: this.resetInitialTestPosition,
+                                        toggleSingleAddTest: this.toggleSingleAddTest,
+                                        decreaseResultFontSize: this.decreaseResultFontSize,
+                                        increaseResultFontSize: this.increaseResultFontSize,
+                                        increaseTitleFontSize: this.increaseTitleFontSize,
+                                        decreaseTitleFontSize: this.decreaseTitleFontSize,
+                                        setTitleColor: this.setTitleColor,
+                                        setResultTextColor: this.setResultTextColor })
+                                ) : null
+                            ),
+                            React.createElement(
+                                'div',
+                                { className: 'data-from-graph' },
+                                React.createElement('input', { id: 'viewport_x1', type: 'text', pattern: '[0-9]*', onChange: this.handleViewportPosition }),
+                                React.createElement('input', { id: 'viewport_x2', type: 'text', pattern: '[0-9]*', onChange: this.handleViewportPosition }),
+                                React.createElement('input', { id: 'annotation-id', type: 'text' }),
+                                React.createElement('input', { id: 'annotation-x', type: 'text', pattern: '[0-9]*' }),
+                                React.createElement('input', { id: 'annotation-y', type: 'text', pattern: '[0-9]*' }),
+                                React.createElement('input', { id: 'annotation-dx', type: 'text', pattern: '[0-9]*' }),
+                                React.createElement('input', { id: 'annotation-dy', type: 'text', pattern: '[0-9]*' }),
+                                React.createElement('input', { id: 'www', type: 'text', pattern: '[0-9]*' }),
+                                React.createElement('button', { id: 'annotation-button', onMouseUp: this.updateAnnotationCoords })
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'app__graph-wrapper wrapper_2', style: this.state.activeTab === 'Grid' ? null : { display: "none" } },
+                            React.createElement(
+                                'div',
+                                { className: 'app__graph-2' },
+                                React.createElement(Graph_2, { graphData: { patient: patient, drawTemp: drawTemp, drawAb: drawAb, adjustAbScope: adjustAbScope, viewport_start_timestamp: viewport_start_timestamp, viewport_end_timestamp: viewport_end_timestamp,
+                                        draw_annotations: draw_annotations, unique_antibiotics_order: unique_antibiotics_order } })
+                            ),
+                            React.createElement(
+                                'div',
+                                { className: 'app__control-panel' },
+                                isLoaded ? React.createElement(
+                                    'div',
+                                    null,
+                                    React.createElement(Temp_controller, { temp: patient.temperature,
+                                        drawTemp: this.state.drawTemp,
+                                        toggleTemp: this.toggleTemp }),
+                                    React.createElement(CBC_controller, { cbc_results: patient.cbc,
+                                        drawCBC: this.state.drawCBC,
+                                        toggleCBC: this.toggleCBC,
+                                        toggleCBCComponent: this.toggleCBCComponent }),
+                                    React.createElement(
+                                        DragDropContext,
+                                        { onDragEnd: this.onDragEnd },
+                                        React.createElement(Ab_controller, { antibiotics: patient.antibiotics,
+                                            unique_ab_order: this.state.unique_antibiotics_order,
+                                            drawAb: this.state.drawAb,
+                                            adjustAbScope: this.state.adjustAbScope,
+                                            toggleAbScope: this.toggleAbScope,
+                                            toggleAb: this.toggleAb,
+                                            toggleSingleAb: this.toggleSingleAb,
+                                            setAbAbbrev: this.setAbAbbrev })
+                                    ),
+                                    React.createElement(Add_tests_controller, { additional_tests: patient.additional_tests,
+                                        updateAdditionalTestResult: this.updateAdditionalTestResult,
+                                        resetInitialTestPosition: this.resetInitialTestPosition,
+                                        toggleSingleAddTest: this.toggleSingleAddTest,
+                                        decreaseResultFontSize: this.decreaseResultFontSize,
+                                        increaseResultFontSize: this.increaseResultFontSize,
+                                        increaseTitleFontSize: this.increaseTitleFontSize,
+                                        decreaseTitleFontSize: this.decreaseTitleFontSize,
+                                        setTitleColor: this.setTitleColor,
+                                        setResultTextColor: this.setResultTextColor })
+                                ) : null
+                            ),
+                            React.createElement(
+                                'div',
+                                { className: 'data-from-graph' },
+                                React.createElement('input', { id: 'viewport_x1', type: 'text', pattern: '[0-9]*', onChange: this.handleViewportPosition }),
+                                React.createElement('input', { id: 'viewport_x2', type: 'text', pattern: '[0-9]*', onChange: this.handleViewportPosition }),
+                                React.createElement('input', { id: 'annotation-id', type: 'text' }),
+                                React.createElement('input', { id: 'annotation-x', type: 'text', pattern: '[0-9]*' }),
+                                React.createElement('input', { id: 'annotation-y', type: 'text', pattern: '[0-9]*' }),
+                                React.createElement('input', { id: 'annotation-dx', type: 'text', pattern: '[0-9]*' }),
+                                React.createElement('input', { id: 'annotation-dy', type: 'text', pattern: '[0-9]*' }),
+                                React.createElement('input', { id: 'www', type: 'text', pattern: '[0-9]*' }),
+                                React.createElement('button', { id: 'annotation-button', onMouseUp: this.updateAnnotationCoords })
+                            )
                         )
                     )
                 );

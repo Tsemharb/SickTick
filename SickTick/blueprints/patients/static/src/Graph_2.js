@@ -1,7 +1,7 @@
-import draw_everything from './graph_components/draw_everything.js'
+import draw_everything from './graph_components/draw_graph_2.js'
 
 
-class Graph extends React.Component {
+class Graph_2 extends React.Component {
     componentDidMount() {
         draw_everything(this.props);
     }
@@ -18,4 +18,4 @@ class Graph extends React.Component {
 }
 
 
-export default Graph;
+export default Graph_2;
