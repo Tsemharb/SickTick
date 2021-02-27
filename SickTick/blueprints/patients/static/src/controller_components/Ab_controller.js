@@ -59,9 +59,14 @@ class Ab_controller extends React.Component {
                                              {...provided.draggableProps}
                                              {...provided.dragHandleProps}>
                                       <div>
-                                        <input id={ab.name} type="checkbox" checked={ab.draw ? "checked" : null}
+                                        <input id={ab.name} type="checkbox" checked={(ab.draw && ab.dates.begin !== '0')
+                                                                                        ? "checked"
+                                                                                        : null}
                                                onChange={this.props.toggleSingleAb}/>
-                                        <span> {ab.name} </span>
+
+                                        <span style = {ab.dates.begin === '0' ? {background: 'red'} : null}>
+                                            {ab.dates.begin === '0' ? ab.name + ' INV DATE' : ab.name}
+                                        </span>
                                       </div>
                                       <input type="text" id={ab.name} value={ab.abbrev}
                                              onChange={(evt) => this.props.setAbAbbrev(evt)}/>

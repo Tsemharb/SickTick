@@ -96,7 +96,7 @@ class Patient_parser:
             return m.group(0)
         elif re.match(r'(0|1|2|3)\d\.(0|1)\d\.\d{2}', date):
             return date[:6] + '20' + date[-2:]
-        return 'No date found'
+        return False
 
 
 # method sets different timestamps for date duplicates (same dates won't have same x-coords)
@@ -208,13 +208,25 @@ class Patient_parser:
                 # add antibiotics dates could be several runs for each ab
                 dates = row_content[0].split(',')
                 for date in dates:
+                    if ab_name == '':
+                        continue
                     antibiotic = {}
                     antibiotic['name'] = ab_name.strip()
                     antibiotic['dose'] = ab_dose
                     antibiotic['color'] = ab_colors[row-1]
                     d = date.strip().split(' ')
-                    antibiotic['dates'] = {'begin': d[1][:10], 'end': d[3][:10]}
-                    antibiotic['timestamps'] = {'begin': self.get_timestamp(d[1][:10]), 'end': self.get_timestamp(d[3][:10])}
+                    try:
+                        antibiotic['dates'] = {'begin': d[1][:10], 'end': d[3][:10]}
+                    except:
+                        antibiotic['dates'] = {'begin': '0', 'end': '0'}
+                    try:
+                        antibiotic['timestamps'] = {'begin': self.get_timestamp(d[1][:10]), 'end': self.get_timestamp(d[3][:10])}
+                    except:
+                        antibiotic['timestamps'] = {'begin': 0, 'end': 0}
+                    if not (self.check_date_string(antibiotic['dates']['begin'])
+                            and self.check_date_string(antibiotic['dates']['end'])):
+                        antibiotic['dates'] = {'begin': '0', 'end': '0'}
+                        antibiotic['timestamps'] = {'begin': 0, 'end': 0}
                     antibiotic['draw'] = True
                     try:
                         antibiotic['abbrev'] = self.json_codes[ab_name.lower().strip()]['abbrev']
@@ -258,7 +270,7 @@ class Patient_parser:
                 test['title_font_size'] = 15
                 test['title_bold'] = True
                 test['title_color'] = 'grey' #'pink'
-                if test['date'] != 'No date found':
+                if test['date']:
                     test['timestamp'] = self.get_timestamp(test['date'])
                     test['timestamp_init'] = self.get_timestamp(test['date'])
                 else:
